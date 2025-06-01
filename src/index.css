@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+/* Thiết lập layout tổng */
+html {
+  font-size: 16px;
+  line-height: 1.5;
+  font-family: 'Inter', sans-serif;
+}
+
+
+/* Logo effect nếu bạn có logo */
+.logo {
+  height: 5em;
+  padding: 1em;
+  transition: filter 300ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 1em #d1a982aa);
+}
+
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Nếu bạn cần animation logo */
+@media (prefers-reduced-motion: no-preference) {
+  .logo.spin {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+/* Card tùy chỉnh nếu không dùng Tailwind card */
+.card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Text phụ */
+.read-the-docs {
+  color: #ccc;
+  font-size: 0.875rem;
+}
