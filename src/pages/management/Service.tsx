@@ -5,39 +5,129 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TablePagination,
   TableHead,
   TableRow,
   Paper,
   IconButton,
   Chip,
-    TextField,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  MenuItem,
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import { useState } from 'react';
 const services = [
   {
     id: 1,
-    name: 'Chăm sóc da mặt',
+    name: 'Chụp ảnh',
     color: '#FFB6C1',
     status: 'active',
   },
   {
     id: 2,
-    name: 'Massage body',
+    name: 'Make up',
     color: '#90EE90',
     status: 'inactive',
   },
   {
     id: 3,
-    name: 'Điều trị mụn chuyên sâu',
+    name: 'Cà phê',
     color: '#ADD8E6',
     status: 'active',
   },
 ];
 
 const Service = () => {
-        const [searchTerm, setSearchTerm] = useState('');
+
+  const [openEdit, setOpenEdit] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [selectedService, setSelectedService] = useState<any | null>(null);
+
+  const handleOpenEdit = (service: any) => {
+    setSelectedService(service);
+    setOpenEdit(true);
+  };
+
+  const handleCloseEdit = () => {
+    setOpenEdit(false);
+    setSelectedService(null);
+  };
+
+  const handleEditChange = (field: string, value: string) => {
+    if (selectedService) {
+      setSelectedService({ ...selectedService, [field]: value });
+    }
+  };
+
+  const handleSaveEdit = () => {
+    // TODO: Logic cập nhật dịch vụ
+    console.log('Đã lưu dịch vụ:', selectedService);
+    handleCloseEdit();
+  };
+
+  const handleOpenDelete = (service: any) => {
+    setSelectedService(service);
+    setOpenDelete(true);
+  };
+
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+    setSelectedService(null);
+  };
+
+  const handleConfirmDelete = () => {
+    // TODO: Logic xóa dịch vụ
+    console.log('Đã xoá dịch vụ:', selectedService);
+    handleCloseDelete();
+  };
+
+  const [openAdd, setOpenAdd] = useState(false);
+  const [newService, setNewService] = useState({
+    name: '',
+    color: '',
+    status: 'active',
+  });
+
+  const handleOpenAdd = () => {
+    setNewService({ name: '', color: '', status: 'active' });
+    setOpenAdd(true);
+  };
+
+  const handleCloseAdd = () => {
+    setOpenAdd(false);
+  };
+
+  const handleAddChange = (field: string, value: string) => {
+    setNewService({ ...newService, [field]: value });
+  };
+
+  const handleAddService = () => {
+    // TODO: Logic thêm dịch vụ (gọi API hoặc cập nhật mảng services)
+    console.log('Thêm dịch vụ mới:', newService);
+    handleCloseAdd();
+  };
+
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const displayedRows = services.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
   return (
     <div className="flex h-screen w-screen">
       <Sidebar />
@@ -58,8 +148,7 @@ const Service = () => {
           <main className="flex-1 p-6 bg-transparent text-gray-900 overflow-auto">
             <h1 className="text-3xl font-bold mb-4">Danh sách dịch vụ</h1>
 
-            <div className="flex flex-wrap gap-4 items-center mb-6">
-              {/* Tìm kiếm */}
+            <div className="flex flex-wrap gap-4 items-center justify-between mb-6">
               <TextField
                 label="Tìm kiếm"
                 variant="outlined"
@@ -67,6 +156,17 @@ const Service = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
+              <Button
+                variant="contained"
+                onClick={handleOpenAdd}
+                sx={{
+                  backgroundColor: '#215858',
+                  color: 'white',
+                  '&:hover': { backgroundColor: '#1a4646' },
+                }}
+              >
+                Thêm dịch vụ
+              </Button>
             </div>
 
             <TableContainer component={Paper} elevation={3}>
@@ -81,14 +181,14 @@ const Service = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {services.map((service, index) => (
-                    <TableRow key={service.id}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>{service.name}</TableCell>
+                  {displayedRows.map((services) => (
+                    <TableRow key={services.id}>
+                      <TableCell>{services.id}</TableCell>
+                      <TableCell>{services.name}</TableCell>
                       <TableCell>
                         <div
                           style={{
-                            backgroundColor: service.color,
+                            backgroundColor: services.color,
                             width: 40,
                             height: 20,
                             borderRadius: 4,
@@ -99,31 +199,119 @@ const Service = () => {
                       <TableCell>
                         <Chip
                           label={
-                            service.status === 'active'
+                            services.status === 'active'
                               ? 'Đang hoạt động'
                               : 'Ngừng hoạt động'
                           }
-                          color={service.status === 'active' ? 'success' : 'default'}
+                          color={services.status === 'active' ? 'success' : 'default'}
                           variant="outlined"
                           size="small"
                         />
                       </TableCell>
                       <TableCell>
-                        <IconButton color="primary" size="small">
-                          <EditIcon />
+                        <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenEdit(services)}>
+                          <FiEdit />
                         </IconButton>
-                        <IconButton color="error" size="small">
-                          <DeleteIcon />
+                        <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenDelete(services)}>
+                          <FiTrash2 />
                         </IconButton>
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
+              <TablePagination
+                component="div"
+                count={services.length}
+                page={page}
+                onPageChange={handleChangePage}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                labelRowsPerPage="Số dòng mỗi trang"
+              />
             </TableContainer>
           </main>
         </div>
       </div>
+      {selectedService && (
+        <Dialog open={openEdit} onClose={handleCloseEdit}>
+          <DialogTitle sx={{ backgroundColor: '#215858', color: 'white' }}>
+            Chỉnh sửa dịch vụ
+          </DialogTitle>
+          <DialogContent sx={{ backgroundColor: '#faebce', minWidth: 400 }}>
+            <TextField
+              label="Tên dịch vụ"
+              fullWidth
+              margin="dense"
+              value={selectedService.name}
+              onChange={(e) => handleEditChange('name', e.target.value)}
+            />
+            <TextField
+              label="Màu sắc (mã HEX)"
+              fullWidth
+              margin="dense"
+              value={selectedService.color}
+              onChange={(e) => handleEditChange('color', e.target.value)}
+            />
+            <TextField
+              label="Trạng thái"
+              select
+              fullWidth
+              margin="dense"
+              value={selectedService.status}
+              onChange={(e) => handleEditChange('status', e.target.value)}
+            >
+              <MenuItem value="active">Đang hoạt động</MenuItem>
+              <MenuItem value="inactive">Ngừng hoạt động</MenuItem>
+            </TextField>
+          </DialogContent>
+          <DialogActions sx={{ backgroundColor: '#faebce' }}>
+            <Button onClick={handleCloseEdit} variant="outlined" sx={{ color: '#215858', borderColor: '#215858' }}>
+              Hủy
+            </Button>
+            <Button
+              onClick={handleSaveEdit}
+              variant="contained"
+              sx={{
+                backgroundColor: '#215858',
+                color: 'white',
+                '&:hover': { backgroundColor: '#1a4646' },
+              }}
+            >
+              Lưu
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+      {selectedService && (
+        <Dialog open={openDelete} onClose={handleCloseDelete}>
+          <DialogTitle
+            sx={{ backgroundColor: '#7a1e1e', color: 'white' }}>
+            Xác nhận xoá
+          </DialogTitle>
+          <DialogContent sx={{ backgroundColor: '#faebce' }}>
+            Bạn có chắc chắn muốn xoá dịch vụ <strong>{selectedService.name}</strong> không?
+          </DialogContent>
+          <DialogActions sx={{ backgroundColor: '#faebce' }}>
+            <Button onClick={handleCloseDelete} variant="outlined"
+              sx={{ color: '#7a1e1e', borderColor: '#7a1e1e' }}
+            >
+              Hủy
+            </Button>
+            <Button
+              onClick={handleConfirmDelete}
+              variant="contained"
+              sx={{
+                backgroundColor: '#7a1e1e',
+                color: 'white',
+                '&:hover': { backgroundColor: '#5c1515' },
+              }}
+            >
+              Xoá
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </div>
   );
 };

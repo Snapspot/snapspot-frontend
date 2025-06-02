@@ -9,6 +9,11 @@ import Partner from './pages/management/Partner'
 import Review from './pages/management/Review'
 import Service from './pages/management/Service'
 import System from './pages/management/System'
+import Member from './pages/management/Member'
+import PartnerApproval from './pages/management/PartnerApproval'
+import Province from './pages/management/Province'
+import District from './pages/management/District'
+import Spot from './pages/management/Spot'
 
 function App() {
   return (
@@ -22,6 +27,11 @@ function App() {
         <Route path="/reviews" element={<Review />} />
         <Route path="/services" element={<Service />} />
         <Route path="/system-log" element={<System />} />
+        <Route path="/members" element={<Member />} />
+        <Route path="/partner-approval" element={<PartnerApproval />} />
+        <Route path="/provinces" element={<Province />} />
+        <Route path="/districts" element={<District />} />
+        <Route path="/spots" element={<Spot />} />
       </Routes>
     </Router>
   )
