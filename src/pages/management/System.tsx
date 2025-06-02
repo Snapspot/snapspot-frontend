@@ -6,6 +6,7 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TablePagination,
   TableHead,
   TableRow,
   Typography,
@@ -15,7 +16,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
-    
+
 } from '@mui/material';
 import { useState } from 'react';
 
@@ -54,8 +55,22 @@ const getChipColor = (type: string) => {
 };
 
 const System = () => {
-    const [filterType, setFilterType] = useState('Truy cập');
-    const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState('Truy cập');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const displayedRows = logs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
   return (
     <div className="flex h-screen w-screen">
       <Sidebar />
@@ -75,9 +90,7 @@ const System = () => {
         <div className="relative flex-1 flex flex-col">
           <Navbar />
           <main className="flex-1 p-6 bg-transparent text-gray-900 overflow-auto">
-            <Typography variant="h4" fontWeight={600} mb={3}>
-              Lịch sử Hệ Thống
-            </Typography>
+            <h1 className="text-3xl font-bold mb-4">Lịch sử hệ thống</h1>
 
             {/* Thanh tìm kiếm và dropdown */}
             <div className="flex flex-wrap gap-4 items-center mb-6">
@@ -118,22 +131,31 @@ const System = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {logs.map((log, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{log.id}</TableCell>
-                      <TableCell>{log.time}</TableCell>
+                  {displayedRows.map((logs) => (
+                    <TableRow key={logs.id}>
+                      <TableCell>{logs.id}</TableCell>
+                      <TableCell>{logs.time}</TableCell>
                       <TableCell>
                         <Chip
-                          label={log.type}
-                          color={getChipColor(log.type)}
+                          label={logs.type}
+                          color={getChipColor(logs.type)}
                           size="small"
                         />
                       </TableCell>
-                      <TableCell>{log.description}</TableCell>
+                      <TableCell>{logs.description}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
+              <TablePagination
+                component="div"
+                count={logs.length}
+                page={page}
+                onPageChange={handleChangePage}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                labelRowsPerPage="Số dòng mỗi trang"
+              />
             </TableContainer>
           </main>
         </div>

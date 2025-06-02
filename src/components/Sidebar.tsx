@@ -1,31 +1,136 @@
-import { FiHome, FiUsers, FiPackage, FiMapPin, FiBook, FiStar, FiSettings } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
+import { FiHome, FiUsers, FiPackage, FiMapPin, FiBook, FiStar, FiSettings, FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { Link, useLocation } from 'react-router-dom';
+import { useState } from 'react';
 
 export default function Sidebar() {
-  const menuItems = [
-    { label: "Dashboard", icon: <FiHome />, path: "/dashboard" },
-    { label: "Quản lý đối tác", icon: <FiUsers />, path: "/partners" },
-    { label: "Quản lý gói tiếp thị", icon: <FiPackage />, path: "/marketing" },
-    { label: "Quản lý địa điểm", icon: <FiMapPin />, path: "/locations" },
-    { label: "Nhật ký hệ thống", icon: <FiBook />, path: "/system-log" },
-    { label: "Quản lý đánh giá", icon: <FiStar />, path: "/reviews" },
-    { label: "Quản lý dịch vụ", icon: <FiSettings />, path: "/services" },
-  ];
+
+  const location = useLocation();
+  const isPartnerPath = ['/partners', '/members', '/partner-approval'].includes(location.pathname);
+  const [isPartnerMenuOpen, setIsPartnerMenuOpen] = useState(isPartnerPath);
+  const isLocationPath = ['/provinces', '/districts', '/spots'].includes(location.pathname);
+  const [isLocationMenuOpen, setIsLocationMenuOpen] = useState(isLocationPath);
+
 
   return (
     <div className="w-72 min-h-screen bg-[#215858] text-[#faebce] flex flex-col p-6">
       <h2 className="text-2xl font-bold mb-10">SNAPSPOT</h2>
       <nav className="flex flex-col space-y-4">
-        {menuItems.map(({ label, icon, path }, index) => (
-          <Link
-            key={index}
-            to={path}
-            className="hover:bg-teal-700 px-4 py-3 rounded transition duration-200 border-b border-[#3a7b7b] flex items-center space-x-3"
+        <Link
+          to="/dashboard"
+          className="hover:bg-teal-700 px-4 py-3 rounded transition flex items-center space-x-3"
+        >
+          <FiHome />
+          <span>Dashboard</span>
+        </Link>
+
+        {/* Quản lý đối tác với menu con */}
+        <div>
+          <button
+            onClick={() => setIsPartnerMenuOpen(!isPartnerMenuOpen)}
+            className="w-full text-left hover:bg-teal-700 px-4 py-3 rounded transition flex items-center justify-between"
           >
-            <span className="text-lg">{icon}</span>
-            <span>{label}</span>
-          </Link>
-        ))}
+            <div className="flex items-center space-x-3">
+              <FiUsers />
+              <span>Quản lý đối tác</span>
+            </div>
+            {isPartnerMenuOpen ? <FiChevronUp /> : <FiChevronDown />}
+          </button>
+
+          {isPartnerMenuOpen && (
+            <div className="pl-10 mt-2 flex flex-col space-y-2">
+              <Link
+                to="/partners"
+                className={`px-2 py-1 rounded transition ${location.pathname === '/partners'
+                  ? 'bg-white text-[#215858] font-semibold'
+                  : 'hover:underline'
+                  }`}
+              >
+                Đối tác
+              </Link>
+              <Link
+                to="/members"
+                className={`px-2 py-1 rounded transition ${location.pathname === '/members'
+                  ? 'bg-white text-[#215858] font-semibold'
+                  : 'hover:underline'
+                  }`}
+              >
+                Thành viên
+              </Link>
+              <Link
+                to="/partner-approval"
+                className={`px-2 py-1 rounded transition ${location.pathname === '/partner-approval'
+                  ? 'bg-white text-[#215858] font-semibold'
+                  : 'hover:underline'
+                  }`}
+              >
+                Duyệt danh sách đối tác
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Các menu khác */}
+        <Link to="/marketing" className="hover:bg-teal-700 px-4 py-3 rounded transition flex items-center space-x-3">
+          <FiPackage />
+          <span>Quản lý gói tiếp thị</span>
+        </Link>
+        {/* Quản lý địa điểm với menu con */}
+        <div>
+          <button
+            onClick={() => setIsLocationMenuOpen(!isLocationMenuOpen)}
+            className="w-full text-left hover:bg-teal-700 px-4 py-3 rounded transition flex items-center justify-between"
+          >
+            <div className="flex items-center space-x-3">
+              <FiMapPin />
+              <span>Quản lý địa điểm</span>
+            </div>
+            {isLocationMenuOpen ? <FiChevronUp /> : <FiChevronDown />}
+          </button>
+
+          {isLocationMenuOpen && (
+            <div className="pl-10 mt-2 flex flex-col space-y-2">
+              <Link
+                to="/provinces"
+                className={`px-2 py-1 rounded transition ${location.pathname === '/provinces'
+                    ? 'bg-white text-[#215858] font-semibold'
+                    : 'hover:underline'
+                  }`}
+              >
+                Tỉnh
+              </Link>
+              <Link
+                to="/districts"
+                className={`px-2 py-1 rounded transition ${location.pathname === '/districts'
+                    ? 'bg-white text-[#215858] font-semibold'
+                    : 'hover:underline'
+                  }`}
+              >
+                Huyện / Thị xã
+              </Link>
+              <Link
+                to="/spots"
+                className={`px-2 py-1 rounded transition ${location.pathname === '/spots'
+                    ? 'bg-white text-[#215858] font-semibold'
+                    : 'hover:underline'
+                  }`}
+              >
+                Spot
+              </Link>
+            </div>
+          )}
+        </div>
+        <Link to="/system-log" className="hover:bg-teal-700 px-4 py-3 rounded transition flex items-center space-x-3">
+          <FiBook />
+          <span>Nhật ký hệ thống</span>
+        </Link>
+        <Link to="/reviews" className="hover:bg-teal-700 px-4 py-3 rounded transition flex items-center space-x-3">
+          <FiStar />
+          <span>Quản lý đánh giá</span>
+        </Link>
+        <Link to="/services" className="hover:bg-teal-700 px-4 py-3 rounded transition flex items-center space-x-3">
+          <FiSettings />
+          <span>Quản lý dịch vụ</span>
+        </Link>
       </nav>
     </div>
   );

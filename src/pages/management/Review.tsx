@@ -5,13 +5,18 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TablePagination,
   TableHead,
   TableRow,
   Paper,
   Button,
   Rating,
   Typography,
-    TextField,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import { useState } from 'react';
 
@@ -37,7 +42,65 @@ const reviews = [
 ];
 
 const Review = () => {
-    const [searchTerm, setSearchTerm] = useState('');
+
+  const [openApproveDialog, setOpenApproveDialog] = useState(false);
+  const [openRejectDialog, setOpenRejectDialog] = useState(false);
+  const [selectedReview, setSelectedReview] = useState<any>(null);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  // Mở popup Duyệt
+  const handleOpenApprove = (review: any) => {
+    setSelectedReview(review);
+    setOpenApproveDialog(true);
+  };
+
+  const handleOpenReject = (review: any) => {
+    setSelectedReview(review);
+    setOpenRejectDialog(true);
+  };
+
+
+  // Đóng popup Duyệt
+  const handleCloseApprove = () => {
+    setOpenApproveDialog(false);
+    setSelectedReview(null);
+  };
+
+
+  // Đóng popup Từ chối
+  const handleCloseReject = () => {
+    setOpenRejectDialog(false);
+    setSelectedReview(null);
+  };
+
+  // Xác nhận duyệt
+  const handleConfirmApprove = () => {
+    console.log('Đã duyệt:', selectedReview);
+    // TODO: xử lý logic duyệt ở đây
+    handleCloseApprove();
+  };
+
+  // Xác nhận từ chối
+  const handleConfirmReject = () => {
+    console.log('Đã từ chối:', selectedReview);
+    // TODO: xử lý logic từ chối ở đây
+    handleCloseReject();
+  };
+
+  const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const displayedRows = reviews.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
   return (
     <div className="flex h-screen w-screen">
       <Sidebar />
@@ -57,20 +120,18 @@ const Review = () => {
         <div className="relative flex-1 flex flex-col">
           <Navbar />
           <main className="flex-1 p-6 bg-transparent text-gray-900 overflow-auto">
-            <Typography variant="h4" fontWeight={600} mb={3}>
-              Đánh Giá Người Dùng
-            </Typography>
+            <h1 className="text-3xl font-bold mb-4">Đánh giá người dùng</h1>
 
-                      <div className="flex flex-wrap gap-4 items-center mb-6">
-                        {/* Tìm kiếm */}
-                        <TextField
-                          label="Tìm kiếm"
-                          variant="outlined"
-                          size="small"
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                      </div>
+            <div className="flex flex-wrap gap-4 items-center mb-6">
+              {/* Tìm kiếm */}
+              <TextField
+                label="Tìm kiếm"
+                variant="outlined"
+                size="small"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
 
             <TableContainer component={Paper} elevation={3}>
               <Table>
@@ -87,7 +148,7 @@ const Review = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {reviews.map((review) => (
+                  {displayedRows.map((review) => (
                     <TableRow key={review.id}>
                       <TableCell>{review.id}</TableCell>
                       <TableCell>{review.reviewer}</TableCell>
@@ -101,16 +162,30 @@ const Review = () => {
                       <TableCell>
                         <Button
                           variant="contained"
-                          color="success"
                           size="small"
-                          sx={{ mr: 1 }}
+                          sx={{
+                            mr: 1,
+                            backgroundColor: '#215858',
+                            '&:hover': { backgroundColor: '#1a4646' },
+                            textTransform: 'none',
+                          }}
+                          onClick={() => handleOpenApprove(review)}
                         >
                           Duyệt
                         </Button>
                         <Button
                           variant="outlined"
-                          color="error"
                           size="small"
+                          sx={{
+                            color: '#215858',
+                            borderColor: '#215858',
+                            '&:hover': {
+                              backgroundColor: 'rgba(33, 88, 88, 0.1)',
+                              borderColor: '#215858',
+                            },
+                            textTransform: 'none',
+                          }}
+                          onClick={() => handleOpenReject(review)}
                         >
                           Từ chối
                         </Button>
@@ -119,10 +194,78 @@ const Review = () => {
                   ))}
                 </TableBody>
               </Table>
+              <TablePagination
+                component="div"
+                count={reviews.length}
+                page={page}
+                onPageChange={handleChangePage}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                labelRowsPerPage="Số dòng mỗi trang"
+              />
             </TableContainer>
           </main>
         </div>
       </div>
+      {/* Popup xác nhận duyệt */}
+      <Dialog open={openApproveDialog} onClose={handleCloseApprove}>
+        <DialogTitle sx={{ backgroundColor: '#215858', color: 'white' }}>
+          Xác nhận duyệt
+        </DialogTitle>
+        <DialogContent sx={{ backgroundColor: '#faebce' }}>
+          Bạn có chắc chắn muốn duyệt đánh giá của <strong>{selectedReview?.reviewer}</strong> không?
+        </DialogContent>
+        <DialogActions sx={{ backgroundColor: '#faebce' }}>
+          <Button
+            variant="outlined"
+            onClick={handleCloseApprove}
+            sx={{ color: '#215858', borderColor: '#215858' }}
+          >
+            Hủy
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleConfirmApprove}
+            sx={{
+              backgroundColor: '#215858',
+              color: 'white',
+              '&:hover': { backgroundColor: '#1a4646' },
+            }}
+          >
+            Xác nhận
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Popup xác nhận từ chối */}
+      <Dialog open={openRejectDialog} onClose={handleCloseReject}>
+        <DialogTitle sx={{ backgroundColor: '#7a1e1e', color: 'white' }}>
+          Xác nhận từ chối
+        </DialogTitle>
+        <DialogContent sx={{ backgroundColor: '#faebce' }}>
+          Bạn có chắc chắn muốn từ chối đánh giá của <strong>{selectedReview?.reviewer}</strong> không?
+        </DialogContent>
+        <DialogActions sx={{ backgroundColor: '#faebce' }}>
+          <Button
+            variant="outlined"
+            onClick={handleCloseReject}
+            sx={{ color: '#7a1e1e', borderColor: '#7a1e1e' }}
+          >
+            Hủy
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleConfirmReject}
+            sx={{
+              backgroundColor: '#7a1e1e',
+              color: 'white',
+              '&:hover': { backgroundColor: '#1a4646' },
+            }}
+          >
+            Xác nhận
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
