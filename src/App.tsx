@@ -14,6 +14,8 @@ import PartnerApproval from './pages/management/PartnerApproval'
 import Province from './pages/management/Province'
 import District from './pages/management/District'
 import Spot from './pages/management/Spot'
+import Login from './pages/Login'
+import Register from './pages/Register'
 
 function App() {
   return (
@@ -32,6 +34,9 @@ function App() {
         <Route path="/provinces" element={<Province />} />
         <Route path="/districts" element={<District />} />
         <Route path="/spots" element={<Spot />} />
+
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </Router>
   )
