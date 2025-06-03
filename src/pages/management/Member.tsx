@@ -1,6 +1,6 @@
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-    Paper, IconButton, TextField, Avatar, TablePagination, Dialog, Button, 
+    Paper, IconButton, TextField, Avatar, TablePagination, Dialog, Button,
     DialogTitle, DialogContent, DialogActions, MenuItem
 } from '@mui/material';
 import { useState } from 'react';
@@ -98,7 +98,19 @@ const Member = () => {
                 <div className="relative flex-1 flex flex-col">
                     <Navbar />
                     <div className="p-6">
-                        <h1 className="text-3xl font-bold mb-4">Thành viên</h1>
+                        <h1
+                            className="text-center flex items-center justify-center h-[100px]" // h-[100px] để canh giữa dọc
+                            style={{
+                                fontFamily: 'Inter, sans-serif',
+                                fontWeight: 400,
+                                fontSize: '40px',
+                                lineHeight: '100%',
+                                letterSpacing: '0.1em', // 10% = 0.1em
+                                color: '#215b5b',
+                            }}
+                        >
+                            Thành viên
+                        </h1>
                         <div className="flex flex-wrap gap-4 items-center mb-6">
                             {/* Tìm kiếm */}
                             <TextField

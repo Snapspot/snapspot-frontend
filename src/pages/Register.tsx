@@ -109,7 +109,7 @@ const Register = () => {
       <div className="absolute inset-0" style={{ backgroundColor: '#21484888', zIndex: -1 }} />
 
       {/* Content */}
-      <div className="flex w-full h-full items-center justify-between px-16 relative z-10">
+      <div className="flex w-full h-full items-center justify-center gap-150 relative z-10">
         <div className="text-white text-4xl font-bold">
           <div className="mb-4">📸 SnapSpot</div>
           <p className="text-lg">Nơi lưu giữ những khoảnh khắc</p>
