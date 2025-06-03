@@ -120,7 +120,19 @@ const Review = () => {
         <div className="relative flex-1 flex flex-col">
           <Navbar />
           <main className="flex-1 p-6 bg-transparent text-gray-900 overflow-auto">
-            <h1 className="text-3xl font-bold mb-4">Đánh giá người dùng</h1>
+            <h1
+              className="text-center flex items-center justify-center h-[50px]" // h-[100px] để canh giữa dọc
+              style={{
+                fontFamily: 'Inter, sans-serif',
+                fontWeight: 400,
+                fontSize: '40px',
+                lineHeight: '100%',
+                letterSpacing: '0.1em', // 10% = 0.1em
+                color: '#215b5b',
+              }}
+            >
+              Đánh giá người dùng
+            </h1>
 
             <div className="flex flex-wrap gap-4 items-center mb-6">
               {/* Tìm kiếm */}
