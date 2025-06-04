@@ -110,13 +110,14 @@ const Login = () => {
             />
 
             {/* Nội dung */}
-            <div className="flex w-full h-full items-center justify-center gap-150 relative z-10">
+            <div className="flex w-full h-full items-center justify-center gap-130 relative z-10">
                 <div className="text-white text-4xl font-bold">
-                    <div className="mb-4">📸 SnapSpot</div>
-                    <p className="text-lg">Nơi lưu giữ những khoảnh khắc</p>
+                    <img src="/images/logo2-03.png" alt="Logo SnapSpot" className="mb-4 w-150 h-auto" />
+                    <p className="text-xl font-extralight tracking-wide">Chụp đúng nơi - Tỏa sáng đúng chất</p>
+
                 </div>
 
-                <Paper elevation={6} sx={{ padding: 5, width: 360, minHeight: 450 }}>
+                <Paper elevation={6} sx={{ padding: 5, width: 400, minHeight: 500 }}>
 
                     <Typography variant="h4" mb={1} textAlign="center" fontWeight="bold" color="#214848">
                         Đăng nhập

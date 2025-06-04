@@ -10,7 +10,6 @@ import {
   IconButton,
   TableHead,
   TableRow,
-  Typography,
   Chip,
   Dialog,
   DialogTitle,
@@ -102,15 +101,17 @@ const Marketing = () => {
       <Sidebar />
 
       <div className="flex-1 relative flex flex-col overflow-hidden">
-        {/* Background */}
+
+        {/* Background ảnh thiên nhiên trắng đen */}
         <div
-          className="absolute inset-0 bg-cover bg-center filter grayscale brightness-125 opacity-40"
+          className="absolute inset-0 bg-cover bg-center grayscale brightness-80 opacity-150"
           style={{
-            backgroundImage:
-              "url('https://static1.squarespace.com/static/63f8b23b0626755198127ae3/63fc8c7f15e5ba00f5bf5e84/63fd08a2e559cd5c7086f8b2/1677527755377/vietnam-halong-bay-01.jpg?format=1500w')",
+            backgroundImage: "url('https://static1.squarespace.com/static/63f8b23b0626755198127ae3/63fc8c7f15e5ba00f5bf5e84/63fd08a2e559cd5c7086f8b2/1677527755377/vietnam-halong-bay-01.jpg?format=1500w')",
           }}
         ></div>
-        <div className="absolute inset-0 bg-[rgba(130,90,50,0.15)]"></div>
+
+        {/* Overlay vàng kem vanilla phủ lên ảnh */}
+        <div className="absolute inset-0 bg-[#f5eacc] opacity-60"></div>
 
         {/* Nội dung */}
         <div className="relative flex-1 flex flex-col">
