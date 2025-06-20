@@ -9,6 +9,9 @@ import {
   Checkbox,
   FormControlLabel,
 } from '@mui/material';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from '../utils/axiosInstance';
 
 const backgroundImages = [
   'https://wander-lush.org/wp-content/uploads/2022/11/Hanoi-to-Halong-Bay-transport-guide-2023-new-DP-Junk-Boat.jpg',
@@ -23,21 +26,27 @@ const displayDuration = 6000; // ms
 const Register = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [fade, setFade] = useState(false);
-
+  const navigate = useNavigate();
   const timeoutRef = useRef<number | null>(null);
   const intervalRef = useRef<number | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreeTerms, setAgreeTerms] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [dob, setDob] = useState(''); // dùng định dạng YYYY-MM-DD
+
 
   const [errors, setErrors] = useState<{
     fullName?: string;
     email?: string;
     password?: string;
     confirmPassword?: string;
+    phoneNumber?: string;
+    dob?: string;
     agreeTerms?: string;
   }>({});
+
 
   const validate = () => {
     const newErrors: typeof errors = {};
@@ -56,6 +65,12 @@ const Register = () => {
     } else if (password !== confirmPassword) {
       newErrors.confirmPassword = 'Mật khẩu xác nhận không khớp';
     }
+    if (!phoneNumber) {
+      newErrors.phoneNumber = 'Vui lòng nhập số điện thoại';
+    }
+    if (!dob) {
+      newErrors.dob = 'Vui lòng chọn ngày sinh';
+    }
     if (!agreeTerms) {
       newErrors.agreeTerms = 'Bạn phải đồng ý với điều khoản';
     }
@@ -63,11 +78,25 @@ const Register = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
-      // Xử lý đăng ký ở đây
-      console.log({ email, password, agreeTerms });
+      try {
+        const response = await axios.post('http://14.225.217.24:8080/api/v1/auth/register', {
+          email,
+          password,
+          confirmPassword,
+          phoneNumber,
+          dob: new Date(dob).toISOString() // convert thành định dạng ISO
+        });
+
+        console.log('Đăng ký thành công:', response.data);
+        alert('Đăng ký thành công!');
+        navigate('/login');
+      } catch (error: any) {
+        console.error('Lỗi đăng ký:', error.response?.data || error.message);
+        alert('Đăng ký thất bại. Vui lòng kiểm tra lại thông tin!');
+      }
     }
   };
 
@@ -164,6 +193,29 @@ const Register = () => {
               helperText={errors.confirmPassword}
               required
               autoComplete="new-password"
+            />
+            <TextField
+              label="Số điện thoại"
+              variant="outlined"
+              fullWidth
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              error={Boolean(errors.phoneNumber)}
+              helperText={errors.phoneNumber}
+              required
+              autoComplete="tel"
+            />
+
+            <TextField
+              label="Ngày sinh"
+              variant="outlined"
+              fullWidth
+              type="date"
+              InputLabelProps={{ shrink: true }}
+              value={dob}
+              onChange={(e) => setDob(e.target.value)}
+              error={Boolean(errors.dob)}
+              helperText={errors.dob}
             />
             <FormControlLabel
               control={

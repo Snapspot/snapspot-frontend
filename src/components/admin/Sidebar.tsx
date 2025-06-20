@@ -1,6 +1,7 @@
 import { FiHome, FiUsers, FiPackage, FiMapPin, FiBook, FiStar, FiSettings, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Sidebar() {
 
@@ -9,7 +10,13 @@ export default function Sidebar() {
   const [isPartnerMenuOpen, setIsPartnerMenuOpen] = useState(isPartnerPath);
   const isLocationPath = ['/provinces', '/districts', '/spots'].includes(location.pathname);
   const [isLocationMenuOpen, setIsLocationMenuOpen] = useState(isLocationPath);
+  const navigate = useNavigate();
 
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    navigate('/login');
+  };
 
   return (
     <div className="w-72 min-h-screen bg-[#215858] text-[#faebce] flex flex-col p-6">
@@ -92,8 +99,8 @@ export default function Sidebar() {
               <Link
                 to="/provinces"
                 className={`px-2 py-1 rounded transition ${location.pathname === '/provinces'
-                    ? 'bg-white text-[#215858] font-semibold'
-                    : 'hover:underline'
+                  ? 'bg-white text-[#215858] font-semibold'
+                  : 'hover:underline'
                   }`}
               >
                 Tỉnh
@@ -101,8 +108,8 @@ export default function Sidebar() {
               <Link
                 to="/districts"
                 className={`px-2 py-1 rounded transition ${location.pathname === '/districts'
-                    ? 'bg-white text-[#215858] font-semibold'
-                    : 'hover:underline'
+                  ? 'bg-white text-[#215858] font-semibold'
+                  : 'hover:underline'
                   }`}
               >
                 Huyện / Thị xã
@@ -110,8 +117,8 @@ export default function Sidebar() {
               <Link
                 to="/spots"
                 className={`px-2 py-1 rounded transition ${location.pathname === '/spots'
-                    ? 'bg-white text-[#215858] font-semibold'
-                    : 'hover:underline'
+                  ? 'bg-white text-[#215858] font-semibold'
+                  : 'hover:underline'
                   }`}
               >
                 Spot
@@ -132,6 +139,14 @@ export default function Sidebar() {
           <span>Quản lý dịch vụ</span>
         </Link>
       </nav>
+      {/* NÚT ĐĂNG XUẤT */}
+      <button
+        onClick={handleLogout}
+        className="mt-auto hover:bg-red-700 px-4 py-3 rounded transition flex items-center space-x-3 text-left bg-red-600 text-white font-semibold"
+      >
+        <FiUsers />
+        <span>Đăng xuất</span>
+      </button>
     </div>
   );
 }

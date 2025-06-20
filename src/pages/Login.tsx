@@ -10,7 +10,7 @@ import {
     FormControlLabel,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-
+import { jwtDecode } from 'jwt-decode';
 
 const backgroundImages = [
     'https://wander-lush.org/wp-content/uploads/2022/11/Hanoi-to-Halong-Bay-transport-guide-2023-new-DP-Junk-Boat.jpg',
@@ -53,11 +53,56 @@ const Login = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (validate()) {
-            console.log({ email, password, remember }); // vẫn có thể giữ log này
-            navigate('/dashboard'); // chuyển trang
+        if (!validate()) return;
+
+        try {
+            const response = await fetch('http://14.225.217.24:8080/api/v1/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                const errorMessage = errorData?.message || 'Đăng nhập thất bại';
+                throw new Error(errorMessage);
+            }
+
+            const data = await response.json();
+            const { accessToken, refreshToken } = data.data;
+
+            // ✅ Lưu token
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('refreshToken', refreshToken);
+
+            // ✅ Giải mã token để lấy role
+            const decoded: any = jwtDecode(accessToken);
+            const userRole = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+            console.log('User Role:', userRole);
+            
+            // ✅ Điều hướng theo role
+            switch (userRole) {
+                case 'Admin':
+                    navigate('/dashboard');
+                    break;
+                case 'Manager':
+                    navigate('/service-management');
+                    break;
+                case 'Staff':
+                    navigate('/view-booking');
+                    break;
+                case 'Customer':
+                    navigate('/booking');
+                    break;
+            }
+
+        } catch (error: any) {
+            console.error('Lỗi đăng nhập:', error);
+            alert(error.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
         }
     };
 
