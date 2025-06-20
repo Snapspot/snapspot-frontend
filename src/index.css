@@ -7,6 +7,10 @@ html {
   font-family: 'Inter', sans-serif;
 }
 
+body {
+  overflow-x: hidden;
+}
+
 
 /* Logo effect nếu bạn có logo */
 .logo {
@@ -29,6 +33,7 @@ html {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -40,6 +45,7 @@ html {
     animation: logo-spin infinite 20s linear;
   }
 }
+
 /* Card tùy chỉnh nếu không dùng Tailwind card */
 .card {
   background: rgba(255, 255, 255, 0.05);

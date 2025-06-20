@@ -4,8 +4,8 @@ import {
     DialogContent, DialogActions
 } from '@mui/material';
 import { useState } from 'react';
-import Sidebar from '../../components/Sidebar';
-import Navbar from '../../components/Navbar';
+import Sidebar from '../../components/admin/Sidebar';
+import Navbar from '../../components/admin/Navbar';
 
 interface pendingPartners {
     id: number;

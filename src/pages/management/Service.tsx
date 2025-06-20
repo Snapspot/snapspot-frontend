@@ -1,5 +1,5 @@
-import Sidebar from '../../components/Sidebar';
-import Navbar from '../../components/Navbar';
+import Sidebar from '../../components/admin/Sidebar';
+import Navbar from '../../components/admin/Navbar';
 import {
   Table,
   TableBody,
@@ -86,31 +86,31 @@ const Service = () => {
     handleCloseDelete();
   };
 
-  const [openAdd, setOpenAdd] = useState(false);
-  const [newService, setNewService] = useState({
-    name: '',
-    color: '',
-    status: 'active',
-  });
+  // const [openAdd, setOpenAdd] = useState(false);
+  // const [newService, setNewService] = useState({
+  //   name: '',
+  //   color: '',
+  //   status: 'active',
+  // });
 
-  const handleOpenAdd = () => {
-    setNewService({ name: '', color: '', status: 'active' });
-    setOpenAdd(true);
-  };
+  // const handleOpenAdd = () => {
+  //   setNewService({ name: '', color: '', status: 'active' });
+  //   setOpenAdd(true);
+  // };
 
-  const handleCloseAdd = () => {
-    setOpenAdd(false);
-  };
+  // const handleCloseAdd = () => {
+  //   setOpenAdd(false);
+  // };
 
-  const handleAddChange = (field: string, value: string) => {
-    setNewService({ ...newService, [field]: value });
-  };
+  // const handleAddChange = (field: string, value: string) => {
+  //   setNewService({ ...newService, [field]: value });
+  // };
 
-  const handleAddService = () => {
-    // TODO: Logic thêm dịch vụ (gọi API hoặc cập nhật mảng services)
-    console.log('Thêm dịch vụ mới:', newService);
-    handleCloseAdd();
-  };
+  // const handleAddService = () => {
+  //   // TODO: Logic thêm dịch vụ (gọi API hoặc cập nhật mảng services)
+  //   console.log('Thêm dịch vụ mới:', newService);
+  //   handleCloseAdd();
+  // };
 
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -172,7 +172,7 @@ const Service = () => {
               />
               <Button
                 variant="contained"
-                onClick={handleOpenAdd}
+                // onClick={handleOpenAdd}
                 sx={{
                   backgroundColor: '#215858',
                   color: 'white',

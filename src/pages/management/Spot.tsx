@@ -1,5 +1,5 @@
-import Sidebar from '../../components/Sidebar';
-import Navbar from '../../components/Navbar';
+import Sidebar from '../../components/admin/Sidebar';
+import Navbar from '../../components/admin/Navbar';
 import {
     Table,
     TableBody,
@@ -15,73 +15,74 @@ import {
     DialogTitle,
     DialogActions,
     TextField,
-    Button
+    Button,
+    Select,
+    MenuItem
 } from '@mui/material';
 import { FiEye, FiEdit, FiTrash2 } from 'react-icons/fi';
 import { useState } from 'react';
+import { useEffect } from 'react';
+import axios from '../../utils/axiosInstance';
 
 type SpotType = {
-    id: number;
+    id?: number;
     name: string;
     description: string;
-    location: string;
-    branchCount: number;
-    status: string;
+    latitude: number;
+    longitude: number;
+    districtId: string;
 };
 
 
-const mockSpots = [
-    {
-        id: 1,
-        name: 'Bến Nhà Rồng',
-        description: 'Một địa điểm du lịch nổi tiếng tại TP.HCM',
-        location: 'Quận 4, TP.HCM',
-        branchCount: 3,
-        status: 'Hoạt động',
-    },
-    {
-        id: 2,
-        name: 'Hồ Gươm',
-        description: 'Biểu tượng văn hóa tại Hà Nội',
-        location: 'Hoàn Kiếm, Hà Nội',
-        branchCount: 5,
-        status: 'Hoạt động',
-    },
-    {
-        id: 3,
-        name: 'Chùa Thiên Mụ',
-        description: 'Ngôi chùa nổi tiếng ở Huế',
-        location: 'TP. Huế, Thừa Thiên Huế',
-        branchCount: 1,
-        status: 'Ngừng hoạt động',
-    },
-];
-
 const Spot = () => {
-
+    const [spotList, setSpotList] = useState<any[]>([]);
     const [openEdit, setOpenEdit] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [selectedSpot, setSelectedSpot] = useState<SpotType | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const handleDeleteConfirmed = () => {
+    const [districts, setDistricts] = useState<{ id: string; name: string }[]>([]);
+
+
+    const handleDeleteConfirmed = async () => {
         if (!selectedSpot?.id) return;
 
-        // TODO: Gọi API xoá hoặc logic xoá tại đây
-        console.log('Deleting spot with ID:', selectedSpot.id);
+        try {
+            // Gọi API DELETE
+            await axios.delete(`http://14.225.217.24:8080/api/Spots/${selectedSpot.id}`);
+            console.log('Deleted spot:', selectedSpot.id);
 
-        // Sau khi xoá xong (hoặc giả lập xoá thành công)
-        setOpenDelete(false);
-        setSelectedSpot(null);
-
-        // Nếu cần reload danh sách sau khi xoá
-        // fetchSpots(); // ví dụ: gọi lại API lấy danh sách
+            // Sau khi xoá, làm mới danh sách
+            const res = await axios.get('http://14.225.217.24:8080/api/Spots');
+            setSpotList(res.data);
+        } catch (error) {
+            console.error('Lỗi khi xoá địa điểm:', error);
+        } finally {
+            setOpenDelete(false);
+            setSelectedSpot(null);
+        }
     };
 
+    useEffect(() => {
+        const fetchSpots = axios.get('http://14.225.217.24:8080/api/Spots');
+        const fetchDistricts = axios.get('http://14.225.217.24:8080/api/Districts');
+
+        Promise.all([fetchSpots, fetchDistricts])
+            .then(([spotsRes, districtsRes]) => {
+                setSpotList(spotsRes.data);
+                const mappedDistricts = districtsRes.data.map((d: any) => ({
+                    id: d.id,
+                    name: d.name,
+                }));
+                setDistricts(mappedDistricts);
+            })
+            .catch((err) => {
+                console.error('Lỗi khi lấy dữ liệu:', err);
+            });
+    }, []);
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-
     const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
         setPage(newPage);
     };
@@ -91,7 +92,44 @@ const Spot = () => {
         setPage(0);
     };
 
-    const displayedRows = mockSpots.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    const filteredRows = spotList.filter((spot) =>
+        spot.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const displayedRows = filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+    const handleSaveSpot = async () => {
+        if (!selectedSpot) return;
+
+        try {
+            if (selectedSpot.id) {
+                // PUT - Cập nhật
+                await axios.put(`http://14.225.217.24:8080/api/Spots/${selectedSpot.id}`, selectedSpot);
+                console.log('Đã cập nhật:', selectedSpot.id);
+            } else {
+                // POST - Thêm mới
+                const spotToCreate = {
+                    name: selectedSpot.name,
+                    description: selectedSpot.description,
+                    latitude: selectedSpot.latitude,
+                    longitude: selectedSpot.longitude,
+                    districtId: selectedSpot.districtId,
+                };
+
+                console.log('Gửi dữ liệu POST:', spotToCreate);
+                await axios.post('http://14.225.217.24:8080/api/Spots', spotToCreate);
+                console.log('Đã thêm mới địa điểm');
+            }
+
+            const res = await axios.get('http://14.225.217.24:8080/api/Spots');
+            setSpotList(res.data);
+        } catch (error) {
+            console.error('Lỗi khi lưu địa điểm:', error);
+        } finally {
+            setOpenEdit(false);
+            setSelectedSpot(null);
+        }
+    };
 
     return (
         <div className="flex h-screen w-screen">
@@ -134,10 +172,20 @@ const Spot = () => {
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
-                                <Button variant="contained" sx={{ backgroundColor: '#215858' }} onClick={() => {
-                                    setSelectedSpot({ name: '', description: '', location: '', branchCount: 0, status: '', id: 0 });
-                                    setOpenEdit(true);
-                                }}>
+                                <Button
+                                    variant="contained"
+                                    sx={{ backgroundColor: '#215858' }}
+                                    onClick={() => {
+                                        setSelectedSpot({
+                                            name: '',
+                                            description: '',
+                                            latitude: 0,
+                                            longitude: 0,
+                                            districtId: ''
+                                        });
+                                        setOpenEdit(true);
+                                    }}
+                                >
                                     THÊM ĐỊA ĐIỂM
                                 </Button>
                             </div>
@@ -146,7 +194,7 @@ const Spot = () => {
                                     <TableHead>
                                         <TableRow>
                                             <TableCell><strong>Tên địa điểm</strong></TableCell>
-                                            <TableCell><strong>Mô tả</strong></TableCell>
+                                            <TableCell style={{ width: '600px' }}><strong>Mô tả</strong></TableCell>
                                             <TableCell><strong>Vị trí</strong></TableCell>
                                             <TableCell><strong>Số lượng chi nhánh</strong></TableCell>
                                             <TableCell><strong>Trạng thái</strong></TableCell>
@@ -158,9 +206,9 @@ const Spot = () => {
                                             <TableRow key={spot.id}>
                                                 <TableCell>{spot.name}</TableCell>
                                                 <TableCell>{spot.description}</TableCell>
-                                                <TableCell>{spot.location}</TableCell>
-                                                <TableCell>{spot.branchCount}</TableCell>
-                                                <TableCell>{spot.status}</TableCell>
+                                                <TableCell>{`${spot.districtName}, ${spot.provinceName}`}</TableCell>
+                                                <TableCell>{spot.agencies?.length || 0}</TableCell>
+                                                <TableCell>{spot.isDeleted ? 'Ngừng hoạt động' : 'Hoạt động'}</TableCell>
                                                 <TableCell>
                                                     <IconButton sx={{ color: '#215858' }}>
                                                         <FiEye />
@@ -184,7 +232,7 @@ const Spot = () => {
                                 </Table>
                                 <TablePagination
                                     component="div"
-                                    count={mockSpots.length}
+                                    count={filteredRows.length}
                                     page={page}
                                     onPageChange={handleChangePage}
                                     rowsPerPage={rowsPerPage}
@@ -207,36 +255,61 @@ const Spot = () => {
                         fullWidth
                         margin="dense"
                         value={selectedSpot?.name || ''}
-                    // onChange={(e) => setSelectedSpot({ ...selectedSpot, name: e.target.value })}
+                        onChange={(e) =>
+                            setSelectedSpot((prev) => ({ ...prev!, name: e.target.value }))
+                        }
                     />
                     <TextField
                         label="Mô tả"
                         fullWidth
                         margin="dense"
                         value={selectedSpot?.description || ''}
-                    // onChange={(e) => setSelectedSpot({ ...selectedSpot, description: e.target.value })}
+                        onChange={(e) =>
+                            setSelectedSpot((prev) => ({ ...prev!, description: e.target.value }))
+                        }
                     />
                     <TextField
-                        label="Vị trí"
+                        label="Vĩ độ (Latitude)"
+                        type="number"
                         fullWidth
                         margin="dense"
-                        value={selectedSpot?.status || ''}
-                    // onChange={(e) => setSelectedSpot({ ...selectedSpot, status: e.target.value })}
+                        value={selectedSpot?.latitude || 0}
+                        onChange={(e) =>
+                            setSelectedSpot((prev) => ({
+                                ...prev!,
+                                latitude: Number(e.target.value),
+                            }))
+                        }
                     />
                     <TextField
-                        label="Số lượng chi nhánh"
+                        label="Kinh độ (Longitude)"
+                        type="number"
                         fullWidth
                         margin="dense"
-                        value={selectedSpot?.status || ''}
-                    // onChange={(e) => setSelectedSpot({ ...selectedSpot, status: e.target.value })}
+                        value={selectedSpot?.longitude || 0}
+                        onChange={(e) =>
+                            setSelectedSpot((prev) => ({
+                                ...prev!,
+                                longitude: Number(e.target.value),
+                            }))
+                        }
                     />
-                    <TextField
-                        label="Trạng thái"
+                    <Select
                         fullWidth
+                        displayEmpty
+                        value={selectedSpot?.districtId || ''}
+                        onChange={(e) =>
+                            setSelectedSpot((prev) => ({ ...prev!, districtId: e.target.value }))
+                        }
                         margin="dense"
-                        value={selectedSpot?.status || ''}
-                    // onChange={(e) => setSelectedSpot({ ...selectedSpot, status: e.target.value })}
-                    />
+                    >
+                        <MenuItem value="" disabled>Chọn huyện / thị xã</MenuItem>
+                        {districts.map((d) => (
+                            <MenuItem key={d.id} value={d.id}>
+                                {d.name}
+                            </MenuItem>
+                        ))}
+                    </Select>
                 </DialogContent>
                 <DialogActions sx={{ backgroundColor: '#faebce' }}>
                     <Button
@@ -247,10 +320,7 @@ const Spot = () => {
                         Hủy
                     </Button>
                     <Button
-                        onClick={() => {
-                            // TODO: Lưu chỉnh sửa hoặc thêm Spot
-                            setOpenEdit(false);
-                        }}
+                        onClick={handleSaveSpot}
                         variant="contained"
                         sx={{
                             backgroundColor: '#215858',
@@ -262,8 +332,6 @@ const Spot = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-
-
 
             <Dialog open={openDelete} onClose={() => setOpenDelete(false)}>
                 <DialogTitle sx={{ backgroundColor: '#7a1e1e', color: 'white' }}>

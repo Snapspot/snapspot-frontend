@@ -9,8 +9,8 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
-import Sidebar from '../../components/Sidebar';
-import Navbar from '../../components/Navbar';
+import Sidebar from '../../components/admin/Sidebar';
+import Navbar from '../../components/admin/Navbar';
 
 
 interface PartnerType {
