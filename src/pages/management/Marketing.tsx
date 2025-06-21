@@ -46,7 +46,7 @@ const Marketing = () => {
   useEffect(() => {
     const fetchPackages = async () => {
       try {
-        const response = await axios.get<SellerPackageType[]>('http://14.225.217.24:8080/api/SellerPackages');
+        const response = await axios.get<SellerPackageType[]>('/SellerPackages');
         const mapped = response.data.map(pkg => ({
           id: pkg.id,
           name: pkg.name,
@@ -92,18 +92,18 @@ const Marketing = () => {
 
       if (editingPackage.id) {
         // Nếu có ID, tức là đang sửa -> gọi PUT
-        await axios.put(`http://14.225.217.24:8080/api/SellerPackages/${editingPackage.id}`, {
+        await axios.put(`/SellerPackages/${editingPackage.id}`, {
           ...payload,
           sellingCount: editingPackage.sold || 0,
           isDeleted: editingPackage.status === 'inactive',
         });
       } else {
         // Nếu không có ID, tức là tạo mới -> gọi POST
-        await axios.post('http://14.225.217.24:8080/api/SellerPackages', payload);
+        await axios.post('/SellerPackages', payload);
       }
 
       // Refresh danh sách
-      const response = await axios.get('http://14.225.217.24:8080/api/SellerPackages');
+      const response = await axios.get('/SellerPackages');
       const mapped = response.data.map((pkg: SellerPackageType) => ({
         id: pkg.id,
         name: pkg.name,
@@ -138,11 +138,11 @@ const Marketing = () => {
     try {
       if (!selectedPackage?.id) return;
 
-      await axios.delete(`http://14.225.217.24:8080/api/SellerPackages/${selectedPackage.id}`);
+      await axios.delete(`/SellerPackages/${selectedPackage.id}`);
       console.log(`Đã xoá gói: ${selectedPackage.name}`);
 
       // Làm mới danh sách sau khi xoá
-      const response = await axios.get('http://14.225.217.24:8080/api/SellerPackages');
+      const response = await axios.get('/SellerPackages');
       const mapped = response.data.map((pkg: SellerPackageType) => ({
         id: pkg.id,
         name: pkg.name,

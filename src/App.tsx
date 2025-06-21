@@ -29,6 +29,9 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={<Home />} />
 
+        {/* Redirect "/" to "/home" */}
+        <Route path="/" element={<Navigate to="/home" replace />} />
+
         {/* Protected routes (role = Admin) */}
         <Route element={<PrivateRoute allowedRoles={['Admin']} />}>
           <Route path="/dashboard" element={<Dashboard />} />

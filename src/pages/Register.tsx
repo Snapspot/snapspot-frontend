@@ -12,6 +12,8 @@ import {
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../utils/axiosInstance';
+import Navbar from '../components/home/Navbar';
+import Footer from '../components/home/Footer';
 
 const backgroundImages = [
   'https://wander-lush.org/wp-content/uploads/2022/11/Hanoi-to-Halong-Bay-transport-guide-2023-new-DP-Junk-Boat.jpg',
@@ -82,7 +84,7 @@ const Register = () => {
     e.preventDefault();
     if (validate()) {
       try {
-        const response = await axios.post('http://14.225.217.24:8080/api/v1/auth/register', {
+        const response = await axios.post('/v1/auth/register', {
           email,
           password,
           confirmPassword,
@@ -123,147 +125,151 @@ const Register = () => {
   }, []);
 
   return (
-    <div className="h-screen w-screen flex relative overflow-hidden">
-      {/* Background */}
-      <div
-        className="absolute inset-0 bg-cover bg-center transition-opacity ease-in-out will-change-opacity"
-        style={{
-          backgroundImage: `url(${backgroundImages[currentImageIndex]})`,
-          opacity: fade ? 0 : 1,
-          transitionDuration: `${fadeDuration}ms`,
-          filter: 'blur(4px) brightness(0.8)',
-          zIndex: -2,
-        }}
-      />
-      <div className="absolute inset-0" style={{ backgroundColor: '#21484888', zIndex: -1 }} />
+    <div className="min-h-screen w-screen flex flex-col relative overflow-hidden">
+      <Navbar />
+      <div className="h-screen w-screen flex relative overflow-hidden">
+        {/* Background */}
+        <div
+          className="absolute inset-0 bg-cover bg-center transition-opacity ease-in-out will-change-opacity"
+          style={{
+            backgroundImage: `url(${backgroundImages[currentImageIndex]})`,
+            opacity: fade ? 0 : 1,
+            transitionDuration: `${fadeDuration}ms`,
+            filter: 'blur(4px) brightness(0.8)',
+            zIndex: -2,
+          }}
+        />
+        <div className="absolute inset-0" style={{ backgroundColor: '#21484888', zIndex: -1 }} />
 
-      {/* Content */}
-      <div className="flex w-full h-full items-center justify-center gap-130 relative z-10">
-        <div className="text-white text-4xl font-bold">
-          <img src="/images/logo2-03.png" alt="Logo SnapSpot" className="mb-4 w-150 h-auto" />
-          <p className="text-xl font-extralight tracking-wide">Chụp đúng nơi - Tỏa sáng đúng chất</p>
-        </div>
+        {/* Content */}
+        <div className="flex w-full h-full items-center justify-center gap-130 relative z-10">
+          <div className="text-white text-4xl font-bold">
+            <img src="/images/logo2-03.png" alt="Logo SnapSpot" className="mb-4 w-150 h-auto" />
+            <p className="text-xl font-extralight tracking-wide">Chụp đúng nơi - Tỏa sáng đúng chất</p>
+          </div>
 
-        <Paper elevation={6} sx={{ padding: 5, width: 400, minHeight: 550 }}>
-          <Typography variant="h4" mb={1} textAlign="center" fontWeight="bold" color="#214848">
-            Đăng ký
-          </Typography>
-          <Typography variant="body2" mb={3} textAlign="center" color="text.secondary">
-            Vui lòng điền thông tin để tạo tài khoản mới
-          </Typography>
-          <Box
-            component="form"
-            display="flex"
-            flexDirection="column"
-            gap={2}
-            onSubmit={handleSubmit}
-            noValidate
-          >
-            <TextField
-              label="Email"
-              variant="outlined"
-              fullWidth
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              error={Boolean(errors.email)}
-              helperText={errors.email}
-              required
-              autoComplete="email"
-            />
-            <TextField
-              label="Mật khẩu"
-              variant="outlined"
-              type="password"
-              fullWidth
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              error={Boolean(errors.password)}
-              helperText={errors.password}
-              required
-              autoComplete="new-password"
-            />
-            <TextField
-              label="Xác nhận mật khẩu"
-              variant="outlined"
-              type="password"
-              fullWidth
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              error={Boolean(errors.confirmPassword)}
-              helperText={errors.confirmPassword}
-              required
-              autoComplete="new-password"
-            />
-            <TextField
-              label="Số điện thoại"
-              variant="outlined"
-              fullWidth
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              error={Boolean(errors.phoneNumber)}
-              helperText={errors.phoneNumber}
-              required
-              autoComplete="tel"
-            />
-
-            <TextField
-              label="Ngày sinh"
-              variant="outlined"
-              fullWidth
-              type="date"
-              InputLabelProps={{ shrink: true }}
-              value={dob}
-              onChange={(e) => setDob(e.target.value)}
-              error={Boolean(errors.dob)}
-              helperText={errors.dob}
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={agreeTerms}
-                  onChange={(e) => setAgreeTerms(e.target.checked)}
-                  color="primary"
-                />
-              }
-              label={
-                <Typography fontSize={14}>
-                  Tôi đồng ý với{' '}
-                  <Link href="#" underline="hover">
-                    Điều khoản sử dụng
-                  </Link>
-                </Typography>
-              }
-            />
-            {errors.agreeTerms && (
-              <Typography color="error" fontSize={12} mt={-1} mb={1}>
-                {errors.agreeTerms}
-              </Typography>
-            )}
-
-            <Button
-              type="submit"
-              variant="contained"
-              size="large"
-              sx={{
-                backgroundColor: '#214848',
-                borderRadius: 2,
-                '&:hover': { backgroundColor: '#163838' },
-                fontWeight: 'bold',
-                mt: 1,
-              }}
-            >
+          <Paper elevation={6} sx={{ padding: 5, width: 400, minHeight: 550, marginTop: 10 }}>
+            <Typography variant="h4" mb={1} textAlign="center" fontWeight="bold" color="#214848">
               Đăng ký
-            </Button>
-
-            <Typography variant="body2" mt={2} textAlign="center" color="text.secondary">
-              Đã có tài khoản?{' '}
-              <Link href="/login" underline="hover">
-                Đăng nhập ngay
-              </Link>
             </Typography>
-          </Box>
-        </Paper>
+            <Typography variant="body2" mb={3} textAlign="center" color="text.secondary">
+              Vui lòng điền thông tin để tạo tài khoản mới
+            </Typography>
+            <Box
+              component="form"
+              display="flex"
+              flexDirection="column"
+              gap={2}
+              onSubmit={handleSubmit}
+              noValidate
+            >
+              <TextField
+                label="Email"
+                variant="outlined"
+                fullWidth
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                error={Boolean(errors.email)}
+                helperText={errors.email}
+                required
+                autoComplete="email"
+              />
+              <TextField
+                label="Mật khẩu"
+                variant="outlined"
+                type="password"
+                fullWidth
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                error={Boolean(errors.password)}
+                helperText={errors.password}
+                required
+                autoComplete="new-password"
+              />
+              <TextField
+                label="Xác nhận mật khẩu"
+                variant="outlined"
+                type="password"
+                fullWidth
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                error={Boolean(errors.confirmPassword)}
+                helperText={errors.confirmPassword}
+                required
+                autoComplete="new-password"
+              />
+              <TextField
+                label="Số điện thoại"
+                variant="outlined"
+                fullWidth
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                error={Boolean(errors.phoneNumber)}
+                helperText={errors.phoneNumber}
+                required
+                autoComplete="tel"
+              />
+
+              <TextField
+                label="Ngày sinh"
+                variant="outlined"
+                fullWidth
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                value={dob}
+                onChange={(e) => setDob(e.target.value)}
+                error={Boolean(errors.dob)}
+                helperText={errors.dob}
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={agreeTerms}
+                    onChange={(e) => setAgreeTerms(e.target.checked)}
+                    color="primary"
+                  />
+                }
+                label={
+                  <Typography fontSize={14}>
+                    Tôi đồng ý với{' '}
+                    <Link href="#" underline="hover">
+                      Điều khoản sử dụng
+                    </Link>
+                  </Typography>
+                }
+              />
+              {errors.agreeTerms && (
+                <Typography color="error" fontSize={12} mt={-1} mb={1}>
+                  {errors.agreeTerms}
+                </Typography>
+              )}
+
+              <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                sx={{
+                  backgroundColor: '#214848',
+                  borderRadius: 2,
+                  '&:hover': { backgroundColor: '#163838' },
+                  fontWeight: 'bold',
+                  mt: 1,
+                }}
+              >
+                Đăng ký
+              </Button>
+
+              <Typography variant="body2" mt={2} textAlign="center" color="text.secondary">
+                Đã có tài khoản?{' '}
+                <Link href="/login" underline="hover">
+                  Đăng nhập ngay
+                </Link>
+              </Typography>
+            </Box>
+          </Paper>
+        </div>
       </div>
+      <Footer />
     </div>
   );
 };

@@ -1,36 +1,53 @@
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
     Paper, IconButton, TextField, Avatar, TablePagination, Dialog, Button,
-    DialogTitle, DialogContent, DialogActions, MenuItem
+    DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import { useState } from 'react';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import Sidebar from '../../components/admin/Sidebar';
 import Navbar from '../../components/admin/Navbar';
+import { useEffect } from 'react';
+import axios from '../../utils/axiosInstance';
 
-const mockMembers = [
-    {
-        id: 1,
-        name: 'Nguyễn Văn A',
-        email: 'a.nguyen@mail.com',
-        role: 'Admin',
-        avatar: 'https://i.pravatar.cc/40?img=3',
-    },
-    {
-        id: 2,
-        name: 'Trần Thị B',
-        email: 'b.tran@mail.com',
-        role: 'User',
-        avatar: 'https://i.pravatar.cc/40?img=4',
-    },
-];
+
+type Member = {
+    id: string;
+    email: string;
+    fullname: string;
+    dob: string;
+    phoneNumber: string;
+    avatarUrl: string;
+    isApproved: boolean;
+};
+
 
 const Member = () => {
 
     const [openEdit, setOpenEdit] = useState(false);
-    const [memberToEdit, setMemberToEdit] = useState<typeof mockMembers[0] | null>(null);
+    const [memberToEdit, setMemberToEdit] = useState<Member | null>(null);
+    const [members, setMembers] = useState<Member[]>([]);
 
-    const handleOpenEdit = (member: typeof mockMembers[0]) => {
+    useEffect(() => {
+        axios.get<Member[]>('/users/regular')
+            .then((res) => {
+                setMembers(res.data);
+            })
+            .catch((err) => {
+                console.error("Lỗi khi lấy danh sách thành viên:", err);
+            });
+    }, []);
+
+    const fetchMembers = async () => {
+        try {
+            const response = await axios.get<Member[]>('/users/regular');
+            setMembers(response.data);
+        } catch (error) {
+            console.error('Lỗi khi tải danh sách thành viên:', error);
+        }
+    };
+
+    const handleOpenEdit = (member: Member) => {
         setMemberToEdit(member);
         setOpenEdit(true);
     };
@@ -45,17 +62,32 @@ const Member = () => {
         setMemberToEdit({ ...memberToEdit, [field]: value });
     };
 
-    const handleSaveEdit = () => {
-        console.log('Cập nhật thành viên:', memberToEdit);
-        setOpenEdit(false);
-        setMemberToEdit(null);
+    const handleSaveEdit = async () => {
+        if (!memberToEdit) return;
+
+        const updateBody = {
+            fullname: memberToEdit.fullname,
+            dob: memberToEdit.dob.includes('T') ? memberToEdit.dob : `${memberToEdit.dob}T00:00:00.000Z`,
+            phoneNumber: memberToEdit.phoneNumber,
+            avatarUrl: memberToEdit.avatarUrl,
+        };
+
+        try {
+            await axios.put(`/users/${memberToEdit.id}`, updateBody);
+            console.log('Cập nhật thành viên thành công:', updateBody);
+            fetchMembers();
+            setOpenEdit(false);
+            setMemberToEdit(null);
+        } catch (error) {
+            console.error('Lỗi khi cập nhật thành viên:', error);
+            alert("Cập nhật không thành công. Vui lòng thử lại.");
+        }
     };
 
-
     const [openDelete, setOpenDelete] = useState(false);
-    const [memberToDelete, setMemberToDelete] = useState<typeof mockMembers[0] | null>(null);
+    const [memberToDelete, setMemberToDelete] = useState<Member | null>(null);
 
-    const handleOpenDelete = (member: typeof mockMembers[0]) => {
+    const handleOpenDelete = (member: Member) => {
         setMemberToDelete(member);
         setOpenDelete(true);
     };
@@ -65,10 +97,22 @@ const Member = () => {
         setMemberToDelete(null);
     };
 
-    const handleDeleteConfirmed = () => {
-        console.log('Xóa thành viên:', memberToDelete);
-        setOpenDelete(false);
-        setMemberToDelete(null);
+    const handleDeleteConfirmed = async () => {
+        if (!memberToDelete) return;
+
+        try {
+            await axios.delete(`/users/${memberToDelete.id}`);
+            console.log('Xoá thành viên thành công:', memberToDelete.id);
+
+            // Cập nhật lại danh sách thành viên sau khi xoá
+            setMembers((prev) => prev.filter((m) => m.id !== memberToDelete.id));
+
+            setOpenDelete(false);
+            setMemberToDelete(null);
+        } catch (error) {
+            console.error('Lỗi khi xoá thành viên:', error);
+            alert("Xoá không thành công. Vui lòng thử lại.");
+        }
     };
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -83,7 +127,13 @@ const Member = () => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
-    const displayedRows = mockMembers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+    const displayedRows = members
+        .filter((m) =>
+            m.fullname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            m.email.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     return (
         <div className="flex h-screen w-screen">
@@ -131,24 +181,30 @@ const Member = () => {
                                 <TableHead>
                                     <TableRow>
                                         <TableCell><strong>Ảnh</strong></TableCell>
-                                        <TableCell><strong>Họ tên</strong></TableCell>
+                                        <TableCell><strong>Tên thành viên</strong></TableCell>
+                                        <TableCell><strong>Ngày sinh</strong></TableCell>
+                                        <TableCell><strong>SĐT</strong></TableCell>
                                         <TableCell><strong>Email</strong></TableCell>
-                                        <TableCell><strong>Vai trò</strong></TableCell>
+                                        <TableCell><strong>Trạng thái</strong></TableCell>
                                         <TableCell><strong>Thao tác</strong></TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {displayedRows.map((mockMembers) => (
-                                        <TableRow key={mockMembers.id}>
-                                            <TableCell><Avatar src={mockMembers.avatar} alt={mockMembers.name} /></TableCell>
-                                            <TableCell>{mockMembers.name}</TableCell>
-                                            <TableCell>{mockMembers.email}</TableCell>
-                                            <TableCell>{mockMembers.role}</TableCell>
+                                    {displayedRows.map((member) => (
+                                        <TableRow key={member.id}>
+                                            <TableCell><Avatar src={member.avatarUrl} alt={member.fullname} /></TableCell>
+                                            <TableCell>{member.fullname}</TableCell>
                                             <TableCell>
-                                                <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenEdit(mockMembers)}>
+                                                {member.dob.split('T')[0]}
+                                            </TableCell>
+                                            <TableCell>{member.phoneNumber}</TableCell>
+                                            <TableCell>{member.email}</TableCell>
+                                            <TableCell>{member.isApproved ? "Đang hoạt động" : "Tạm ngưng"}</TableCell>
+                                            <TableCell>
+                                                <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenEdit(member)}>
                                                     <FiEdit />
                                                 </IconButton>
-                                                <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenDelete(mockMembers)}>
+                                                <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenDelete(member)}>
                                                     <FiTrash2 />
                                                 </IconButton>
                                             </TableCell>
@@ -158,7 +214,7 @@ const Member = () => {
                             </Table>
                             <TablePagination
                                 component="div"
-                                count={mockMembers.length}
+                                count={members.length}
                                 page={page}
                                 onPageChange={handleChangePage}
                                 rowsPerPage={rowsPerPage}
@@ -173,11 +229,11 @@ const Member = () => {
                                 Xác nhận xoá thành viên
                             </DialogTitle>
                             <DialogContent sx={{ backgroundColor: '#faebce', minWidth: 400 }}>
-                                <p>Bạn có chắc chắn muốn xoá thành viên <strong>{memberToDelete.name}</strong> không?</p>
+                                <p>Bạn có chắc chắn muốn xoá thành viên <strong>{memberToDelete.fullname}</strong> không?</p>
                                 <div style={{ textAlign: 'center', marginTop: 12 }}>
                                     <Avatar
-                                        src={memberToDelete.avatar}
-                                        alt={memberToDelete.name}
+                                        src={memberToDelete.avatarUrl}
+                                        alt={memberToDelete.fullname}
                                         sx={{ width: 80, height: 80, margin: 'auto' }}
                                     />
                                 </div>
@@ -215,37 +271,37 @@ const Member = () => {
                                 sx={{ backgroundColor: '#faebce', minWidth: 400 }}
                             >
                                 <TextField
+                                    label="Tên thành viên"
+                                    fullWidth
+                                    margin="dense"
+                                    value={memberToEdit.fullname}
+                                    onChange={(e) => handleEditChange('fullname', e.target.value)}
+                                />
+                                <TextField
+                                    label="Ngày sinh"
+                                    type="date"
+                                    fullWidth
+                                    margin="dense"
+                                    value={memberToEdit.dob?.split('T')[0]} // chỉ lấy phần yyyy-MM-dd
+                                    onChange={(e) => handleEditChange('dob', e.target.value)}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                />
+                                <TextField
+                                    label="Số điện thoại"
+                                    fullWidth
+                                    margin="dense"
+                                    value={memberToEdit.phoneNumber}
+                                    onChange={(e) => handleEditChange('phoneNumber', e.target.value)}
+                                />
+                                <TextField
                                     label="Link ảnh đại diện"
                                     fullWidth
                                     margin="dense"
-                                    value={memberToEdit.avatar}
+                                    value={memberToEdit.avatarUrl}
                                     onChange={(e) => handleEditChange('avatar', e.target.value)}
                                 />
-                                <TextField
-                                    label="Họ tên"
-                                    fullWidth
-                                    margin="dense"
-                                    value={memberToEdit.name}
-                                    onChange={(e) => handleEditChange('name', e.target.value)}
-                                />
-                                <TextField
-                                    label="Email"
-                                    fullWidth
-                                    margin="dense"
-                                    value={memberToEdit.email}
-                                    onChange={(e) => handleEditChange('email', e.target.value)}
-                                />
-                                <TextField
-                                    label="Vai trò"
-                                    select
-                                    fullWidth
-                                    margin="dense"
-                                    value={memberToEdit.role}
-                                    onChange={(e) => handleEditChange('role', e.target.value)}
-                                >
-                                    <MenuItem value="Admin">Admin</MenuItem>
-                                    <MenuItem value="User">User</MenuItem>
-                                </TextField>
                             </DialogContent>
                             <DialogActions sx={{ backgroundColor: '#faebce' }}>
                                 <Button

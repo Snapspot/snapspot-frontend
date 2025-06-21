@@ -4,14 +4,14 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
-  MenuItem,
+  Button
 } from '@mui/material';
 import { useState } from 'react';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import Sidebar from '../../components/admin/Sidebar';
 import Navbar from '../../components/admin/Navbar';
-
+import { useEffect } from 'react';
+import axios from '../../utils/axiosInstance';
 
 interface PartnerType {
   id: number;
@@ -20,30 +20,34 @@ interface PartnerType {
   email: string;
   status: string;
   photo: string;
+  dob: string;
 }
 
-const mockPartnersList = [
-  {
-    id: 1,
-    name: 'Studio A',
-    phone: '0123456789',
-    email: 'studioA@mail.com',
-    status: 'Đang hoạt động',
-    photo: 'https://i.pravatar.cc/40?img=1',
-  },
-  {
-    id: 2,
-    name: 'Studio B',
-    phone: '0987654321',
-    email: 'studioB@mail.com',
-    status: 'Tạm ngưng',
-    photo: 'https://i.pravatar.cc/40?img=2',
-  },
-];
 const Partner = () => {
   const [openDelete, setOpenDelete] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState<PartnerType | null>(null);
+  const [partners, setPartners] = useState<PartnerType[]>([]);
+
+  useEffect(() => {
+    axios.get('/users/third-party')
+      .then((res) => {
+        const mappedPartners = res.data.map((user: any) => ({
+          id: user.id,
+          name: user.fullname,
+          phone: user.phoneNumber,
+          email: user.email,
+          status: user.isApproved ? 'Đang hoạt động' : 'Tạm ngưng',
+          photo: user.avatarUrl || 'https://via.placeholder.com/40',
+          dob: user.dob,
+        }));
+        setPartners(mappedPartners);
+      })
+      .catch((err) => {
+        console.error("Lỗi khi gọi API:", err);
+      });
+  }, []);
+
 
   // Sử dụng trong hàm
   const handleOpenEdit = (mockPartners: PartnerType) => {
@@ -56,16 +60,38 @@ const Partner = () => {
     setSelectedPartner(null);
   };
 
-  // const handleEditChange = (field, value) => {
-  //   setSelectedPartner((prev) => ({ ...prev, [field]: value }));
-  // };
-
-  const handleSaveEdit = () => {
-    // TODO: Gửi dữ liệu lên backend hoặc cập nhật state
-    console.log('Lưu chỉnh sửa:', selectedPartner);
-    handleCloseEdit();
+  const handleEditChange = (field: keyof PartnerType, value: string) => {
+    setSelectedPartner((prev) => prev ? { ...prev, [field]: value } : null);
   };
 
+  const handleSaveEdit = () => {
+    if (!selectedPartner) return;
+
+    const updatedData = {
+      fullname: selectedPartner.name,
+      dob: selectedPartner.dob.includes("T") ? selectedPartner.dob : `${selectedPartner.dob}T00:00:00`, // đảm bảo định dạng ISO
+      phoneNumber: selectedPartner.phone,
+      avatarUrl: selectedPartner.photo,
+    };
+
+    const url = `/users/${selectedPartner.id}`;
+
+    axios.put(url, updatedData)
+      .then((res) => {
+        console.log("Đã cập nhật:", res.data);
+
+        setPartners((prev) =>
+          prev.map((p) =>
+            p.id === selectedPartner.id ? { ...p, ...selectedPartner } : p
+          )
+        );
+
+        handleCloseEdit();
+      })
+      .catch((err) => {
+        console.error("Lỗi khi cập nhật đối tác:", err);
+      });
+  };
 
   // Trong component:
   const [partnerToDelete, setPartnerToDelete] = useState<PartnerType | null>(null);
@@ -81,13 +107,25 @@ const Partner = () => {
   };
 
   const handleDeleteConfirmed = () => {
-    if (partnerToDelete) {
-      console.log("Đã xóa:", partnerToDelete);
-      setOpenDelete(false);
-      setPartnerToDelete(null);
-    }
-  };
+    if (!partnerToDelete) return;
 
+    const url = `/users/${partnerToDelete.id}`;
+    console.log("🗑️ Xoá đối tác với ID:", partnerToDelete.id);
+
+    axios.delete(url)
+      .then((res) => {
+        console.log("Đã xoá thành công:", res.data);
+
+        // Cập nhật lại danh sách sau khi xoá
+        setPartners((prev) => prev.filter((p) => p.id !== partnerToDelete.id));
+
+        setOpenDelete(false);
+        setPartnerToDelete(null);
+      })
+      .catch((err) => {
+        console.error("Lỗi khi xoá đối tác:", err);
+      });
+  };
 
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(0);
@@ -102,7 +140,12 @@ const Partner = () => {
     setPage(0);
   };
 
-  const displayedRows = mockPartnersList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const filteredRows = partners.filter(p =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const displayedRows = filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
 
   return (
     <div className="flex h-screen w-screen">
@@ -155,6 +198,7 @@ const Partner = () => {
                   <TableRow>
                     <TableCell><strong>Ảnh</strong></TableCell>
                     <TableCell><strong>Tên đối tác</strong></TableCell>
+                    <TableCell><strong>Ngày sinh</strong></TableCell>
                     <TableCell><strong>SĐT</strong></TableCell>
                     <TableCell><strong>Email</strong></TableCell>
                     <TableCell><strong>Trạng thái</strong></TableCell>
@@ -168,6 +212,9 @@ const Partner = () => {
                         <Avatar src={mockPartners.photo} alt={mockPartners.name} />
                       </TableCell>
                       <TableCell>{mockPartners.name}</TableCell>
+                      <TableCell>
+                        {mockPartners.dob.split('T')[0]}
+                      </TableCell>
                       <TableCell>{mockPartners.phone}</TableCell>
                       <TableCell>{mockPartners.email}</TableCell>
                       <TableCell>{mockPartners.status}</TableCell>
@@ -185,7 +232,7 @@ const Partner = () => {
               </Table>
               <TablePagination
                 component="div"
-                count={mockPartnersList.length}
+                count={filteredRows.length}
                 page={page}
                 onPageChange={handleChangePage}
                 rowsPerPage={rowsPerPage}
@@ -207,44 +254,35 @@ const Partner = () => {
             sx={{ backgroundColor: '#faebce', minWidth: 400 }}
           >
             <TextField
-              label="Link ảnh"
-              fullWidth
-              margin="dense"
-              value={selectedPartner.photo}
-            // onChange={(e) => handleEditChange('photo', e.target.value)}
-            />
-            <TextField
               label="Tên đối tác"
               fullWidth
               margin="dense"
               value={selectedPartner.name}
-            // onChange={(e) => handleEditChange('name', e.target.value)}
+              onChange={(e) => handleEditChange('name', e.target.value)}
+            />
+            <TextField
+              label="Ngày sinh"
+              type="date"
+              fullWidth
+              margin="dense"
+              value={selectedPartner.dob.split('T')[0]} // chỉ lấy phần ngày
+              onChange={(e) => handleEditChange('dob', e.target.value)} // vẫn là string dạng YYYY-MM-DD
+              InputLabelProps={{ shrink: true }} // để nhãn không che giá trị
             />
             <TextField
               label="Số điện thoại"
               fullWidth
               margin="dense"
               value={selectedPartner.phone}
-            // onChange={(e) => handleEditChange('phone', e.target.value)}
+              onChange={(e) => handleEditChange('phone', e.target.value)}
             />
             <TextField
-              label="Email"
+              label="Link ảnh"
               fullWidth
               margin="dense"
-              value={selectedPartner.email}
-            // onChange={(e) => handleEditChange('email', e.target.value)}
+              value={selectedPartner.photo}
+              onChange={(e) => handleEditChange('photo', e.target.value)}
             />
-            <TextField
-              label="Trạng thái"
-              select
-              fullWidth
-              margin="dense"
-              value={selectedPartner.status}
-            // onChange={(e) => handleEditChange('status', e.target.value)}
-            >
-              <MenuItem value="Đang hoạt động">Đang hoạt động</MenuItem>
-              <MenuItem value="Tạm ngưng">Tạm ngưng</MenuItem>
-            </TextField>
           </DialogContent>
           <DialogActions sx={{ backgroundColor: '#faebce' }}>
             <Button

@@ -11,6 +11,9 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import Navbar from '../components/home/Navbar';
+import Footer from '../components/home/Footer';
+import axiosInstance from '../utils/axiosInstance';
 
 const backgroundImages = [
     'https://wander-lush.org/wp-content/uploads/2022/11/Hanoi-to-Halong-Bay-transport-guide-2023-new-DP-Junk-Boat.jpg',
@@ -58,33 +61,23 @@ const Login = () => {
         if (!validate()) return;
 
         try {
-            const response = await fetch('http://14.225.217.24:8080/api/v1/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, password })
+            const loginURL = '/v1/auth/login';
+            console.log('🔗 URL đang gọi:', loginURL);
+
+            const response = await axiosInstance.post(loginURL, {
+                email,
+                password
             });
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => null);
-                const errorMessage = errorData?.message || 'Đăng nhập thất bại';
-                throw new Error(errorMessage);
-            }
+            const { accessToken, refreshToken } = response.data.data;
 
-            const data = await response.json();
-            const { accessToken, refreshToken } = data.data;
-
-            // ✅ Lưu token
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
 
-            // ✅ Giải mã token để lấy role
             const decoded: any = jwtDecode(accessToken);
             const userRole = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
             console.log('User Role:', userRole);
-            
-            // ✅ Điều hướng theo role
+
             switch (userRole) {
                 case 'Admin':
                     navigate('/dashboard');
@@ -98,13 +91,18 @@ const Login = () => {
                 case 'Customer':
                     navigate('/booking');
                     break;
+                default:
+                    console.warn('Vai trò không xác định:', userRole);
             }
 
         } catch (error: any) {
             console.error('Lỗi đăng nhập:', error);
-            alert(error.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
+            const errorMessage = error.response?.data?.message || 'Đăng nhập thất bại. Vui lòng thử lại.';
+            alert(errorMessage);
         }
     };
+
+
 
     useEffect(() => {
         const changeImage = () => {
@@ -135,108 +133,112 @@ const Login = () => {
     }, []);
 
     return (
-        <div className="h-screen w-screen flex relative overflow-hidden">
-            {/* Background hiện tại */}
-            <div
-                className="absolute inset-0 bg-cover bg-center transition-opacity ease-in-out will-change-opacity"
-                style={{
-                    backgroundImage: `url(${backgroundImages[currentImageIndex]})`,
-                    opacity: fade ? 0 : 1,
-                    transitionDuration: `${fadeDuration}ms`,
-                    filter: 'blur(4px) brightness(0.8)',
-                    zIndex: -2,
-                }}
-            />
+        <div className="min-h-screen w-screen flex flex-col relative overflow-hidden">
+            <Navbar />
+            <div className="h-screen w-screen flex relative overflow-hidden">
+                {/* Background hiện tại */}
+                <div
+                    className="absolute inset-0 bg-cover bg-center transition-opacity ease-in-out will-change-opacity"
+                    style={{
+                        backgroundImage: `url(${backgroundImages[currentImageIndex]})`,
+                        opacity: fade ? 0 : 1,
+                        transitionDuration: `${fadeDuration}ms`,
+                        filter: 'blur(4px) brightness(0.8)',
+                        zIndex: -2,
+                    }}
+                />
 
-            {/* Overlay màu */}
-            <div
-                className="absolute inset-0"
-                style={{ backgroundColor: '#21484888', zIndex: -1 }}
-            />
+                {/* Overlay màu */}
+                <div
+                    className="absolute inset-0"
+                    style={{ backgroundColor: '#21484888', zIndex: -1 }}
+                />
 
-            {/* Nội dung */}
-            <div className="flex w-full h-full items-center justify-center gap-130 relative z-10">
-                <div className="text-white text-4xl font-bold">
-                    <img src="/images/logo2-03.png" alt="Logo SnapSpot" className="mb-4 w-150 h-auto" />
-                    <p className="text-xl font-extralight tracking-wide">Chụp đúng nơi - Tỏa sáng đúng chất</p>
+                {/* Nội dung */}
+                <div className="flex w-full h-full items-center justify-center gap-130 relative z-10">
+                    <div className="text-white text-4xl font-bold">
+                        <img src="/images/logo2-03.png" alt="Logo SnapSpot" className="mb-4 w-150 h-auto" />
+                        <p className="text-xl font-extralight tracking-wide">Chụp đúng nơi - Tỏa sáng đúng chất</p>
 
-                </div>
+                    </div>
 
-                <Paper elevation={6} sx={{ padding: 5, width: 400, minHeight: 500 }}>
+                    <Paper elevation={6} sx={{ padding: 5, width: 400, minHeight: 500 }}>
 
-                    <Typography variant="h4" mb={1} textAlign="center" fontWeight="bold" color="#214848">
-                        Đăng nhập
-                    </Typography>
-                    <Typography variant="body2" mb={3} textAlign="center" color="text.secondary">
-                        Vui lòng nhập thông tin tài khoản của bạn để tiếp tục
-                    </Typography>
-                    <Box component="form" display="flex" flexDirection="column" gap={2} onSubmit={handleSubmit} noValidate>
-                        <TextField
-                            label="Email"
-                            variant="outlined"
-                            fullWidth
-                            name="email"
-                            id="email"
-                            value={email}
-                            onChange={e => setEmail(e.target.value)}
-                            error={Boolean(errors.email)}
-                            helperText={errors.email}
-                            autoComplete="email"
-                            required
-                        />
-                        <TextField
-                            label="Mật khẩu"
-                            variant="outlined"
-                            type="password"
-                            fullWidth
-                            name="password"
-                            id="password"
-                            value={password}
-                            onChange={e => setPassword(e.target.value)}
-                            error={Boolean(errors.password)}
-                            helperText={errors.password}
-                            autoComplete="current-password"
-                            required
-                        />
-                        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={remember}
-                                        onChange={e => setRemember(e.target.checked)}
-                                        color="primary"
-                                    />
-                                }
-                                label="Ghi nhớ đăng nhập"
-                            />
-                            <Link href="#" underline="hover" fontSize={14}>
-                                Quên mật khẩu?
-                            </Link>
-                        </Box>
-
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            size="large"
-                            sx={{
-                                backgroundColor: '#214848',
-                                borderRadius: 2,
-                                '&:hover': { backgroundColor: '#163838' },
-                                fontWeight: 'bold',
-                            }}
-                        >
+                        <Typography variant="h4" mb={1} textAlign="center" fontWeight="bold" color="#214848">
                             Đăng nhập
-                        </Button>
-
-                        <Typography variant="body2" mt={2} textAlign="center" color="text.secondary">
-                            Chưa có tài khoản?{' '}
-                            <Link href="/register" underline="hover">
-                                Đăng ký ngay
-                            </Link>
                         </Typography>
-                    </Box>
-                </Paper>
+                        <Typography variant="body2" mb={3} textAlign="center" color="text.secondary">
+                            Vui lòng nhập thông tin tài khoản của bạn để tiếp tục
+                        </Typography>
+                        <Box component="form" display="flex" flexDirection="column" gap={2} onSubmit={handleSubmit} noValidate>
+                            <TextField
+                                label="Email"
+                                variant="outlined"
+                                fullWidth
+                                name="email"
+                                id="email"
+                                value={email}
+                                onChange={e => setEmail(e.target.value)}
+                                error={Boolean(errors.email)}
+                                helperText={errors.email}
+                                autoComplete="email"
+                                required
+                            />
+                            <TextField
+                                label="Mật khẩu"
+                                variant="outlined"
+                                type="password"
+                                fullWidth
+                                name="password"
+                                id="password"
+                                value={password}
+                                onChange={e => setPassword(e.target.value)}
+                                error={Boolean(errors.password)}
+                                helperText={errors.password}
+                                autoComplete="current-password"
+                                required
+                            />
+                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={remember}
+                                            onChange={e => setRemember(e.target.checked)}
+                                            color="primary"
+                                        />
+                                    }
+                                    label="Ghi nhớ đăng nhập"
+                                />
+                                <Link href="#" underline="hover" fontSize={14}>
+                                    Quên mật khẩu?
+                                </Link>
+                            </Box>
+
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                size="large"
+                                sx={{
+                                    backgroundColor: '#214848',
+                                    borderRadius: 2,
+                                    '&:hover': { backgroundColor: '#163838' },
+                                    fontWeight: 'bold',
+                                }}
+                            >
+                                Đăng nhập
+                            </Button>
+
+                            <Typography variant="body2" mt={2} textAlign="center" color="text.secondary">
+                                Chưa có tài khoản?{' '}
+                                <Link href="/register" underline="hover">
+                                    Đăng ký ngay
+                                </Link>
+                            </Typography>
+                        </Box>
+                    </Paper>
+                </div>
             </div>
+            <Footer />
         </div>
     );
 };
