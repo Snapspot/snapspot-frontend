@@ -25,13 +25,22 @@ import { useEffect } from 'react';
 import axios from '../../utils/axiosInstance';
 
 type SpotType = {
-    id?: number;
+    id?: string;
     name: string;
     description: string;
     latitude: number;
     longitude: number;
     districtId: string;
+    districtName?: string;
+    provinceName?: string;
+    agencies?: any[];
+    createdAt?: string;
+    updatedAt?: string;
+    isDeleted?: boolean;
+    address?: string;
+    imageUrl?: string;
 };
+
 
 
 const Spot = () => {
@@ -49,12 +58,12 @@ const Spot = () => {
 
         try {
             // Gọi API DELETE
-            await axios.delete(`http://14.225.217.24:8080/api/Spots/${selectedSpot.id}`);
+            await axios.delete(`/spots/${selectedSpot.id}`);
             console.log('Deleted spot:', selectedSpot.id);
 
             // Sau khi xoá, làm mới danh sách
-            const res = await axios.get('http://14.225.217.24:8080/api/Spots');
-            setSpotList(res.data);
+            const res = await axios.get('/spots');
+            setSpotList(res.data.data);
         } catch (error) {
             console.error('Lỗi khi xoá địa điểm:', error);
         } finally {
@@ -64,12 +73,12 @@ const Spot = () => {
     };
 
     useEffect(() => {
-        const fetchSpots = axios.get('http://14.225.217.24:8080/api/Spots');
-        const fetchDistricts = axios.get('http://14.225.217.24:8080/api/Districts');
+        const fetchSpots = axios.get('/spots');
+        const fetchDistricts = axios.get('/districts');
 
         Promise.all([fetchSpots, fetchDistricts])
             .then(([spotsRes, districtsRes]) => {
-                setSpotList(spotsRes.data);
+                setSpotList(spotsRes.data.data);
                 const mappedDistricts = districtsRes.data.map((d: any) => ({
                     id: d.id,
                     name: d.name,
@@ -104,7 +113,7 @@ const Spot = () => {
         try {
             if (selectedSpot.id) {
                 // PUT - Cập nhật
-                await axios.put(`http://14.225.217.24:8080/api/Spots/${selectedSpot.id}`, selectedSpot);
+                await axios.put(`/spots/${selectedSpot.id}`, selectedSpot);
                 console.log('Đã cập nhật:', selectedSpot.id);
             } else {
                 // POST - Thêm mới
@@ -117,12 +126,12 @@ const Spot = () => {
                 };
 
                 console.log('Gửi dữ liệu POST:', spotToCreate);
-                await axios.post('http://14.225.217.24:8080/api/Spots', spotToCreate);
+                await axios.post('/spots', spotToCreate);
                 console.log('Đã thêm mới địa điểm');
             }
 
-            const res = await axios.get('http://14.225.217.24:8080/api/Spots');
-            setSpotList(res.data);
+            const res = await axios.get('/spots');
+            setSpotList(res.data.data);
         } catch (error) {
             console.error('Lỗi khi lưu địa điểm:', error);
         } finally {
@@ -132,7 +141,7 @@ const Spot = () => {
     };
 
     return (
-        <div className="flex h-screen w-screen">
+        <div className="flex min-h-screen w-screen">
             <Sidebar />
 
             <div className="flex-1 relative flex flex-col overflow-hidden">
@@ -194,9 +203,12 @@ const Spot = () => {
                                     <TableHead>
                                         <TableRow>
                                             <TableCell><strong>Tên địa điểm</strong></TableCell>
-                                            <TableCell style={{ width: '600px' }}><strong>Mô tả</strong></TableCell>
+                                            <TableCell style={{ width: '200px' }}><strong>Mô tả</strong></TableCell>
                                             <TableCell><strong>Vị trí</strong></TableCell>
-                                            <TableCell><strong>Số lượng chi nhánh</strong></TableCell>
+                                            <TableCell><strong>Vĩ độ</strong></TableCell>
+                                            <TableCell><strong>Kinh độ</strong></TableCell>
+                                            <TableCell><strong>Địa chỉ</strong></TableCell>
+                                            <TableCell><strong>Ảnh</strong></TableCell>
                                             <TableCell><strong>Trạng thái</strong></TableCell>
                                             <TableCell><strong>Thao tác</strong></TableCell>
                                         </TableRow>
@@ -207,7 +219,18 @@ const Spot = () => {
                                                 <TableCell>{spot.name}</TableCell>
                                                 <TableCell>{spot.description}</TableCell>
                                                 <TableCell>{`${spot.districtName}, ${spot.provinceName}`}</TableCell>
-                                                <TableCell>{spot.agencies?.length || 0}</TableCell>
+                                                <TableCell>{spot.latitude}</TableCell>
+                                                <TableCell>{spot.longitude}</TableCell>
+                                                <TableCell>{spot.address}</TableCell>
+                                                <TableCell>
+                                                    {spot.imageUrl && (
+                                                        <img
+                                                            src={spot.imageUrl}
+                                                            alt={spot.name}
+                                                            style={{ width: 100, height: 70, objectFit: 'cover', borderRadius: 8 }}
+                                                        />
+                                                    )}
+                                                </TableCell>
                                                 <TableCell>{spot.isDeleted ? 'Ngừng hoạt động' : 'Hoạt động'}</TableCell>
                                                 <TableCell>
                                                     <IconButton sx={{ color: '#215858' }}>

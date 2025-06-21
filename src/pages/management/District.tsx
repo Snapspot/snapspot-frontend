@@ -36,26 +36,26 @@ const District = () => {
 
     const fetchDistricts = async () => {
         try {
-            const response = await axios.get('http://14.225.217.24:8080/api/Districts');
-            console.log("🔍 API Districts trả về:", response.data);
-            const mapped = response.data.map((d: any) => ({
+            const response = await axios.get('/districts');
+            console.log("🔍 API Districts trả về:", response.data.data);
+            const mapped = response.data.data.map((d: any) => ({
                 id: d.id,
                 name: d.name,
                 description: d.description,
-                provinceId: d.provinceId, // 🟢 thêm dòng này
+                provinceId: d.provinceId,
                 provinceName: d.provinceName,
                 isDeleted: d.isDeleted,
             }));
             setDistricts(mapped);
         } catch (error) {
-            console.error('Lỗi khi gọi GET /api/Districts:', error);
+            console.error('Lỗi khi gọi GET /api/districts:', error);
         }
     };
 
     const fetchProvinces = async () => {
         try {
-            const response = await axios.get('http://14.225.217.24:8080/api/Provinces');
-            setProvinces(response.data);
+            const response = await axios.get('/provinces');
+            setProvinces(response.data.data);
         } catch (error) {
             console.error('Lỗi khi lấy danh sách tỉnh:', error);
         }
@@ -98,11 +98,11 @@ const District = () => {
         try {
             if (selectedDistrict.id !== '') {
                 await axios.put(
-                    `http://14.225.217.24:8080/api/Districts/${selectedDistrict.id}`,
+                    `/districts/${selectedDistrict.id}`,
                     payload
                 );
             } else {
-                await axios.post('http://14.225.217.24:8080/api/Districts', payload);
+                await axios.post('/districts', payload);
             }
 
             // Đảm bảo gọi sau khi PUT/POST hoàn tất
@@ -116,7 +116,7 @@ const District = () => {
 
     const handleDeleteConfirmed = async () => {
         try {
-            await axios.delete(`http://14.225.217.24:8080/api/Districts/${selectedDistrict?.id}`);
+            await axios.delete(`/districts/${selectedDistrict?.id}`);
 
             // Load lại danh sách huyện sau khi xoá
             await fetchDistricts();
@@ -137,7 +137,7 @@ const District = () => {
     const displayedRows = filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     return (
-        <div className="flex h-screen w-screen">
+        <div className="flex min-h-screen w-screen">
             <Sidebar />
             <div className="flex-1 relative flex flex-col overflow-hidden">
                 <div
@@ -184,8 +184,8 @@ const District = () => {
                                 <Table>
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell><strong>Huyện / Thị xã</strong></TableCell>
-                                            <TableCell><strong>Mô tả</strong></TableCell>
+                                            <TableCell sx={{ width: 200 }}><strong>Huyện / Thị xã</strong></TableCell>
+                                            <TableCell sx={{ width: 700 }}><strong>Mô tả</strong></TableCell>
                                             <TableCell><strong>Thuộc tỉnh</strong></TableCell>
                                             <TableCell><strong>Trạng thái</strong></TableCell>
                                             <TableCell><strong>Thao tác</strong></TableCell>

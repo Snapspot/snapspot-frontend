@@ -44,10 +44,10 @@ export default function Sidebar() {
           </button>
 
           {isPartnerMenuOpen && (
-            <div className="pl-10 mt-2 flex flex-col space-y-2">
+            <div className="pl-15 mt-2 flex flex-col space-y-2">
               <Link
                 to="/partners"
-                className={`px-2 py-1 rounded transition ${location.pathname === '/partners'
+                className={`text-left w-full block px-2 py-1 rounded transition ${location.pathname === '/partners'
                   ? 'bg-white text-[#215858] font-semibold'
                   : 'hover:underline'
                   }`}
@@ -56,7 +56,7 @@ export default function Sidebar() {
               </Link>
               <Link
                 to="/members"
-                className={`px-2 py-1 rounded transition ${location.pathname === '/members'
+                className={`text-left w-full block px-2 py-1 rounded transition ${location.pathname === '/members'
                   ? 'bg-white text-[#215858] font-semibold'
                   : 'hover:underline'
                   }`}
@@ -65,7 +65,7 @@ export default function Sidebar() {
               </Link>
               <Link
                 to="/partner-approval"
-                className={`px-2 py-1 rounded transition ${location.pathname === '/partner-approval'
+                className={`text-left w-full block px-2 py-1 rounded transition ${location.pathname === '/partner-approval'
                   ? 'bg-white text-[#215858] font-semibold'
                   : 'hover:underline'
                   }`}
@@ -95,10 +95,10 @@ export default function Sidebar() {
           </button>
 
           {isLocationMenuOpen && (
-            <div className="pl-10 mt-2 flex flex-col space-y-2">
+            <div className="pl-15 mt-2 flex flex-col space-y-2">
               <Link
                 to="/provinces"
-                className={`px-2 py-1 rounded transition ${location.pathname === '/provinces'
+                className={`text-left w-full block px-2 py-1 rounded transition ${location.pathname === '/provinces'
                   ? 'bg-white text-[#215858] font-semibold'
                   : 'hover:underline'
                   }`}
@@ -107,7 +107,7 @@ export default function Sidebar() {
               </Link>
               <Link
                 to="/districts"
-                className={`px-2 py-1 rounded transition ${location.pathname === '/districts'
+                className={`text-left w-full block px-2 py-1 rounded transition ${location.pathname === '/districts'
                   ? 'bg-white text-[#215858] font-semibold'
                   : 'hover:underline'
                   }`}
@@ -116,7 +116,7 @@ export default function Sidebar() {
               </Link>
               <Link
                 to="/spots"
-                className={`px-2 py-1 rounded transition ${location.pathname === '/spots'
+                className={`text-left w-full block px-2 py-1 rounded transition ${location.pathname === '/spots'
                   ? 'bg-white text-[#215858] font-semibold'
                   : 'hover:underline'
                   }`}

@@ -19,9 +19,9 @@ const Province = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
     useEffect(() => {
-        axios.get('http://14.225.217.24:8080/api/Provinces')
+        axios.get('/provinces')
             .then((res) => {
-                setProvinceList(res.data);
+                setProvinceList(res.data.data); // ✅ data chứa mảng các tỉnh
             })
             .catch((err) => {
                 console.error('Lỗi khi lấy danh sách tỉnh:', err);
@@ -29,9 +29,9 @@ const Province = () => {
     }, []);
 
     const fetchProvinceList = () => {
-        axios.get('http://14.225.217.24:8080/api/Provinces')
+        axios.get('/provinces')
             .then((res) => {
-                setProvinceList(res.data);
+                setProvinceList(res.data.data);
             })
             .catch((err) => {
                 console.error('Lỗi khi lấy danh sách tỉnh:', err);
@@ -194,11 +194,11 @@ const Province = () => {
                                 if (selectedProvince?.id) {
                                     const { name, description } = selectedProvince;
                                     await axios.put(
-                                        `http://14.225.217.24:8080/api/Provinces/${selectedProvince.id}`,
+                                        `/provinces/${selectedProvince.id}`,
                                         { name, description }
                                     );
                                 } else {
-                                    await axios.post('http://14.225.217.24:8080/api/Provinces', selectedProvince);
+                                    await axios.post('/provinces', selectedProvince);
                                 }
 
                                 // Gọi lại API để làm mới danh sách
@@ -228,7 +228,7 @@ const Province = () => {
                     <Button
                         onClick={async () => {
                             try {
-                                await axios.delete(`http://14.225.217.24:8080/api/Provinces/${selectedProvince?.id}`);
+                                await axios.delete(`/provinces/${selectedProvince?.id}`);
                                 setProvinceList(prev => prev.filter(p => p.id !== selectedProvince?.id));
                                 setOpenDelete(false);
                             } catch (error) {
