@@ -19,6 +19,7 @@ import Spot from './pages/management/Spot'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Home from './pages/Home';
+import Services from './pages/Services';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
 
         {/* Redirect "/" to "/home" */}
         <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/services" element={<Services/>} />
 
         {/* Protected routes (role = Admin) */}
         <Route element={<PrivateRoute allowedRoles={['Admin']} />}>

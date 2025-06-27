@@ -14,6 +14,7 @@ const Navbar = () => {
       {/* Menu */}
       <div className="flex space-x-8 text-[#ffffff] font-semibold">
         <button onClick={() => navigate("/home")} className="hover:underline">Home</button>
+        <button onClick={() => navigate("/services")} className="hover:underline">Service</button>
         <button onClick={() => navigate("/about")} className="hover:underline">About Us</button>
         <button onClick={() => navigate("/blog")} className="hover:underline">Blog</button>
       </div>
