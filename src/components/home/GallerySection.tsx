@@ -16,8 +16,8 @@ const GallerySection = () => {
         dots: true,
         infinite: false,
         speed: 600,
-        slidesToShow: 4,     // 👈 Hiển thị 4 ảnh một lúc
-        slidesToScroll: 1,   // 👈 Mỗi lần cuộn sang 1 ảnh
+        slidesToShow: 4,     //  Hiển thị 4 ảnh một lúc
+        slidesToScroll: 1,   //  Mỗi lần cuộn sang 1 ảnh
         arrows: true,
         responsive: [
             {
@@ -45,7 +45,7 @@ const GallerySection = () => {
     };
 
     return (
-        <div className="relative w-full h-screen overflow-hidden">
+        <div className="relative w-full overflow-hidden">
             {/* Ảnh nền trắng đen */}
             <div
                 className="absolute inset-0 bg-cover bg-center grayscale brightness-80"
@@ -63,15 +63,15 @@ const GallerySection = () => {
                 {/* Tiêu đề nằm trên + đường gạch ngang */}
                 <div className="w-full flex items-center justify-center px-4 mb-8">
                     {/* Đường gạch bên trái */}
-                    <div className="flex-grow h-px bg-[#215858]"></div>
+                    <div className="flex-grow h-[3px] bg-[#215858]"></div>
 
                     {/* Tiêu đề nằm giữa */}
                     <h2 className="px-4 text-2xl md:text-3xl font-semibold text-[#215858] whitespace-nowrap">
-                        Các địa điểm nổi bật
+                        CÁC ĐỊA ĐIỂM NỔI BẬT
                     </h2>
 
                     {/* Đường gạch bên phải */}
-                    <div className="flex-grow h-px bg-[#215858]"></div>
+                    <div className="flex-grow h-[3px] bg-[#215858]"></div>
                 </div>
 
                 {/* Slider ảnh bên dưới */}
