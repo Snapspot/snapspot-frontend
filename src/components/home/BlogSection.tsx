@@ -1,3 +1,4 @@
+import { FiMail, FiMapPin, FiPhone } from "react-icons/fi";
 import Slider from "react-slick";
 
 const images = [
@@ -9,6 +10,24 @@ const images = [
     "https://dulichviet.com.vn/images/bandidau/NOI-DIA/Con-Dao/du-lich-con-dao-mua-he-2025-du-lich-viet.jpg",
     "https://www.elle.vn/wp-content/uploads/2017/06/30/8-tips-de-co-nhung-buc-anh-tuyet-dep-khi-di-du-lich-mot-minh-ellevn.jpg",
     "https://images.baoangiang.com.vn/image/fckeditor/upload/2024/20240131/images/8f0d986ccf20267e7f31.jpg",
+];
+
+const features = [
+    {
+        image: "https://dulichsaigon.edu.vn/wp-content/uploads/2024/01/hoi-an-thanh-pho-du-lich-o-viet-nam-thu-hut-nhieu-du-khach.jpg",
+        title: "Mỗi địa điểm là một bức tranh sống động, nơi bạn có thể tự do tạo nên những khoảnh khắc không thể quên",
+        size: "w-150 h-150", // lớn nhất
+    },
+    {
+        image: "https://puluongexcursions.com/wp-content/uploads/2023/03/vinh-ha-long-01.jpg",
+        title: "Thiên nhiên không chỉ đẹp để ngắm nhìn, mà còn là nơi chữa lành và truyền cảm hứng cho tâm hồn bạn",
+        size: "w-100 h-100", // vừa
+    },
+    {
+        image: "https://cdn-images.vtv.vn/2020/5/27/du-lich-noi-dia-1590582875432562565334.jpg",
+        title: "Du lịch không chỉ là đi, mà là hành trình để tìm thấy chính mình giữa muôn vàn trải nghiệm mới lạ",
+        size: "w-50 h-50", // nhỏ nhất
+    },
 ];
 
 const BlogSection = () => {
@@ -45,7 +64,7 @@ const BlogSection = () => {
     };
 
     return (
-        <div className="relative w-full h-screen overflow-hidden">
+        <div className="relative w-full">
             {/* Ảnh nền trắng đen */}
             <div
                 className="absolute inset-0 bg-cover bg-center grayscale brightness-80"
@@ -85,6 +104,95 @@ const BlogSection = () => {
                 <h2 className="mt-6 text-7xl font-extrabold">TRÊN VIỆT NAM</h2>
             </div>
 
+            <div className="relative z-10 w-full flex items-center justify-end px-25 mt-20 mb-10">
+                <div className="flex-grow h-[3px] bg-[#215858]"></div>
+                <h2 className="text-2xl md:text-3xl font-semibold text-[#215858] whitespace-nowrap">
+                    TẦM NHÌN
+                </h2>
+            </div>
+
+
+            <div className="flex items-end justify-center gap-60 flex-wrap">
+                {features.map((feature, index) => (
+                    <div
+                        key={index}
+                        className={`relative group rounded-full overflow-hidden shadow-xl transition-transform duration-500 hover:scale-105 ${feature.size}`}
+                    >
+                        <img
+                            src={feature.image}
+                            alt={feature.title}
+                            className="object-cover w-full h-full"
+                        />
+                        {/* Overlay hiển thị title */}
+                        <div className="absolute inset-0 flex items-center justify-center group-hover:bg-black/40 transition-colors duration-300">
+                            <span className="text-white text-center text-sm md:text-base font-light px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                {feature.title}
+                            </span>
+
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            <div className="relative z-10 w-full flex items-center justify-start px-25 mt-20 mb-10">
+                <h2 className="text-2xl md:text-3xl font-semibold text-[#215858] whitespace-nowrap">
+                    LIÊN HỆ
+                </h2>
+                <div className="flex-grow h-[3px] bg-[#215858]"></div>
+            </div>
+
+            <div className="relative z-10 max-w-8xl mx-auto flex flex-col md:flex-row gap-12">
+                {/* Bên trái: Form nhập liệu */}
+                <form className="w-full md:w-[60%] flex flex-col space-y-11 pl-15">
+                    <div className="flex flex-col md:flex-row gap-6">
+                        <input
+                            type="email"
+                            placeholder="Email"
+                            className="w-full bg-[#215858] text-white placeholder-white px-6 py-4 text-base rounded-2xl"
+                        />
+                        <input
+                            type="tel"
+                            placeholder="Phone"
+                            className="w-full bg-[#215858] text-white placeholder-white px-6 py-4 text-base rounded-2xl"
+                        />
+                    </div>
+
+                    <input
+                        type="text"
+                        placeholder="Name"
+                        className="w-full bg-[#215858] text-white placeholder-white px-6 py-4 text-base rounded-2xl"
+                    />
+
+                    <textarea
+                        placeholder="Message"
+                        className="w-full bg-[#215858] text-white placeholder-white px-6 py-4 text-base rounded-2xl h-40 resize-none"
+                    />
+
+                    <button
+                        type="submit"
+                        className="w-fit border border-[#215858] text-[#215858] text-lg px-6 py-2 rounded-full hover:bg-[#215858] hover:text-white transition"
+                    >
+                        Submit
+                    </button>
+                </form>
+
+
+                {/* Bên phải: Info hiển thị */}
+                <form className="w-full md:w-[40%] flex flex-col gap-6 pr-6 md:pr-50 pl-50">
+                    <div className="flex items-center justify-center gap-4 bg-[#215858] text-white px-6 py-10 rounded-2xl shadow-md">
+                        <FiPhone className="text-2xl text-[#faebce]" />
+                        <span className="text-base font-medium">(+84) 123 456 789</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-4 bg-[#215858] text-white px-6 py-10 rounded-2xl shadow-md">
+                        <FiMail className="text-2xl text-[#faebce]" />
+                        <span className="text-base font-medium">snapspot@gmail.com</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-4 bg-[#215858] text-white px-6 py-10 rounded-2xl shadow-md">
+                        <FiMapPin className="text-2xl text-[#faebce]" />
+                        <span className="text-base font-medium">Thành phố Hồ Chí Minh</span>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 };

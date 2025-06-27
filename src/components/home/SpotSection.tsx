@@ -15,7 +15,7 @@ const SpotSection: React.FC<SpotSectionProps> = ({
 }) => {
     return (
         <div
-            className="w-full h-screen bg-cover bg-center relative flex items-center justify-center"
+            className="w-full bg-cover bg-center relative flex items-center justify-center"
             style={{ backgroundImage: "url('https://i2.ex-cdn.com/crystalbay.com/files/content/2025/02/04/vinh-ha-long-co-bao-nhieu-hon-dao-1-1038.jpg')"}}
         >
 

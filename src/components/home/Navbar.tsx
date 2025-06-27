@@ -7,7 +7,7 @@ const Navbar = () => {
         <nav className="fixed top-0 left-0 w-full z-50 text-white">
             {/* Background trắng đen + làm sáng */}
             <div
-                className="absolute inset-0 bg-cover bg-center grayscale brightness-90"
+                className="absolute inset-0 bg-cover bg-center grayscale brightness-90 opacity-20"
                 style={{
                     backgroundImage: `url('https://static1.squarespace.com/static/63f8b23b0626755198127ae3/63fc8c7f15e5ba00f5bf5e84/63fd08a2e559cd5c7086f8b2/1677527755377/vietnam-halong-bay-01.jpg?format=1500w')`,
                     zIndex: -2,
