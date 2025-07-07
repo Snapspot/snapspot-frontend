@@ -6,9 +6,9 @@ import { useNavigate } from 'react-router-dom';
 export default function Sidebar() {
 
   const location = useLocation();
-  const isPartnerPath = ['/partners', '/members', '/partner-approval'].includes(location.pathname);
+  const isPartnerPath = ['/admin/companies', '/admin/agencies', '/admin/partner-approval'].includes(location.pathname);
   const [isPartnerMenuOpen, setIsPartnerMenuOpen] = useState(isPartnerPath);
-  const isLocationPath = ['/provinces', '/districts', '/spots'].includes(location.pathname);
+  const isLocationPath = ['/admin/provinces', '/admin/districts', '/admin/spots'].includes(location.pathname);
   const [isLocationMenuOpen, setIsLocationMenuOpen] = useState(isLocationPath);
   const navigate = useNavigate();
 
@@ -23,7 +23,7 @@ export default function Sidebar() {
       <h2 className="text-2xl font-bold mb-10">SNAPSPOT</h2>
       <nav className="flex flex-col space-y-4">
         <Link
-          to="/dashboard"
+          to="/admin/dashboard"
           className="hover:bg-teal-700 px-4 py-3 rounded transition flex items-center space-x-3"
         >
           <FiHome />
@@ -46,8 +46,8 @@ export default function Sidebar() {
           {isPartnerMenuOpen && (
             <div className="pl-15 mt-2 flex flex-col space-y-2">
               <Link
-                to="/partners"
-                className={`text-left w-full block px-2 py-1 rounded transition ${location.pathname === '/partners'
+                to="/admin/companies"
+                className={`text-left w-full block px-2 py-1 rounded transition ${location.pathname === '/admin/companies'
                   ? 'bg-white text-[#215858] font-semibold'
                   : 'hover:underline'
                   }`}
@@ -55,8 +55,8 @@ export default function Sidebar() {
                 Đối tác
               </Link>
               <Link
-                to="/members"
-                className={`text-left w-full block px-2 py-1 rounded transition ${location.pathname === '/members'
+                to="/admin/agencies"
+                className={`text-left w-full block px-2 py-1 rounded transition ${location.pathname === '/admin/agencies'
                   ? 'bg-white text-[#215858] font-semibold'
                   : 'hover:underline'
                   }`}
@@ -64,8 +64,8 @@ export default function Sidebar() {
                 Thành viên
               </Link>
               <Link
-                to="/partner-approval"
-                className={`text-left w-full block px-2 py-1 rounded transition ${location.pathname === '/partner-approval'
+                to="/admin/partner-approval"
+                className={`text-left w-full block px-2 py-1 rounded transition ${location.pathname === '/admin/partner-approval'
                   ? 'bg-white text-[#215858] font-semibold'
                   : 'hover:underline'
                   }`}
@@ -77,7 +77,7 @@ export default function Sidebar() {
         </div>
 
         {/* Các menu khác */}
-        <Link to="/marketing" className="hover:bg-teal-700 px-4 py-3 rounded transition flex items-center space-x-3">
+        <Link to="/admin/seller-packages" className="hover:bg-teal-700 px-4 py-3 rounded transition flex items-center space-x-3">
           <FiPackage />
           <span>Quản lý gói tiếp thị</span>
         </Link>
@@ -97,8 +97,8 @@ export default function Sidebar() {
           {isLocationMenuOpen && (
             <div className="pl-15 mt-2 flex flex-col space-y-2">
               <Link
-                to="/provinces"
-                className={`text-left w-full block px-2 py-1 rounded transition ${location.pathname === '/provinces'
+                to="/admin/provinces"
+                className={`text-left w-full block px-2 py-1 rounded transition ${location.pathname === '/admin/provinces'
                   ? 'bg-white text-[#215858] font-semibold'
                   : 'hover:underline'
                   }`}
@@ -106,8 +106,8 @@ export default function Sidebar() {
                 Tỉnh
               </Link>
               <Link
-                to="/districts"
-                className={`text-left w-full block px-2 py-1 rounded transition ${location.pathname === '/districts'
+                to="/admin/districts"
+                className={`text-left w-full block px-2 py-1 rounded transition ${location.pathname === '/admin/districts'
                   ? 'bg-white text-[#215858] font-semibold'
                   : 'hover:underline'
                   }`}
@@ -115,8 +115,8 @@ export default function Sidebar() {
                 Huyện / Thị xã
               </Link>
               <Link
-                to="/spots"
-                className={`text-left w-full block px-2 py-1 rounded transition ${location.pathname === '/spots'
+                to="/admin/spots"
+                className={`text-left w-full block px-2 py-1 rounded transition ${location.pathname === '/admin/spots'
                   ? 'bg-white text-[#215858] font-semibold'
                   : 'hover:underline'
                   }`}
@@ -126,15 +126,15 @@ export default function Sidebar() {
             </div>
           )}
         </div>
-        <Link to="/system-log" className="hover:bg-teal-700 px-4 py-3 rounded transition flex items-center space-x-3">
+        <Link to="/admin/system-log" className="hover:bg-teal-700 px-4 py-3 rounded transition flex items-center space-x-3">
           <FiBook />
           <span>Nhật ký hệ thống</span>
         </Link>
-        <Link to="/reviews" className="hover:bg-teal-700 px-4 py-3 rounded transition flex items-center space-x-3">
+        <Link to="/admin/reviews" className="hover:bg-teal-700 px-4 py-3 rounded transition flex items-center space-x-3">
           <FiStar />
           <span>Quản lý đánh giá</span>
         </Link>
-        <Link to="/services" className="hover:bg-teal-700 px-4 py-3 rounded transition flex items-center space-x-3">
+        <Link to="/admin/agency-services" className="hover:bg-teal-700 px-4 py-3 rounded transition flex items-center space-x-3">
           <FiSettings />
           <span>Quản lý dịch vụ</span>
         </Link>

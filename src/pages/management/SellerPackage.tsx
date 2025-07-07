@@ -22,21 +22,53 @@ import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import { useState, useEffect } from 'react';
 import axios from '../../utils/axiosInstance';
 
+type CompanyType = {
+  id: string;
+  name: string;
+  address: string;
+  email: string;
+  phoneNumber: string;
+  avatarUrl: string;
+  pdfUrl: string;
+  rating: number;
+  isApproved: boolean;
+  userId: string;
+  userName: string;
+  agencies: any; // Nếu có schema cụ thể thì thay thế `any`
+  createdAt: string;
+  updatedAt: string;
+  isDeleted: boolean;
+};
+
 type SellerPackageType = {
   id: string;
   name: string;
   description: string;
   maxAgency: number;
   price: number;
-  sellingCount: number;
+  sellingCount?: number; // Có thể giữ tạm, nhưng không cần thiết nếu dùng companies.length
   isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  companies: CompanyType[];
 };
 
-const Marketing = () => {
+type SellerPackageFormData = {
+  id?: string;
+  name: string;
+  description: string;
+  branches: number;      // thay cho maxAgency
+  price: number;
+  sold?: number;         // chỉ hiển thị
+  status?: 'active' | 'inactive'; // chỉ hiển thị
+};
+
+
+const SellerPackage = () => {
   const [packages, setPackages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [openEdit, setOpenEdit] = useState(false);
-  const [editingPackage, setEditingPackage] = useState<any>(null);
+  const [editingPackage, setEditingPackage] = useState<SellerPackageFormData | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [openDelete, setOpenDelete] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<any>(null);
@@ -46,17 +78,18 @@ const Marketing = () => {
   useEffect(() => {
     const fetchPackages = async () => {
       try {
-        const response = await axios.get<SellerPackageType[]>('/SellerPackages');
-        const mapped = response.data.map(pkg => ({
+        const response = await axios.get('/SellerPackages');
+        const mapped = response.data.data.map((pkg: SellerPackageType) => ({
           id: pkg.id,
           name: pkg.name,
           description: pkg.description,
           branches: pkg.maxAgency,
           price: pkg.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }),
-          sold: pkg.sellingCount,
+          sold: pkg.companies?.length ?? 0, // Đổi từ sellingCount sang đếm thực tế
           status: pkg.isDeleted ? 'inactive' : 'active',
         }));
         setPackages(mapped);
+
         setLoading(false);
       } catch (err) {
         console.error('Lỗi khi gọi API SellerPackages:', err);
@@ -68,9 +101,18 @@ const Marketing = () => {
   }, []);
 
   const handleOpenEdit = (pkg: any) => {
-    setEditingPackage({ ...pkg });
+    setEditingPackage({
+      id: pkg.id,
+      name: pkg.name,
+      description: pkg.description,
+      branches: pkg.branches, // vì bạn đã map từ maxAgency trước đó
+      price: parseInt(pkg.price.toString().replace(/[^\d]/g, '')), // về số
+      sold: pkg.sold,
+      status: pkg.status,
+    });
     setOpenEdit(true);
   };
+
 
   const handleCloseEdit = () => {
     setOpenEdit(false);
@@ -78,11 +120,11 @@ const Marketing = () => {
   };
 
   const handleSaveEdit = async () => {
-    try {
-      // Chuyển giá về dạng số (bỏ ₫, dấu chấm,…)
-      const numericPrice = parseInt(editingPackage.price.toString().replace(/[^\d]/g, ''));
+    if (!editingPackage) return;
 
-      // Payload phù hợp với yêu cầu của API
+    try {
+      const numericPrice = Number(editingPackage.price) || 0;
+
       const payload = {
         name: editingPackage.name,
         description: editingPackage.description,
@@ -91,26 +133,28 @@ const Marketing = () => {
       };
 
       if (editingPackage.id) {
-        // Nếu có ID, tức là đang sửa -> gọi PUT
+        // Nếu có ID → chỉnh sửa
         await axios.put(`/SellerPackages/${editingPackage.id}`, {
           ...payload,
-          sellingCount: editingPackage.sold || 0,
           isDeleted: editingPackage.status === 'inactive',
         });
       } else {
-        // Nếu không có ID, tức là tạo mới -> gọi POST
+        // Nếu không có ID → tạo mới
         await axios.post('/SellerPackages', payload);
       }
 
-      // Refresh danh sách
+      // Làm mới danh sách sau khi cập nhật thành công
       const response = await axios.get('/SellerPackages');
-      const mapped = response.data.map((pkg: SellerPackageType) => ({
+      const mapped = response.data.data.map((pkg: SellerPackageType) => ({
         id: pkg.id,
         name: pkg.name,
         description: pkg.description,
         branches: pkg.maxAgency,
-        price: pkg.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }),
-        sold: pkg.sellingCount,
+        price: pkg.price.toLocaleString('vi-VN', {
+          style: 'currency',
+          currency: 'VND',
+        }),
+        sold: pkg.companies?.length ?? 0,
         status: pkg.isDeleted ? 'inactive' : 'active',
       }));
       setPackages(mapped);
@@ -123,6 +167,7 @@ const Marketing = () => {
       }
     }
   };
+
 
   const handleOpenDelete = (pkg: any) => {
     setSelectedPackage(pkg);
@@ -143,13 +188,13 @@ const Marketing = () => {
 
       // Làm mới danh sách sau khi xoá
       const response = await axios.get('/SellerPackages');
-      const mapped = response.data.map((pkg: SellerPackageType) => ({
+      const mapped = response.data.data.map((pkg: SellerPackageType) => ({
         id: pkg.id,
         name: pkg.name,
         description: pkg.description,
         branches: pkg.maxAgency,
         price: pkg.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }),
-        sold: pkg.sellingCount,
+        sold: pkg.companies?.length ?? 0,
         status: pkg.isDeleted ? 'inactive' : 'active',
       }));
       setPackages(mapped);
@@ -220,7 +265,7 @@ const Marketing = () => {
                     name: '',
                     description: '',
                     branches: 0,
-                    price: '',
+                    price: 0,
                     sold: 0,
                     status: 'active',
                   });
@@ -308,12 +353,71 @@ const Marketing = () => {
       {/* Dialog Sửa */}
       <Dialog open={openEdit} onClose={handleCloseEdit} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ backgroundColor: '#215858', color: 'white' }}>Chỉnh sửa gói tiếp thị</DialogTitle>
-        <DialogContent sx={{ backgroundColor: '#faebce', display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-          <TextField label="Tên gói" variant="outlined" value={editingPackage?.name || ''} onChange={(e) => setEditingPackage({ ...editingPackage, name: e.target.value })} fullWidth />
-          <TextField label="Mô tả" variant="outlined" value={editingPackage?.description || ''} onChange={(e) => setEditingPackage({ ...editingPackage, description: e.target.value })} fullWidth />
-          <TextField label="Số chi nhánh" type="number" variant="outlined" value={editingPackage?.branches || ''} onChange={(e) => setEditingPackage({ ...editingPackage, branches: parseInt(e.target.value) })} fullWidth />
-          <TextField label="Giá" variant="outlined" value={editingPackage?.price || ''} onChange={(e) => setEditingPackage({ ...editingPackage, price: e.target.value })} fullWidth />
-          <TextField label="Đã bán" type="number" variant="outlined" value={editingPackage?.sold || ''} onChange={(e) => setEditingPackage({ ...editingPackage, sold: parseInt(e.target.value) })} fullWidth />
+        <DialogContent
+          sx={{
+            backgroundColor: '#faebce',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            mt: 1,
+          }}
+        >
+          <TextField
+            label="Tên gói"
+            variant="outlined"
+            value={editingPackage?.name || ''}
+            onChange={(e) =>
+              setEditingPackage({ ...editingPackage!, name: e.target.value })
+            }
+            fullWidth
+          />
+
+          <TextField
+            label="Mô tả"
+            variant="outlined"
+            value={editingPackage?.description || ''}
+            onChange={(e) =>
+              setEditingPackage({ ...editingPackage!, description: e.target.value })
+            }
+            fullWidth
+          />
+
+          <TextField
+            label="Số chi nhánh"
+            type="number"
+            variant="outlined"
+            value={editingPackage?.branches ?? ''}
+            onChange={(e) =>
+              setEditingPackage({
+                ...editingPackage!,
+                branches: Math.max(0, parseInt(e.target.value) || 0),
+              })
+            }
+            fullWidth
+          />
+
+          <TextField
+            label="Giá (VNĐ)"
+            type="number"
+            variant="outlined"
+            value={editingPackage?.price ?? ''}
+            onChange={(e) =>
+              setEditingPackage({
+                ...editingPackage!,
+                price: Math.max(0, parseInt(e.target.value) || 0),
+              })
+            }
+            fullWidth
+          />
+
+          <TextField
+            label="Đã bán"
+            type="number"
+            variant="outlined"
+            value={editingPackage?.sold ?? 0}
+            InputProps={{ readOnly: true }}
+            fullWidth
+          />
         </DialogContent>
         <DialogActions sx={{ backgroundColor: '#faebce' }}>
           <Button onClick={handleCloseEdit} variant="outlined" sx={{ color: '#215858', borderColor: '#215858' }}>Hủy</Button>
@@ -324,4 +428,4 @@ const Marketing = () => {
   );
 };
 
-export default Marketing;
+export default SellerPackage;
