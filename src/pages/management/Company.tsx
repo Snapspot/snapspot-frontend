@@ -13,35 +13,37 @@ import Navbar from '../../components/admin/Navbar';
 import { useEffect } from 'react';
 import axios from '../../utils/axiosInstance';
 
-interface PartnerType {
-  id: number;
+interface CompanyType {
+  id: string;
   name: string;
   phone: string;
   email: string;
   status: string;
   photo: string;
-  dob: string;
+  userName: string;
+  address: string;
 }
 
-const Partner = () => {
+const Company = () => {
   const [openDelete, setOpenDelete] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const [selectedPartner, setSelectedPartner] = useState<PartnerType | null>(null);
-  const [partners, setPartners] = useState<PartnerType[]>([]);
+  const [selectedPartner, setSelectedPartner] = useState<CompanyType | null>(null);
+  const [partners, setPartners] = useState<CompanyType[]>([]);
 
   useEffect(() => {
-    axios.get('/users/third-party')
+    axios.get('/companies')
       .then((res) => {
-        const mappedPartners = res.data.map((user: any) => ({
-          id: user.id,
-          name: user.fullname,
-          phone: user.phoneNumber,
-          email: user.email,
-          status: user.isApproved ? 'Đang hoạt động' : 'Tạm ngưng',
-          photo: user.avatarUrl || 'https://via.placeholder.com/40',
-          dob: user.dob,
+        const mappedCompanies = res.data.data.map((company: any) => ({
+          id: company.id,
+          name: company.name,
+          phone: company.phoneNumber,
+          email: company.email,
+          status: company.isApproved ? 'Đang hoạt động' : 'Tạm ngưng',
+          photo: company.avatarUrl || 'https://via.placeholder.com/40',
+          userName: company.userName,
+          address: company.address,
         }));
-        setPartners(mappedPartners);
+        setPartners(mappedCompanies);
       })
       .catch((err) => {
         console.error("Lỗi khi gọi API:", err);
@@ -50,7 +52,7 @@ const Partner = () => {
 
 
   // Sử dụng trong hàm
-  const handleOpenEdit = (mockPartners: PartnerType) => {
+  const handleOpenEdit = (mockPartners: CompanyType) => {
     setSelectedPartner(mockPartners);
     setOpenEdit(true);
   };
@@ -60,7 +62,7 @@ const Partner = () => {
     setSelectedPartner(null);
   };
 
-  const handleEditChange = (field: keyof PartnerType, value: string) => {
+  const handleEditChange = (field: keyof CompanyType, value: string) => {
     setSelectedPartner((prev) => prev ? { ...prev, [field]: value } : null);
   };
 
@@ -68,13 +70,14 @@ const Partner = () => {
     if (!selectedPartner) return;
 
     const updatedData = {
-      fullname: selectedPartner.name,
-      dob: selectedPartner.dob.includes("T") ? selectedPartner.dob : `${selectedPartner.dob}T00:00:00`, // đảm bảo định dạng ISO
+      name: selectedPartner.name,
       phoneNumber: selectedPartner.phone,
+      email: selectedPartner.email,
+      address: selectedPartner.address,
       avatarUrl: selectedPartner.photo,
     };
 
-    const url = `/users/${selectedPartner.id}`;
+    const url = `/companies/${selectedPartner.id}`;
 
     axios.put(url, updatedData)
       .then((res) => {
@@ -93,10 +96,11 @@ const Partner = () => {
       });
   };
 
-  // Trong component:
-  const [partnerToDelete, setPartnerToDelete] = useState<PartnerType | null>(null);
 
-  const handleOpenDelete = (partner: PartnerType) => {
+  // Trong component:
+  const [partnerToDelete, setPartnerToDelete] = useState<CompanyType | null>(null);
+
+  const handleOpenDelete = (partner: CompanyType) => {
     setPartnerToDelete(partner);
     setOpenDelete(true);
   };
@@ -109,7 +113,7 @@ const Partner = () => {
   const handleDeleteConfirmed = () => {
     if (!partnerToDelete) return;
 
-    const url = `/users/${partnerToDelete.id}`;
+    const url = `/companies/${partnerToDelete.id}`;
     console.log("🗑️ Xoá đối tác với ID:", partnerToDelete.id);
 
     axios.delete(url)
@@ -197,8 +201,9 @@ const Partner = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell><strong>Ảnh</strong></TableCell>
-                    <TableCell><strong>Tên đối tác</strong></TableCell>
-                    <TableCell><strong>Ngày sinh</strong></TableCell>
+                    <TableCell><strong>Tên công ty</strong></TableCell>
+                    <TableCell><strong>Người đại diện</strong></TableCell>
+                    <TableCell><strong>Địa chỉ</strong></TableCell>
                     <TableCell><strong>SĐT</strong></TableCell>
                     <TableCell><strong>Email</strong></TableCell>
                     <TableCell><strong>Trạng thái</strong></TableCell>
@@ -206,23 +211,22 @@ const Partner = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {displayedRows.map((mockPartners) => (
-                    <TableRow key={mockPartners.id}>
+                  {displayedRows.map((company) => (
+                    <TableRow key={company.id}>
                       <TableCell>
-                        <Avatar src={mockPartners.photo} alt={mockPartners.name} />
+                        <Avatar src={company.photo} alt={company.name} />
                       </TableCell>
-                      <TableCell>{mockPartners.name}</TableCell>
+                      <TableCell>{company.name}</TableCell>
+                      <TableCell>{company.userName}</TableCell>
+                      <TableCell>{company.address}</TableCell>
+                      <TableCell>{company.phone}</TableCell>
+                      <TableCell>{company.email}</TableCell>
+                      <TableCell>{company.status}</TableCell>
                       <TableCell>
-                        {mockPartners.dob.split('T')[0]}
-                      </TableCell>
-                      <TableCell>{mockPartners.phone}</TableCell>
-                      <TableCell>{mockPartners.email}</TableCell>
-                      <TableCell>{mockPartners.status}</TableCell>
-                      <TableCell>
-                        <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenEdit(mockPartners)}>
+                        <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenEdit(company)}>
                           <FiEdit />
                         </IconButton>
-                        <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenDelete(mockPartners)}>
+                        <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenDelete(company)}>
                           <FiTrash2 />
                         </IconButton>
                       </TableCell>
@@ -230,6 +234,7 @@ const Partner = () => {
                   ))}
                 </TableBody>
               </Table>
+
               <TablePagination
                 component="div"
                 count={filteredRows.length}
@@ -245,29 +250,23 @@ const Partner = () => {
       </div>
       {selectedPartner && (
         <Dialog open={openEdit} onClose={handleCloseEdit}>
-          <DialogTitle
-            sx={{ backgroundColor: '#215858', color: 'white' }}
-          >
+          <DialogTitle sx={{ backgroundColor: '#215858', color: 'white' }}>
             Chỉnh sửa đối tác
           </DialogTitle>
-          <DialogContent
-            sx={{ backgroundColor: '#faebce', minWidth: 400 }}
-          >
+          <DialogContent sx={{ backgroundColor: '#faebce', minWidth: 400 }}>
             <TextField
-              label="Tên đối tác"
+              label="Tên công ty"
               fullWidth
               margin="dense"
               value={selectedPartner.name}
               onChange={(e) => handleEditChange('name', e.target.value)}
             />
             <TextField
-              label="Ngày sinh"
-              type="date"
+              label="Email"
               fullWidth
               margin="dense"
-              value={selectedPartner.dob.split('T')[0]} // chỉ lấy phần ngày
-              onChange={(e) => handleEditChange('dob', e.target.value)} // vẫn là string dạng YYYY-MM-DD
-              InputLabelProps={{ shrink: true }} // để nhãn không che giá trị
+              value={selectedPartner.email}
+              onChange={(e) => handleEditChange('email', e.target.value)}
             />
             <TextField
               label="Số điện thoại"
@@ -277,7 +276,14 @@ const Partner = () => {
               onChange={(e) => handleEditChange('phone', e.target.value)}
             />
             <TextField
-              label="Link ảnh"
+              label="Địa chỉ"
+              fullWidth
+              margin="dense"
+              value={selectedPartner.address}
+              onChange={(e) => handleEditChange('address', e.target.value)}
+            />
+            <TextField
+              label="Link ảnh đại diện"
               fullWidth
               margin="dense"
               value={selectedPartner.photo}
@@ -312,7 +318,7 @@ const Partner = () => {
             Xác nhận xoá đối tác
           </DialogTitle>
           <DialogContent sx={{ backgroundColor: '#faebce', minWidth: 400 }}>
-            <p>Bạn có chắc chắn muốn xoá đối tác <strong>{partnerToDelete?.name}</strong> không?</p>
+            <p>Bạn có chắc chắn muốn xoá <strong>{partnerToDelete?.name}</strong> không?</p>
 
             <div style={{ textAlign: 'center', marginTop: 12 }}>
               <Avatar
@@ -348,4 +354,4 @@ const Partner = () => {
   );
 };
 
-export default Partner;
+export default Company;

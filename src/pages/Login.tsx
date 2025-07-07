@@ -80,10 +80,10 @@ const Login = () => {
 
             switch (userRole) {
                 case 'Admin':
-                    navigate('/dashboard');
+                    navigate('/admin/dashboard');
                     break;
-                case 'Manager':
-                    navigate('/service-management');
+                case 'ThirdParty':
+                    navigate('/third-party/dashboard');
                     break;
                 case 'Staff':
                     navigate('/view-booking');

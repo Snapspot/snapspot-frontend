@@ -6,12 +6,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Dashboard from './pages/management/Dashboard'
 import Location from './pages/management/Location'
-import Marketing from './pages/management/Marketing'
-import Partner from './pages/management/Partner'
 import Review from './pages/management/Review'
-import Service from './pages/management/Service'
 import System from './pages/management/System'
-import Member from './pages/management/Member'
 import PartnerApproval from './pages/management/PartnerApproval'
 import Province from './pages/management/Province'
 import District from './pages/management/District'
@@ -20,6 +16,14 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Home from './pages/Home';
 import Services from './pages/Services';
+import ThirdpartyDashboard from './pages/thirdparty/Dashboard';
+import BranchManagement from './pages/thirdparty/Branch';
+import ThirdpartyRatings from './pages/thirdparty/Ratings';
+import ThirdpartyPackage from './pages/thirdparty/Package';
+import Company from './pages/management/Company';
+import SellerPackage from './pages/management/SellerPackage';
+import Agency from './pages/management/Agency';
+import AgencyService from './pages/management/AgencyService';
 
 function App() {
   return (
@@ -36,18 +40,26 @@ function App() {
 
         {/* Protected routes (role = Admin) */}
         <Route element={<PrivateRoute allowedRoles={['Admin']} />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/locations" element={<Location />} />
-          <Route path="/marketing" element={<Marketing />} />
-          <Route path="/partners" element={<Partner />} />
-          <Route path="/reviews" element={<Review />} />
-          <Route path="/services" element={<Service />} />
-          <Route path="/system-log" element={<System />} />
-          <Route path="/members" element={<Member />} />
-          <Route path="/partner-approval" element={<PartnerApproval />} />
-          <Route path="/provinces" element={<Province />} />
-          <Route path="/districts" element={<District />} />
-          <Route path="/spots" element={<Spot />} />
+          <Route path="/admin/dashboard" element={<Dashboard />} />
+          <Route path="/admin/locations" element={<Location />} />
+          <Route path="/admin/seller-packages" element={<SellerPackage />} />
+          <Route path="/admin/companies" element={<Company />} />
+          <Route path="/admin/reviews" element={<Review />} />
+          <Route path="/admin/agency-services" element={<AgencyService />} />
+          <Route path="/admin/system-log" element={<System />} />
+          <Route path="/admin/agencies" element={<Agency />} />
+          <Route path="/admin/partner-approval" element={<PartnerApproval />} />
+          <Route path="/admin/provinces" element={<Province />} />
+          <Route path="/admin/districts" element={<District />} />
+          <Route path="/admin/spots" element={<Spot />} />
+        </Route>
+
+                {/* Protected routes (role = Admin) */}
+        <Route element={<PrivateRoute allowedRoles={['ThirdParty']} />}>
+          <Route path="/third-party/dashboard" element={<ThirdpartyDashboard />} />
+          <Route path="/third-party/branches" element={<BranchManagement />} />
+          <Route path="/third-party/ratings" element={<ThirdpartyRatings />} />
+          <Route path="/third-party/package" element={<ThirdpartyPackage />} />
         </Route>
 
         {/* Redirect fallback */}

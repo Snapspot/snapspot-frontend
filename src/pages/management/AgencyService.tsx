@@ -17,36 +17,33 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  MenuItem,
 } from '@mui/material';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
-import { useState } from 'react';
-const services = [
-  {
-    id: 1,
-    name: 'Chụp ảnh',
-    color: '#FFB6C1',
-    status: 'active',
-  },
-  {
-    id: 2,
-    name: 'Make up',
-    color: '#90EE90',
-    status: 'inactive',
-  },
-  {
-    id: 3,
-    name: 'Cà phê',
-    color: '#ADD8E6',
-    status: 'active',
-  },
-];
+import { useEffect, useState } from 'react';
+import axios from '../../utils/axiosInstance';
 
-const Service = () => {
+const AgencyService = () => {
 
   const [openEdit, setOpenEdit] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [selectedService, setSelectedService] = useState<any | null>(null);
+  const [services, setServices] = useState<any[]>([]);
+  const [openAdd, setOpenAdd] = useState(false);
+  const [newService, setNewService] = useState({
+    name: '',
+    color: '',
+  });
+
+  useEffect(() => {
+    axios.get('/agencyservices')
+      .then(res => {
+        console.log("📥 Dịch vụ nhận được:", res.data); // ← kiểm tra có dịch vụ vừa thêm không
+        setServices(res.data);
+      })
+      .catch(err => {
+        console.error('Lỗi khi tải danh sách dịch vụ:', err);
+      });
+  }, []);
 
   const handleOpenEdit = (service: any) => {
     setSelectedService(service);
@@ -65,9 +62,21 @@ const Service = () => {
   };
 
   const handleSaveEdit = () => {
-    // TODO: Logic cập nhật dịch vụ
-    console.log('Đã lưu dịch vụ:', selectedService);
-    handleCloseEdit();
+    const payload = {
+      name: selectedService.name,
+      color: selectedService.color,
+    };
+
+    axios.put(`/agencyservices/${selectedService.id}`, payload)
+      .then(res => {
+        setServices(prev =>
+          prev.map(s => (s.id === selectedService.id ? res.data : s))
+        );
+        handleCloseEdit();
+      })
+      .catch(err => {
+        console.error('Lỗi khi cập nhật dịch vụ:', err);
+      });
   };
 
   const handleOpenDelete = (service: any) => {
@@ -81,36 +90,46 @@ const Service = () => {
   };
 
   const handleConfirmDelete = () => {
-    // TODO: Logic xóa dịch vụ
-    console.log('Đã xoá dịch vụ:', selectedService);
-    handleCloseDelete();
+    axios.delete(`/agencyservices/${selectedService.id}`)
+      .then(() => {
+        setServices(prev => prev.filter(s => s.id !== selectedService.id));
+        handleCloseDelete();
+      })
+      .catch(err => {
+        console.error('Lỗi khi xoá dịch vụ:', err);
+      });
   };
 
-  // const [openAdd, setOpenAdd] = useState(false);
-  // const [newService, setNewService] = useState({
-  //   name: '',
-  //   color: '',
-  //   status: 'active',
-  // });
+  const handleOpenAdd = () => {
+    setNewService({ name: '', color: '' });
+    setOpenAdd(true);
+  };
 
-  // const handleOpenAdd = () => {
-  //   setNewService({ name: '', color: '', status: 'active' });
-  //   setOpenAdd(true);
-  // };
+  const handleCloseAdd = () => {
+    setOpenAdd(false);
+  };
 
-  // const handleCloseAdd = () => {
-  //   setOpenAdd(false);
-  // };
+  const handleAddChange = (field: string, value: string) => {
+    setNewService({ ...newService, [field]: value });
+  };
 
-  // const handleAddChange = (field: string, value: string) => {
-  //   setNewService({ ...newService, [field]: value });
-  // };
+  const handleAddService = () => {
+    const payload = {
+      name: newService.name,
+      color: newService.color,
+    };
 
-  // const handleAddService = () => {
-  //   // TODO: Logic thêm dịch vụ (gọi API hoặc cập nhật mảng services)
-  //   console.log('Thêm dịch vụ mới:', newService);
-  //   handleCloseAdd();
-  // };
+    axios.post('/agencyservices', payload)
+      .then(res => {
+        console.log("🔥 Thêm thành công:", res.data);
+        setServices(prev => [...prev, res.data]);
+        handleCloseAdd();
+      })
+      .catch(err => {
+        console.error('❌ Lỗi khi thêm dịch vụ:', err);
+      });
+  };
+
 
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -126,14 +145,21 @@ const Service = () => {
     setPage(0);
   };
 
-  const displayedRows = services.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const filteredServices = services.filter((service) =>
+    service.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const displayedRows = filteredServices.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
 
   return (
     <div className="flex h-screen w-screen">
       <Sidebar />
 
       <div className="flex-1 relative flex flex-col overflow-hidden">
-        
+
         {/* Background ảnh thiên nhiên trắng đen */}
         <div
           className="absolute inset-0 bg-cover bg-center grayscale brightness-80 opacity-150"
@@ -172,7 +198,7 @@ const Service = () => {
               />
               <Button
                 variant="contained"
-                // onClick={handleOpenAdd}
+                onClick={handleOpenAdd}
                 sx={{
                   backgroundColor: '#215858',
                   color: 'white',
@@ -195,14 +221,14 @@ const Service = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {displayedRows.map((services) => (
-                    <TableRow key={services.id}>
-                      <TableCell>{services.id}</TableCell>
-                      <TableCell>{services.name}</TableCell>
+                  {displayedRows.map((service, index) => (
+                    <TableRow key={service.id}>
+                      <TableCell>{index + 1 + page * rowsPerPage}</TableCell>
+                      <TableCell>{service.name}</TableCell>
                       <TableCell>
                         <div
                           style={{
-                            backgroundColor: services.color,
+                            backgroundColor: service.color,
                             width: 40,
                             height: 20,
                             borderRadius: 4,
@@ -212,21 +238,17 @@ const Service = () => {
                       </TableCell>
                       <TableCell>
                         <Chip
-                          label={
-                            services.status === 'active'
-                              ? 'Đang hoạt động'
-                              : 'Ngừng hoạt động'
-                          }
-                          color={services.status === 'active' ? 'success' : 'default'}
+                          label="Đang hoạt động"
+                          color="success"
                           variant="outlined"
                           size="small"
                         />
                       </TableCell>
                       <TableCell>
-                        <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenEdit(services)}>
+                        <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenEdit(service)}>
                           <FiEdit />
                         </IconButton>
-                        <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenDelete(services)}>
+                        <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenDelete(service)}>
                           <FiTrash2 />
                         </IconButton>
                       </TableCell>
@@ -236,7 +258,7 @@ const Service = () => {
               </Table>
               <TablePagination
                 component="div"
-                count={services.length}
+                count={filteredServices.length}
                 page={page}
                 onPageChange={handleChangePage}
                 rowsPerPage={rowsPerPage}
@@ -267,17 +289,6 @@ const Service = () => {
               value={selectedService.color}
               onChange={(e) => handleEditChange('color', e.target.value)}
             />
-            <TextField
-              label="Trạng thái"
-              select
-              fullWidth
-              margin="dense"
-              value={selectedService.status}
-              onChange={(e) => handleEditChange('status', e.target.value)}
-            >
-              <MenuItem value="active">Đang hoạt động</MenuItem>
-              <MenuItem value="inactive">Ngừng hoạt động</MenuItem>
-            </TextField>
           </DialogContent>
           <DialogActions sx={{ backgroundColor: '#faebce' }}>
             <Button onClick={handleCloseEdit} variant="outlined" sx={{ color: '#215858', borderColor: '#215858' }}>
@@ -297,6 +308,45 @@ const Service = () => {
           </DialogActions>
         </Dialog>
       )}
+
+      <Dialog open={openAdd} onClose={handleCloseAdd}>
+        <DialogTitle sx={{ backgroundColor: '#215858', color: 'white' }}>
+          Thêm dịch vụ mới
+        </DialogTitle>
+        <DialogContent sx={{ backgroundColor: '#faebce', minWidth: 400 }}>
+          <TextField
+            label="Tên dịch vụ"
+            fullWidth
+            margin="dense"
+            value={newService.name}
+            onChange={(e) => handleAddChange('name', e.target.value)}
+          />
+          <TextField
+            label="Màu sắc (mã HEX)"
+            fullWidth
+            margin="dense"
+            value={newService.color}
+            onChange={(e) => handleAddChange('color', e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions sx={{ backgroundColor: '#faebce' }}>
+          <Button onClick={handleCloseAdd} variant="outlined" sx={{ color: '#215858', borderColor: '#215858' }}>
+            Hủy
+          </Button>
+          <Button
+            onClick={handleAddService}
+            variant="contained"
+            sx={{
+              backgroundColor: '#215858',
+              color: 'white',
+              '&:hover': { backgroundColor: '#1a4646' },
+            }}
+          >
+            Thêm
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       {selectedService && (
         <Dialog open={openDelete} onClose={handleCloseDelete}>
           <DialogTitle
@@ -330,4 +380,4 @@ const Service = () => {
   );
 };
 
-export default Service;
+export default AgencyService;

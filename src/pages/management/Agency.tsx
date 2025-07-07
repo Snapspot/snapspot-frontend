@@ -11,106 +11,112 @@ import { useEffect } from 'react';
 import axios from '../../utils/axiosInstance';
 
 
-type Member = {
+type Agency = {
     id: string;
-    email: string;
+    name: string;
+    address: string;
     fullname: string;
-    dob: string;
     phoneNumber: string;
     avatarUrl: string;
-    isApproved: boolean;
+    rating: number;
+    companyName: string;
+    spotName: string;
+    description: string;
 };
 
 
-const Member = () => {
+
+const Agency = () => {
 
     const [openEdit, setOpenEdit] = useState(false);
-    const [memberToEdit, setMemberToEdit] = useState<Member | null>(null);
-    const [members, setMembers] = useState<Member[]>([]);
+    const [agencyToEdit, setAgencyToEdit] = useState<Agency | null>(null);
+    const [agencies, setAgencies] = useState<Agency[]>([]);
 
+    // 🔁 Lấy danh sách agency khi load
     useEffect(() => {
-        axios.get<Member[]>('/users/regular')
-            .then((res) => {
-                setMembers(res.data);
-            })
-            .catch((err) => {
-                console.error("Lỗi khi lấy danh sách thành viên:", err);
-            });
+        fetchAgencies();
     }, []);
 
-    const fetchMembers = async () => {
+    const fetchAgencies = async () => {
         try {
-            const response = await axios.get<Member[]>('/users/regular');
-            setMembers(response.data);
-        } catch (error) {
-            console.error('Lỗi khi tải danh sách thành viên:', error);
+            const res = await axios.get('/agencies');
+            if (res.data.success) {
+                setAgencies(res.data.data);
+            } else {
+                console.error("API trả về không thành công:", res.data.message);
+            }
+        } catch (err) {
+            console.error("Lỗi khi gọi API /agencies:", err);
         }
     };
 
-    const handleOpenEdit = (member: Member) => {
-        setMemberToEdit(member);
+    // ✏️ Xử lý mở form edit
+    const handleOpenEdit = (agency: Agency) => {
+        setAgencyToEdit(agency);
         setOpenEdit(true);
     };
 
     const handleCloseEdit = () => {
         setOpenEdit(false);
-        setMemberToEdit(null);
+        setAgencyToEdit(null);
     };
 
-    const handleEditChange = (field: string, value: string) => {
-        if (!memberToEdit) return;
-        setMemberToEdit({ ...memberToEdit, [field]: value });
+    const handleEditChange = (field: keyof Agency, value: string) => {
+        if (!agencyToEdit) return;
+        setAgencyToEdit({ ...agencyToEdit, [field]: value });
     };
 
     const handleSaveEdit = async () => {
-        if (!memberToEdit) return;
+        if (!agencyToEdit) return;
 
         const updateBody = {
-            fullname: memberToEdit.fullname,
-            dob: memberToEdit.dob.includes('T') ? memberToEdit.dob : `${memberToEdit.dob}T00:00:00.000Z`,
-            phoneNumber: memberToEdit.phoneNumber,
-            avatarUrl: memberToEdit.avatarUrl,
+            name: agencyToEdit.name,
+            fullname: agencyToEdit.fullname,
+            phoneNumber: agencyToEdit.phoneNumber,
+            avatarUrl: agencyToEdit.avatarUrl,
+            address: agencyToEdit.address,
+            description: agencyToEdit.description,
         };
 
         try {
-            await axios.put(`/users/${memberToEdit.id}`, updateBody);
-            console.log('Cập nhật thành viên thành công:', updateBody);
-            fetchMembers();
+            await axios.put(`/agencies/${agencyToEdit.id}`, updateBody);
+            console.log('Cập nhật agency thành công:', updateBody);
+            fetchAgencies(); // cập nhật lại danh sách
             setOpenEdit(false);
-            setMemberToEdit(null);
+            setAgencyToEdit(null);
         } catch (error) {
-            console.error('Lỗi khi cập nhật thành viên:', error);
+            console.error('Lỗi khi cập nhật agency:', error);
             alert("Cập nhật không thành công. Vui lòng thử lại.");
         }
     };
 
+    // 🗑️ Xoá
     const [openDelete, setOpenDelete] = useState(false);
-    const [memberToDelete, setMemberToDelete] = useState<Member | null>(null);
+    const [agencyToDelete, setAgencyToDelete] = useState<Agency | null>(null);
 
-    const handleOpenDelete = (member: Member) => {
-        setMemberToDelete(member);
+    const handleOpenDelete = (agency: Agency) => {
+        setAgencyToDelete(agency);
         setOpenDelete(true);
     };
 
     const handleCloseDelete = () => {
         setOpenDelete(false);
-        setMemberToDelete(null);
+        setAgencyToDelete(null);
     };
 
     const handleDeleteConfirmed = async () => {
-        if (!memberToDelete) return;
+        if (!agencyToDelete) return;
 
         try {
-            await axios.delete(`/users/${memberToDelete.id}`);
-            console.log('Xoá thành viên thành công:', memberToDelete.id);
+            await axios.delete(`/agencies/${agencyToDelete.id}`);
+            console.log('Xoá agency thành công:', agencyToDelete.id);
 
-            // Cập nhật lại danh sách thành viên sau khi xoá
-            setMembers((prev) => prev.filter((m) => m.id !== memberToDelete.id));
+            setAgencies((prev) => prev.filter((a) => a.id !== agencyToDelete.id));
 
             setOpenDelete(false);
-            setMemberToDelete(null);
+            setAgencyToDelete(null);
         } catch (error) {
-            console.error('Lỗi khi xoá thành viên:', error);
+            console.error('Lỗi khi xoá agency:', error);
             alert("Xoá không thành công. Vui lòng thử lại.");
         }
     };
@@ -128,12 +134,13 @@ const Member = () => {
         setPage(0);
     };
 
-    const displayedRows = members
-        .filter((m) =>
-            m.fullname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            m.email.toLowerCase().includes(searchTerm.toLowerCase())
+    const displayedRows = agencies
+        .filter((a) =>
+            a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            a.fullname.toLowerCase().includes(searchTerm.toLowerCase())
         )
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
 
     return (
         <div className="flex h-screen w-screen">
@@ -181,30 +188,31 @@ const Member = () => {
                                 <TableHead>
                                     <TableRow>
                                         <TableCell><strong>Ảnh</strong></TableCell>
-                                        <TableCell><strong>Tên thành viên</strong></TableCell>
-                                        <TableCell><strong>Ngày sinh</strong></TableCell>
+                                        <TableCell><strong>Tên dịch vụ</strong></TableCell>
+                                        <TableCell><strong>Địa chỉ</strong></TableCell>
+                                        <TableCell><strong>Người phụ trách</strong></TableCell>
                                         <TableCell><strong>SĐT</strong></TableCell>
-                                        <TableCell><strong>Email</strong></TableCell>
-                                        <TableCell><strong>Trạng thái</strong></TableCell>
+                                        <TableCell><strong>Công ty</strong></TableCell>
+                                        <TableCell><strong>Địa điểm</strong></TableCell>
                                         <TableCell><strong>Thao tác</strong></TableCell>
                                     </TableRow>
                                 </TableHead>
+
                                 <TableBody>
-                                    {displayedRows.map((member) => (
-                                        <TableRow key={member.id}>
-                                            <TableCell><Avatar src={member.avatarUrl} alt={member.fullname} /></TableCell>
-                                            <TableCell>{member.fullname}</TableCell>
+                                    {displayedRows.map((agency) => (
+                                        <TableRow key={agency.id}>
+                                            <TableCell><Avatar src={agency.avatarUrl} alt={agency.fullname} /></TableCell>
+                                            <TableCell>{agency.name}</TableCell>
+                                            <TableCell>{agency.address}</TableCell>
+                                            <TableCell>{agency.fullname}</TableCell>
+                                            <TableCell>{agency.phoneNumber}</TableCell>
+                                            <TableCell>{agency.companyName}</TableCell>
+                                            <TableCell>{agency.spotName}</TableCell>
                                             <TableCell>
-                                                {member.dob.split('T')[0]}
-                                            </TableCell>
-                                            <TableCell>{member.phoneNumber}</TableCell>
-                                            <TableCell>{member.email}</TableCell>
-                                            <TableCell>{member.isApproved ? "Đang hoạt động" : "Tạm ngưng"}</TableCell>
-                                            <TableCell>
-                                                <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenEdit(member)}>
+                                                <IconButton onClick={() => handleOpenEdit(agency)}>
                                                     <FiEdit />
                                                 </IconButton>
-                                                <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenDelete(member)}>
+                                                <IconButton onClick={() => handleOpenDelete(agency)}>
                                                     <FiTrash2 />
                                                 </IconButton>
                                             </TableCell>
@@ -214,7 +222,7 @@ const Member = () => {
                             </Table>
                             <TablePagination
                                 component="div"
-                                count={members.length}
+                                count={agencies.length}
                                 page={page}
                                 onPageChange={handleChangePage}
                                 rowsPerPage={rowsPerPage}
@@ -223,17 +231,17 @@ const Member = () => {
                             />
                         </TableContainer>
                     </div>
-                    {memberToDelete && (
+                    {agencyToDelete && (
                         <Dialog open={openDelete} onClose={handleCloseDelete}>
                             <DialogTitle sx={{ backgroundColor: '#7a1e1e', color: 'white' }}>
                                 Xác nhận xoá thành viên
                             </DialogTitle>
                             <DialogContent sx={{ backgroundColor: '#faebce', minWidth: 400 }}>
-                                <p>Bạn có chắc chắn muốn xoá thành viên <strong>{memberToDelete.fullname}</strong> không?</p>
+                                <p>Bạn có chắc chắn muốn xoá thành viên <strong>{agencyToDelete.fullname}</strong> không?</p>
                                 <div style={{ textAlign: 'center', marginTop: 12 }}>
                                     <Avatar
-                                        src={memberToDelete.avatarUrl}
-                                        alt={memberToDelete.fullname}
+                                        src={agencyToDelete.avatarUrl}
+                                        alt={agencyToDelete.fullname}
                                         sx={{ width: 80, height: 80, margin: 'auto' }}
                                     />
                                 </div>
@@ -260,47 +268,55 @@ const Member = () => {
                             </DialogActions>
                         </Dialog>
                     )}
-                    {memberToEdit && (
+                    {agencyToEdit && (
                         <Dialog open={openEdit} onClose={handleCloseEdit}>
-                            <DialogTitle
-                                sx={{ backgroundColor: '#215858', color: 'white' }}
-                            >
-                                Chỉnh sửa thành viên
+                            <DialogTitle sx={{ backgroundColor: '#215858', color: 'white' }}>
+                                Chỉnh sửa đối tác
                             </DialogTitle>
-                            <DialogContent
-                                sx={{ backgroundColor: '#faebce', minWidth: 400 }}
-                            >
+                            <DialogContent sx={{ backgroundColor: '#faebce', minWidth: 400 }}>
                                 <TextField
-                                    label="Tên thành viên"
+                                    label="Tên gói dịch vụ / agency"
                                     fullWidth
                                     margin="dense"
-                                    value={memberToEdit.fullname}
-                                    onChange={(e) => handleEditChange('fullname', e.target.value)}
+                                    value={agencyToEdit.name}
+                                    onChange={(e) => handleEditChange('name', e.target.value)}
                                 />
                                 <TextField
-                                    label="Ngày sinh"
-                                    type="date"
+                                    label="Họ và tên người đại diện"
                                     fullWidth
                                     margin="dense"
-                                    value={memberToEdit.dob?.split('T')[0]} // chỉ lấy phần yyyy-MM-dd
-                                    onChange={(e) => handleEditChange('dob', e.target.value)}
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
+                                    value={agencyToEdit.fullname}
+                                    onChange={(e) => handleEditChange('fullname', e.target.value)}
                                 />
                                 <TextField
                                     label="Số điện thoại"
                                     fullWidth
                                     margin="dense"
-                                    value={memberToEdit.phoneNumber}
+                                    value={agencyToEdit.phoneNumber}
                                     onChange={(e) => handleEditChange('phoneNumber', e.target.value)}
+                                />
+                                <TextField
+                                    label="Địa chỉ"
+                                    fullWidth
+                                    margin="dense"
+                                    value={agencyToEdit.address}
+                                    onChange={(e) => handleEditChange('address', e.target.value)}
                                 />
                                 <TextField
                                     label="Link ảnh đại diện"
                                     fullWidth
                                     margin="dense"
-                                    value={memberToEdit.avatarUrl}
-                                    onChange={(e) => handleEditChange('avatar', e.target.value)}
+                                    value={agencyToEdit.avatarUrl}
+                                    onChange={(e) => handleEditChange('avatarUrl', e.target.value)}
+                                />
+                                <TextField
+                                    label="Mô tả dịch vụ"
+                                    fullWidth
+                                    margin="dense"
+                                    multiline
+                                    rows={3}
+                                    value={agencyToEdit.description}
+                                    onChange={(e) => handleEditChange('description', e.target.value)}
                                 />
                             </DialogContent>
                             <DialogActions sx={{ backgroundColor: '#faebce' }}>
@@ -325,11 +341,10 @@ const Member = () => {
                             </DialogActions>
                         </Dialog>
                     )}
-
                 </div>
             </div>
         </div>
     );
 };
 
-export default Member;
+export default Agency;
