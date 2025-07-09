@@ -9,11 +9,17 @@ import {
     Checkbox,
     FormControlLabel,
 } from '@mui/material';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+import type { AlertProps } from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Navbar from '../components/home/Navbar';
 import Footer from '../components/home/Footer';
 import axiosInstance from '../utils/axiosInstance';
+import React from 'react';
+
 
 const backgroundImages = [
     'https://wander-lush.org/wp-content/uploads/2022/11/Hanoi-to-Halong-Bay-transport-guide-2023-new-DP-Junk-Boat.jpg',
@@ -36,11 +42,22 @@ const Login = () => {
     const navigate = useNavigate();
 
 
-
+    const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [remember, setRemember] = useState(false);
     const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+    const [snackbar, setSnackbar] = useState({
+        open: false,
+        message: '',
+        severity: 'success' as 'success' | 'error' | 'info' | 'warning',
+    });
+    const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
+        return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+    });
+    const showSnackbar = (message: string, severity: 'success' | 'error' | 'info' | 'warning') => {
+        setSnackbar({ open: true, message, severity });
+    };
 
     const validate = () => {
         const newErrors: typeof errors = {};
@@ -60,6 +77,8 @@ const Login = () => {
         e.preventDefault();
         if (!validate()) return;
 
+        setLoading(true); // ⏳ Bắt đầu loading
+
         try {
             const loginURL = '/v1/auth/login';
             console.log('🔗 URL đang gọi:', loginURL);
@@ -70,35 +89,49 @@ const Login = () => {
             });
 
             const { accessToken, refreshToken } = response.data.data;
-
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
 
             const decoded: any = jwtDecode(accessToken);
             const userRole = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-            console.log('User Role:', userRole);
 
-            switch (userRole) {
-                case 'Admin':
-                    navigate('/admin/dashboard');
-                    break;
-                case 'ThirdParty':
-                    navigate('/third-party/dashboard');
-                    break;
-                case 'Staff':
-                    navigate('/view-booking');
-                    break;
-                case 'Customer':
-                    navigate('/booking');
-                    break;
-                default:
-                    console.warn('Vai trò không xác định:', userRole);
-            }
+            showSnackbar('Đăng nhập thành công!', 'success');
+
+            // Delay nhỏ trước khi redirect (tuỳ chọn)
+            setTimeout(() => {
+                switch (userRole) {
+                    case 'Admin':
+                        navigate('/admin/dashboard');
+                        break;
+                    case 'ThirdParty':
+                        navigate('/third-party/dashboard');
+                        break;
+                    case 'Staff':
+                        navigate('/view-booking');
+                        break;
+                    case 'Customer':
+                        navigate('/booking');
+                        break;
+                    default:
+                        console.warn('Vai trò không xác định:', userRole);
+                }
+            }, 800); // delay 800ms để thấy rõ loading
 
         } catch (error: any) {
             console.error('Lỗi đăng nhập:', error);
-            const errorMessage = error.response?.data?.message || 'Đăng nhập thất bại. Vui lòng thử lại.';
-            alert(errorMessage);
+            const rawMessage = error.response?.data?.message;
+
+            let errorMessage = 'Đăng nhập thất bại. Vui lòng thử lại.';
+            if (rawMessage) {
+                if (rawMessage === 'Please check the detailed error list for more information.') {
+                    errorMessage = 'Email hoặc mật khẩu không chính xác.';
+                } else {
+                    errorMessage = rawMessage;
+                }
+            }
+            showSnackbar(errorMessage, 'error');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -218,14 +251,26 @@ const Login = () => {
                                 type="submit"
                                 variant="contained"
                                 size="large"
+                                disabled={loading}
                                 sx={{
                                     backgroundColor: '#214848',
                                     borderRadius: 2,
                                     '&:hover': { backgroundColor: '#163838' },
                                     fontWeight: 'bold',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    gap: 1,
                                 }}
                             >
-                                Đăng nhập
+                                {loading ? (
+                                    <>
+                                        <CircularProgress size={20} color="inherit" />
+                                        Đang xử lý...
+                                    </>
+                                ) : (
+                                    'Đăng nhập'
+                                )}
                             </Button>
 
                             <Typography variant="body2" mt={2} textAlign="center" color="text.secondary">
@@ -239,6 +284,20 @@ const Login = () => {
                 </div>
             </div>
             <Footer />
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={4000}
+                onClose={() => setSnackbar({ ...snackbar, open: false })}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }} // ⬅️ sửa chỗ này
+            >
+                <Alert
+                    onClose={() => setSnackbar({ ...snackbar, open: false })}
+                    severity={snackbar.severity}
+                    sx={{ width: '100%' }}
+                >
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
         </div>
     );
 };

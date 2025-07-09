@@ -10,13 +10,19 @@ export default function Sidebar() {
   const [isPartnerMenuOpen, setIsPartnerMenuOpen] = useState(isPartnerPath);
   const isLocationPath = ['/admin/provinces', '/admin/districts', '/admin/spots'].includes(location.pathname);
   const [isLocationMenuOpen, setIsLocationMenuOpen] = useState(isLocationPath);
+  const [loggingOut, setLoggingOut] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    navigate('/login');
+    setLoggingOut(true);
+
+    setTimeout(() => {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      navigate('/login');
+    }, 1000);
   };
+
 
   return (
     <div className="w-72 min-h-screen bg-[#215858] text-[#faebce] flex flex-col p-6">
@@ -142,10 +148,28 @@ export default function Sidebar() {
       {/* NÚT ĐĂNG XUẤT */}
       <button
         onClick={handleLogout}
-        className="mt-auto hover:bg-red-700 px-4 py-3 rounded transition flex items-center space-x-3 text-left bg-red-600 text-white font-semibold"
+        disabled={loggingOut}
+        className={`mt-auto px-4 py-3 rounded transition flex items-center space-x-3 text-left font-semibold 
+    ${loggingOut ? 'bg-red-300 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700 text-white'}`}
       >
-        <FiUsers />
-        <span>Đăng xuất</span>
+        {loggingOut ? (
+          <svg
+            className="animate-spin h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4l3.5-3.5L12 0v4a8 8 0 00-8 8h4z"
+            ></path>
+          </svg>
+        ) : (
+          <FiUsers />
+        )}
+        <span>{loggingOut ? 'Đang đăng xuất...' : 'Đăng xuất'}</span>
       </button>
     </div>
   );

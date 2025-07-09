@@ -11,6 +11,9 @@ import {
 } from '@mui/material';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+import type { AlertProps } from '@mui/material/Alert';
 import axios from '../utils/axiosInstance';
 import Navbar from '../components/home/Navbar';
 import Footer from '../components/home/Footer';
@@ -37,6 +40,17 @@ const Register = () => {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [dob, setDob] = useState(''); // dùng định dạng YYYY-MM-DD
+  const showSnackbar = (message: string, severity: 'success' | 'error' | 'info' | 'warning') => {
+    setSnackbar({ open: true, message, severity });
+  };
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success' as 'success' | 'error' | 'info' | 'warning',
+  });
+  const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
 
 
   const [errors, setErrors] = useState<{
@@ -89,15 +103,18 @@ const Register = () => {
           password,
           confirmPassword,
           phoneNumber,
-          dob: new Date(dob).toISOString() // convert thành định dạng ISO
+          dob: new Date(dob).toISOString(),
         });
 
         console.log('Đăng ký thành công:', response.data);
-        alert('Đăng ký thành công!');
-        navigate('/login');
+        showSnackbar('Đăng ký thành công! Đang chuyển hướng...', 'success');
+
+        setTimeout(() => {
+          navigate('/login');
+        }, 1200); // Cho người dùng thấy snackbar trước khi chuyển trang
       } catch (error: any) {
         console.error('Lỗi đăng ký:', error.response?.data || error.message);
-        alert('Đăng ký thất bại. Vui lòng kiểm tra lại thông tin!');
+        showSnackbar('Đăng ký thất bại. Vui lòng kiểm tra lại thông tin!', 'error');
       }
     }
   };
@@ -270,6 +287,16 @@ const Register = () => {
         </div>
       </div>
       <Footer />
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
