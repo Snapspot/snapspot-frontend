@@ -3,10 +3,11 @@ import Navbar from '../../components/admin/Navbar';
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination,
     Paper, IconButton, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField,
-    Select, MenuItem
+    Select, MenuItem, Snackbar
 } from '@mui/material';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import { useState, type SetStateAction, useEffect } from 'react';
+import MuiAlert, { type AlertColor } from '@mui/material/Alert';
 import axios from '../../utils/axiosInstance';
 
 type DistrictType = {
@@ -28,6 +29,13 @@ const District = () => {
     const [openDelete, setOpenDelete] = useState(false);
     const [selectedDistrict, setSelectedDistrict] = useState<DistrictType | null>(null);
     const [provinces, setProvinces] = useState<{ id: string; name: string }[]>([]);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>('success');
+
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
+    };
 
     useEffect(() => {
         fetchDistricts();
@@ -97,34 +105,41 @@ const District = () => {
 
         try {
             if (selectedDistrict.id !== '') {
-                await axios.put(
-                    `/districts/${selectedDistrict.id}`,
-                    payload
-                );
+                await axios.put(`/districts/${selectedDistrict.id}`, payload);
+                setSnackbarMessage('Cập nhật Huyện/Thị xã thành công!');
             } else {
                 await axios.post('/districts', payload);
+                setSnackbarMessage('Thêm Huyện/Thị xã thành công!');
             }
 
-            // Đảm bảo gọi sau khi PUT/POST hoàn tất
+            setSnackbarSeverity('success');
+            setSnackbarOpen(true);
+
             await fetchDistricts();
             setOpenEdit(false);
         } catch (error) {
             console.error('Lỗi khi lưu District:', error);
+            setSnackbarMessage('Đã xảy ra lỗi khi lưu Huyện/Thị xã!');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
         }
     };
-
 
     const handleDeleteConfirmed = async () => {
         try {
             await axios.delete(`/districts/${selectedDistrict?.id}`);
-
-            // Load lại danh sách huyện sau khi xoá
             await fetchDistricts();
 
-            // Đóng dialog xoá
+            setSnackbarMessage('Xoá Huyện/Thị xã thành công!');
+            setSnackbarSeverity('success');
+            setSnackbarOpen(true);
+
             setOpenDelete(false);
         } catch (error) {
             console.error('Lỗi khi xoá District:', error);
+            setSnackbarMessage('Đã xảy ra lỗi khi xoá Huyện/Thị xã!');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
         }
     };
 
@@ -305,6 +320,16 @@ const District = () => {
                     </DialogActions>
                 </Dialog>
             )}
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={3000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <MuiAlert onClose={handleCloseSnackbar} severity={snackbarSeverity} elevation={6} variant="filled">
+                    {snackbarMessage}
+                </MuiAlert>
+            </Snackbar>
         </div>
     );
 };

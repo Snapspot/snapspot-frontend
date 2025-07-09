@@ -17,10 +17,12 @@ import {
   DialogActions,
   Button,
   TextField,
+  Snackbar,
 } from '@mui/material';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import { useState, useEffect } from 'react';
 import axios from '../../utils/axiosInstance';
+import MuiAlert, { type AlertColor } from '@mui/material/Alert';
 
 type CompanyType = {
   id: string;
@@ -74,6 +76,15 @@ const SellerPackage = () => {
   const [selectedPackage, setSelectedPackage] = useState<any>(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: AlertColor;
+  }>({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
 
   useEffect(() => {
     const fetchPackages = async () => {
@@ -133,17 +144,29 @@ const SellerPackage = () => {
       };
 
       if (editingPackage.id) {
-        // Nếu có ID → chỉnh sửa
+        // Cập nhật
         await axios.put(`/SellerPackages/${editingPackage.id}`, {
           ...payload,
           isDeleted: editingPackage.status === 'inactive',
         });
+
+        setSnackbar({
+          open: true,
+          message: 'Cập nhật gói thành công!',
+          severity: 'success',
+        });
       } else {
-        // Nếu không có ID → tạo mới
+        // Thêm mới
         await axios.post('/SellerPackages', payload);
+
+        setSnackbar({
+          open: true,
+          message: 'Thêm gói mới thành công!',
+          severity: 'success',
+        });
       }
 
-      // Làm mới danh sách sau khi cập nhật thành công
+      // Làm mới danh sách
       const response = await axios.get('/SellerPackages');
       const mapped = response.data.data.map((pkg: SellerPackageType) => ({
         id: pkg.id,
@@ -162,11 +185,14 @@ const SellerPackage = () => {
       handleCloseEdit();
     } catch (error: any) {
       console.error('Lỗi khi cập nhật gói:', error);
-      if (error.response?.data) {
-        console.error('Chi tiết lỗi từ server:', error.response.data);
-      }
+      setSnackbar({
+        open: true,
+        message: 'Đã xảy ra lỗi khi lưu gói!',
+        severity: 'error',
+      });
     }
   };
+
 
 
   const handleOpenDelete = (pkg: any) => {
@@ -186,7 +212,13 @@ const SellerPackage = () => {
       await axios.delete(`/SellerPackages/${selectedPackage.id}`);
       console.log(`Đã xoá gói: ${selectedPackage.name}`);
 
-      // Làm mới danh sách sau khi xoá
+      setSnackbar({
+        open: true,
+        message: `Đã xoá gói "${selectedPackage.name}"`,
+        severity: 'success',
+      });
+
+      // Làm mới danh sách
       const response = await axios.get('/SellerPackages');
       const mapped = response.data.data.map((pkg: SellerPackageType) => ({
         id: pkg.id,
@@ -202,11 +234,14 @@ const SellerPackage = () => {
       handleCloseDelete();
     } catch (error: any) {
       console.error('Lỗi khi xoá gói:', error);
-      if (error.response?.data) {
-        console.error('Chi tiết lỗi từ server:', error.response.data);
-      }
+      setSnackbar({
+        open: true,
+        message: 'Xoá gói thất bại!',
+        severity: 'error',
+      });
     }
   };
+
 
   const handleChangePage = (_event: unknown, newPage: number) => setPage(newPage);
 
@@ -424,6 +459,22 @@ const SellerPackage = () => {
           <Button onClick={handleSaveEdit} variant="contained" sx={{ backgroundColor: '#215858', color: 'white', '&:hover': { backgroundColor: '#1a4646' } }}>Lưu</Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <MuiAlert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          elevation={6}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </MuiAlert>
+      </Snackbar>
     </div>
   );
 };

@@ -41,6 +41,39 @@ const Login = () => {
     const intervalRef = useRef<number | null>(null);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+            try {
+                const decoded: any = jwtDecode(token);
+                const userRole = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+
+                // Nếu đã đăng nhập, redirect về trang phù hợp
+                switch (userRole) {
+                    case 'Admin':
+                        navigate('/admin/dashboard');
+                        break;
+                    case 'ThirdParty':
+                        navigate('/third-party/dashboard');
+                        break;
+                    case 'Staff':
+                        navigate('/view-booking');
+                        break;
+                    case 'Customer':
+                        navigate('/booking');
+                        break;
+                    default:
+                        console.warn('Vai trò không xác định:', userRole);
+                }
+            } catch (err) {
+                console.error('Token không hợp lệ:', err);
+                // Nếu token lỗi thì xóa luôn cho sạch
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+            }
+        }
+    }, []);
+
 
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
@@ -105,12 +138,6 @@ const Login = () => {
                         break;
                     case 'ThirdParty':
                         navigate('/third-party/dashboard');
-                        break;
-                    case 'Staff':
-                        navigate('/view-booking');
-                        break;
-                    case 'Customer':
-                        navigate('/booking');
                         break;
                     default:
                         console.warn('Vai trò không xác định:', userRole);

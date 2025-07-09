@@ -3,10 +3,12 @@ import Navbar from '../../components/admin/Navbar';
 import {
     Table, TableBody, TableCell, TableContainer, TablePagination,
     TableHead, TableRow, Paper, IconButton, Dialog,
-    DialogActions, DialogContent, DialogTitle, Button, TextField
+    DialogActions, DialogContent, DialogTitle, Button, TextField,
+    Snackbar
 } from '@mui/material';
 import { FiEye, FiEdit, FiTrash2 } from 'react-icons/fi';
 import { useState, useEffect } from 'react';
+import MuiAlert, { type AlertColor } from '@mui/material/Alert';
 import axios from '../../utils/axiosInstance';
 
 const Province = () => {
@@ -17,6 +19,13 @@ const Province = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>('success');
+
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
+    };
 
     useEffect(() => {
         axios.get('/provinces')
@@ -193,19 +202,23 @@ const Province = () => {
                             try {
                                 if (selectedProvince?.id) {
                                     const { name, description } = selectedProvince;
-                                    await axios.put(
-                                        `/provinces/${selectedProvince.id}`,
-                                        { name, description }
-                                    );
+                                    await axios.put(`/provinces/${selectedProvince.id}`, { name, description });
+                                    setSnackbarMessage('Cập nhật tỉnh thành công!');
                                 } else {
                                     await axios.post('/provinces', selectedProvince);
+                                    setSnackbarMessage('Thêm tỉnh thành công!');
                                 }
 
-                                // Gọi lại API để làm mới danh sách
+                                setSnackbarSeverity('success');
+                                setSnackbarOpen(true);
+
                                 fetchProvinceList();
                                 setOpenEdit(false);
                             } catch (error) {
                                 console.error('Lỗi khi lưu tỉnh:', error);
+                                setSnackbarMessage('Đã xảy ra lỗi khi lưu tỉnh!');
+                                setSnackbarSeverity('error');
+                                setSnackbarOpen(true);
                             }
                         }}
                         variant="contained"
@@ -230,9 +243,15 @@ const Province = () => {
                             try {
                                 await axios.delete(`/provinces/${selectedProvince?.id}`);
                                 setProvinceList(prev => prev.filter(p => p.id !== selectedProvince?.id));
+                                setSnackbarMessage('Xoá tỉnh thành công!');
+                                setSnackbarSeverity('success');
+                                setSnackbarOpen(true);
                                 setOpenDelete(false);
                             } catch (error) {
                                 console.error('Lỗi khi xoá tỉnh:', error);
+                                setSnackbarMessage('Đã xảy ra lỗi khi xoá tỉnh!');
+                                setSnackbarSeverity('error');
+                                setSnackbarOpen(true);
                             }
                         }}
                         variant="contained"
@@ -246,6 +265,16 @@ const Province = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={3000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <MuiAlert onClose={handleCloseSnackbar} severity={snackbarSeverity} elevation={6} variant="filled">
+                    {snackbarMessage}
+                </MuiAlert>
+            </Snackbar>
         </div>
     );
 };
