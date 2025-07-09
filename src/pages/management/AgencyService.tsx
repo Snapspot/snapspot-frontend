@@ -17,7 +17,8 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Snackbar
+  Snackbar,
+  CircularProgress
 } from '@mui/material';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import { useEffect, useState } from 'react';
@@ -33,6 +34,9 @@ const AgencyService = () => {
   const [openAdd, setOpenAdd] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [loadingFetch, setLoadingFetch] = useState(false);
+  const [loadingSave, setLoadingSave] = useState(false);
+  const [loadingDelete, setLoadingDelete] = useState(false);
   const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>('success');
 
   const handleCloseSnackbar = () => {
@@ -45,14 +49,18 @@ const AgencyService = () => {
   });
 
   useEffect(() => {
-    axios.get('/agencyservices')
-      .then(res => {
-        console.log("📥 Dịch vụ nhận được:", res.data); // ← kiểm tra có dịch vụ vừa thêm không
+    const fetchServices = async () => {
+      setLoadingFetch(true);
+      try {
+        const res = await axios.get('/agencyservices');
         setServices(res.data);
-      })
-      .catch(err => {
+      } catch (err) {
         console.error('Lỗi khi tải danh sách dịch vụ:', err);
-      });
+      } finally {
+        setLoadingFetch(false);
+      }
+    };
+    fetchServices();
   }, []);
 
   const handleOpenEdit = (service: any) => {
@@ -72,6 +80,7 @@ const AgencyService = () => {
   };
 
   const handleSaveEdit = () => {
+    setLoadingSave(true);
     const payload = {
       name: selectedService.name,
       color: selectedService.color,
@@ -92,9 +101,12 @@ const AgencyService = () => {
         setSnackbarMessage('Lỗi khi cập nhật dịch vụ!');
         setSnackbarSeverity('error');
         setSnackbarOpen(true);
+      })
+      .finally(() => {
+        setLoadingSave(false);
       });
-
   };
+
 
   const handleOpenDelete = (service: any) => {
     setSelectedService(service);
@@ -107,6 +119,7 @@ const AgencyService = () => {
   };
 
   const handleConfirmDelete = () => {
+    setLoadingDelete(true);
     axios.delete(`/agencyservices/${selectedService.id}`)
       .then(() => {
         setServices(prev => prev.filter(s => s.id !== selectedService.id));
@@ -120,9 +133,12 @@ const AgencyService = () => {
         setSnackbarMessage('Lỗi khi xoá dịch vụ!');
         setSnackbarSeverity('error');
         setSnackbarOpen(true);
+      })
+      .finally(() => {
+        setLoadingDelete(false);
       });
-
   };
+
 
   const handleOpenAdd = () => {
     setNewService({ name: '', color: '' });
@@ -238,64 +254,69 @@ const AgencyService = () => {
                 Thêm dịch vụ
               </Button>
             </div>
-
-            <TableContainer component={Paper} elevation={3}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell><strong>#</strong></TableCell>
-                    <TableCell><strong>Tên dịch vụ</strong></TableCell>
-                    <TableCell><strong>Màu</strong></TableCell>
-                    <TableCell><strong>Trạng thái</strong></TableCell>
-                    <TableCell><strong>Thao tác</strong></TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {displayedRows.map((service, index) => (
-                    <TableRow key={service.id}>
-                      <TableCell>{index + 1 + page * rowsPerPage}</TableCell>
-                      <TableCell>{service.name}</TableCell>
-                      <TableCell>
-                        <div
-                          style={{
-                            backgroundColor: service.color,
-                            width: 40,
-                            height: 20,
-                            borderRadius: 4,
-                            border: '1px solid #ccc',
-                          }}
-                        ></div>
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          label="Đang hoạt động"
-                          color="success"
-                          variant="outlined"
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenEdit(service)}>
-                          <FiEdit />
-                        </IconButton>
-                        <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenDelete(service)}>
-                          <FiTrash2 />
-                        </IconButton>
-                      </TableCell>
+            {loadingFetch ? (
+              <div className="flex justify-center items-center h-64">
+                <CircularProgress sx={{ color: '#215858' }} />
+              </div>
+            ) : (
+              <TableContainer component={Paper} elevation={3}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell><strong>#</strong></TableCell>
+                      <TableCell><strong>Tên dịch vụ</strong></TableCell>
+                      <TableCell><strong>Màu</strong></TableCell>
+                      <TableCell><strong>Trạng thái</strong></TableCell>
+                      <TableCell><strong>Thao tác</strong></TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              <TablePagination
-                component="div"
-                count={filteredServices.length}
-                page={page}
-                onPageChange={handleChangePage}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                labelRowsPerPage="Số dòng mỗi trang"
-              />
-            </TableContainer>
+                  </TableHead>
+                  <TableBody>
+                    {displayedRows.map((service, index) => (
+                      <TableRow key={service.id}>
+                        <TableCell>{index + 1 + page * rowsPerPage}</TableCell>
+                        <TableCell>{service.name}</TableCell>
+                        <TableCell>
+                          <div
+                            style={{
+                              backgroundColor: service.color,
+                              width: 40,
+                              height: 20,
+                              borderRadius: 4,
+                              border: '1px solid #ccc',
+                            }}
+                          ></div>
+                        </TableCell>
+                        <TableCell>
+                          <Chip
+                            label="Đang hoạt động"
+                            color="success"
+                            variant="outlined"
+                            size="small"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenEdit(service)}>
+                            <FiEdit />
+                          </IconButton>
+                          <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenDelete(service)}>
+                            <FiTrash2 />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <TablePagination
+                  component="div"
+                  count={filteredServices.length}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  rowsPerPage={rowsPerPage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  labelRowsPerPage="Số dòng mỗi trang"
+                />
+              </TableContainer>
+            )}
           </main>
         </div>
       </div>
@@ -332,8 +353,14 @@ const AgencyService = () => {
                 color: 'white',
                 '&:hover': { backgroundColor: '#1a4646' },
               }}
+              disabled={loadingSave}
             >
-              Lưu
+              {loadingSave ? (
+                <>
+                  <CircularProgress size={20} sx={{ color: 'white', mr: 1 }} />
+                  Đang lưu...
+                </>
+              ) : 'Lưu'}
             </Button>
           </DialogActions>
         </Dialog>
@@ -400,8 +427,14 @@ const AgencyService = () => {
                 color: 'white',
                 '&:hover': { backgroundColor: '#5c1515' },
               }}
+              disabled={loadingDelete}
             >
-              Xoá
+              {loadingDelete ? (
+                <>
+                  <CircularProgress size={20} sx={{ color: 'white', mr: 1 }} />
+                  Đang xoá...
+                </>
+              ) : 'Xoá'}
             </Button>
           </DialogActions>
         </Dialog>

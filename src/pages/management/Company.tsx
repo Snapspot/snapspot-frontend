@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
+import CircularProgress from '@mui/material/CircularProgress';
 import Sidebar from '../../components/admin/Sidebar';
 import Navbar from '../../components/admin/Navbar';
 import { useEffect } from 'react';
@@ -36,6 +37,10 @@ const Company = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>('success');
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
 
   const showSnackbar = (message: string, severity: AlertColor) => {
     setSnackbarMessage(message);
@@ -48,8 +53,10 @@ const Company = () => {
   };
 
   useEffect(() => {
-    axios.get('/companies')
-      .then((res) => {
+    const fetchCompanies = async () => {
+      setLoading(true); // 👉 Bắt đầu loading
+      try {
+        const res = await axios.get('/companies');
         const mappedCompanies = res.data.data.map((company: any) => ({
           id: company.id,
           name: company.name,
@@ -59,12 +66,17 @@ const Company = () => {
           photo: company.avatarUrl || 'https://via.placeholder.com/40',
           userName: company.userName,
           address: company.address,
+          pdfUrl: company.pdfUrl || '',
         }));
         setPartners(mappedCompanies);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Lỗi khi gọi API:", err);
-      });
+      } finally {
+        setLoading(false); // 👉 Kết thúc loading
+      }
+    };
+
+    fetchCompanies();
   }, []);
 
 
@@ -85,6 +97,7 @@ const Company = () => {
 
   const handleSaveEdit = () => {
     if (!selectedPartner) return;
+    setSaving(true); // ⏳ Bắt đầu loading
 
     const updatedData = {
       name: selectedPartner.name,
@@ -92,20 +105,13 @@ const Company = () => {
       email: selectedPartner.email,
       address: selectedPartner.address,
       avatarUrl: selectedPartner.photo,
-      pdfUrl: selectedPartner.pdfUrl || '', // 👈 thêm dòng này
+      pdfUrl: selectedPartner.pdfUrl || '',
     };
 
     const url = `/companies/${selectedPartner.id}`;
 
-    console.log('📤 Đang gửi PUT request đến:', url);
-    console.log('📤 Request Body:', updatedData);
-
     axios.put(url, updatedData)
-      .then((res) => {
-        console.log('✅ Response Data:', res.data);
-        console.log('📨 Request Headers:', res.config.headers);
-        console.log('📨 Request Body (raw):', res.config.data); // dạng JSON string
-
+      .then(() => {
         setPartners((prev) =>
           prev.map((p) =>
             p.id === selectedPartner.id ? { ...p, ...selectedPartner } : p
@@ -115,21 +121,11 @@ const Company = () => {
         showSnackbar('Cập nhật thành công!', 'success');
       })
       .catch((err) => {
-        if (err.response) {
-          console.error('❌ Response Error Data:', err.response.data);
-          console.error('❌ Status:', err.response.status);
-          console.error('❌ Headers:', err.response.headers);
-          console.error('❌ Request Sent:', err.config.data); // xem dữ liệu gửi lên
-          showSnackbar(`Lỗi xác thực: ${JSON.stringify(err.response.data.errors ?? err.response.data)}`, 'error');
-        } else {
-          console.error('❌ Lỗi không có response (network, timeout?):', err);
-          showSnackbar('Có lỗi xảy ra. Vui lòng thử lại.', 'error');
-        }
-      });
-
+        console.error("❌ Lỗi cập nhật:", err);
+        showSnackbar('Cập nhật thất bại.', 'error');
+      })
+      .finally(() => setSaving(false)); // ✅ Kết thúc loading
   };
-
-
 
   // Trong component:
   const [partnerToDelete, setPartnerToDelete] = useState<CompanyType | null>(null);
@@ -146,13 +142,11 @@ const Company = () => {
 
   const handleDeleteConfirmed = () => {
     if (!partnerToDelete) return;
+    setDeleting(true); // ⏳
 
     const url = `/companies/${partnerToDelete.id}`;
-    console.log("🗑️ Xoá đối tác với ID:", partnerToDelete.id);
-
     axios.delete(url)
-      .then((res) => {
-        console.log("Đã xoá thành công:", res.data);
+      .then(() => {
         setPartners((prev) => prev.filter((p) => p.id !== partnerToDelete.id));
         setOpenDelete(false);
         setPartnerToDelete(null);
@@ -161,9 +155,10 @@ const Company = () => {
       .catch((err) => {
         console.error("Lỗi khi xoá đối tác:", err);
         showSnackbar('Xoá thất bại. Vui lòng thử lại.', 'error');
-      });
-
+      })
+      .finally(() => setDeleting(false)); // ✅
   };
+
 
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(0);
@@ -230,55 +225,60 @@ const Company = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <TableContainer component={Paper} elevation={3}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell><strong>Ảnh</strong></TableCell>
-                    <TableCell><strong>Tên công ty</strong></TableCell>
-                    <TableCell><strong>Người đại diện</strong></TableCell>
-                    <TableCell><strong>Địa chỉ</strong></TableCell>
-                    <TableCell><strong>SĐT</strong></TableCell>
-                    <TableCell><strong>Email</strong></TableCell>
-                    <TableCell><strong>Trạng thái</strong></TableCell>
-                    <TableCell><strong>Thao tác</strong></TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {displayedRows.map((company) => (
-                    <TableRow key={company.id}>
-                      <TableCell>
-                        <Avatar src={company.photo} alt={company.name} />
-                      </TableCell>
-                      <TableCell>{company.name}</TableCell>
-                      <TableCell>{company.userName}</TableCell>
-                      <TableCell>{company.address}</TableCell>
-                      <TableCell>{company.phone}</TableCell>
-                      <TableCell>{company.email}</TableCell>
-                      <TableCell>{company.status}</TableCell>
-                      <TableCell>
-                        <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenEdit(company)}>
-                          <FiEdit />
-                        </IconButton>
-                        <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenDelete(company)}>
-                          <FiTrash2 />
-                        </IconButton>
-                      </TableCell>
+            {loading ? (
+              <div className="flex justify-center items-center h-64">
+                <CircularProgress sx={{ color: '#215858' }} />
+              </div>
+            ) : (
+              <TableContainer component={Paper} elevation={3}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell><strong>Ảnh</strong></TableCell>
+                      <TableCell><strong>Tên công ty</strong></TableCell>
+                      <TableCell><strong>Người đại diện</strong></TableCell>
+                      <TableCell><strong>Địa chỉ</strong></TableCell>
+                      <TableCell><strong>SĐT</strong></TableCell>
+                      <TableCell><strong>Email</strong></TableCell>
+                      <TableCell><strong>Trạng thái</strong></TableCell>
+                      <TableCell><strong>Thao tác</strong></TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-
-              <TablePagination
-                component="div"
-                count={filteredRows.length}
-                page={page}
-                onPageChange={handleChangePage}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                labelRowsPerPage="Số dòng mỗi trang"
-              />
-            </TableContainer>
+                  </TableHead>
+                  <TableBody>
+                    {displayedRows.map((company) => (
+                      <TableRow key={company.id}>
+                        <TableCell>
+                          <Avatar src={company.photo} alt={company.name} />
+                        </TableCell>
+                        <TableCell>{company.name}</TableCell>
+                        <TableCell>{company.userName}</TableCell>
+                        <TableCell>{company.address}</TableCell>
+                        <TableCell>{company.phone}</TableCell>
+                        <TableCell>{company.email}</TableCell>
+                        <TableCell>{company.status}</TableCell>
+                        <TableCell>
+                          <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenEdit(company)}>
+                            <FiEdit />
+                          </IconButton>
+                          <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenDelete(company)}>
+                            <FiTrash2 />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <TablePagination
+                  component="div"
+                  count={filteredRows.length}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  rowsPerPage={rowsPerPage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  labelRowsPerPage="Số dòng mỗi trang"
+                />
+              </TableContainer>
+            )}
           </div>
         </div>
       </div>
@@ -347,8 +347,14 @@ const Company = () => {
                 color: 'white',
                 '&:hover': { backgroundColor: '#1a4646' },
               }}
+              disabled={saving}
             >
-              Lưu
+              {saving ? (
+                <>
+                  <CircularProgress size={20} sx={{ color: 'white', mr: 1 }} />
+                  Đang lưu...
+                </>
+              ) : 'Lưu'}
             </Button>
           </DialogActions>
         </Dialog>
@@ -378,9 +384,16 @@ const Company = () => {
                 color: 'white',
                 '&:hover': { backgroundColor: '#5c1515' },
               }}
+              disabled={deleting}
             >
-              Xoá
+              {deleting ? (
+                <>
+                  <CircularProgress size={20} sx={{ color: 'white', mr: 1 }} />
+                  Đang xoá...
+                </>
+              ) : 'Xoá'}
             </Button>
+
             <Button
               onClick={handleCloseDelete}
               variant="outlined"

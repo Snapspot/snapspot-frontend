@@ -9,6 +9,7 @@ import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import MuiAlert from '@mui/material/Alert';
 import Sidebar from '../../components/admin/Sidebar';
 import Navbar from '../../components/admin/Navbar';
+import CircularProgress from '@mui/material/CircularProgress';
 import { useEffect } from 'react';
 import axios from '../../utils/axiosInstance';
 
@@ -29,13 +30,15 @@ type Agency = {
 };
 
 
-
-
 const Agency = () => {
 
     const [openEdit, setOpenEdit] = useState(false);
     const [agencyToEdit, setAgencyToEdit] = useState<Agency | null>(null);
     const [agencies, setAgencies] = useState<Agency[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [saving, setSaving] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+    
     const [snackbar, setSnackbar] = useState({
         open: false,
         message: '',
@@ -55,6 +58,7 @@ const Agency = () => {
     }, []);
 
     const fetchAgencies = async () => {
+        setLoading(true); // ⏳ Bắt đầu loading
         try {
             const res = await axios.get('/agencies');
             if (res.data.success) {
@@ -64,8 +68,12 @@ const Agency = () => {
             }
         } catch (err) {
             console.error("Lỗi khi gọi API /agencies:", err);
+        } finally {
+            setLoading(false); // ✅ Kết thúc loading
         }
     };
+
+
 
     // ✏️ Xử lý mở form edit
     const handleOpenEdit = (agency: Agency) => {
@@ -85,6 +93,7 @@ const Agency = () => {
 
     const handleSaveEdit = async () => {
         if (!agencyToEdit) return;
+        setSaving(true); // ⏳ Start saving
 
         const updateBody = {
             name: agencyToEdit.name,
@@ -93,18 +102,12 @@ const Agency = () => {
             avatarUrl: agencyToEdit.avatarUrl,
             address: agencyToEdit.address,
             description: agencyToEdit.description,
-            companyId: agencyToEdit.companyId, // thêm nếu backend yêu cầu
-            spotId: agencyToEdit.spotId,       // thêm nếu backend yêu cầu
+            companyId: agencyToEdit.companyId,
+            spotId: agencyToEdit.spotId,
         };
-
-        console.log("📤 updateBody:", updateBody);
 
         try {
             const res = await axios.put(`/agencies/${agencyToEdit.id}`, updateBody);
-            console.log("✅ RESPONSE DATA:", res.data);
-            console.log("📨 REQUEST HEADERS:", res.config.headers);
-            console.log("📨 REQUEST BODY:", res.config.data);
-
             if (res.data.success) {
                 fetchAgencies();
                 setOpenEdit(false);
@@ -114,17 +117,12 @@ const Agency = () => {
                 showSnackbar('Cập nhật thất bại: ' + res.data.message, 'error');
             }
         } catch (error: any) {
-            if (error.response) {
-                console.error("❌ RESPONSE ERROR DATA:", error.response.data);
-                console.error("❌ RESPONSE ERROR HEADERS:", error.response.headers);
-                console.error("❌ RESPONSE ERROR CONFIG:", error.response.config);
-            } else {
-                console.error('❌ Lỗi không xác định:', error);
-            }
+            console.error('❌ Lỗi cập nhật:', error);
+            showSnackbar('Lỗi khi cập nhật', 'error');
+        } finally {
+            setSaving(false); // ✅ End saving
         }
     };
-
-
 
     // 🗑️ Xoá
     const [openDelete, setOpenDelete] = useState(false);
@@ -142,22 +140,22 @@ const Agency = () => {
 
     const handleDeleteConfirmed = async () => {
         if (!agencyToDelete) return;
+        setDeleting(true); // ⏳ Start deleting
 
         try {
             await axios.delete(`/agencies/${agencyToDelete.id}`);
-            console.log('Xoá agency thành công:', agencyToDelete.id);
             showSnackbar('Xoá thành công!', 'success');
-
             setAgencies((prev) => prev.filter((a) => a.id !== agencyToDelete.id));
-
             setOpenDelete(false);
             setAgencyToDelete(null);
         } catch (error) {
             console.error('Lỗi khi xoá agency:', error);
-            alert("Xoá không thành công. Vui lòng thử lại.");
             showSnackbar('Xoá thất bại.', 'error');
+        } finally {
+            setDeleting(false); // ✅ End deleting
         }
     };
+
 
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(0); // Trang hiện tại
@@ -221,53 +219,61 @@ const Agency = () => {
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
-                        <TableContainer component={Paper} elevation={3}>
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell><strong>Ảnh</strong></TableCell>
-                                        <TableCell><strong>Tên dịch vụ</strong></TableCell>
-                                        <TableCell><strong>Địa chỉ</strong></TableCell>
-                                        <TableCell><strong>Người phụ trách</strong></TableCell>
-                                        <TableCell><strong>SĐT</strong></TableCell>
-                                        <TableCell><strong>Công ty</strong></TableCell>
-                                        <TableCell><strong>Địa điểm</strong></TableCell>
-                                        <TableCell><strong>Thao tác</strong></TableCell>
-                                    </TableRow>
-                                </TableHead>
-
-                                <TableBody>
-                                    {displayedRows.map((agency) => (
-                                        <TableRow key={agency.id}>
-                                            <TableCell><Avatar src={agency.avatarUrl} alt={agency.fullname} /></TableCell>
-                                            <TableCell>{agency.name}</TableCell>
-                                            <TableCell>{agency.address}</TableCell>
-                                            <TableCell>{agency.fullname}</TableCell>
-                                            <TableCell>{agency.phoneNumber}</TableCell>
-                                            <TableCell>{agency.companyName}</TableCell>
-                                            <TableCell>{agency.spotName}</TableCell>
-                                            <TableCell>
-                                                <IconButton onClick={() => handleOpenEdit(agency)}>
-                                                    <FiEdit />
-                                                </IconButton>
-                                                <IconButton onClick={() => handleOpenDelete(agency)}>
-                                                    <FiTrash2 />
-                                                </IconButton>
-                                            </TableCell>
+                        {loading ? (
+                            <div className="flex justify-center items-center h-64">
+                                <CircularProgress sx={{ color: '#215858' }} />
+                            </div>
+                        ) : (
+                            <TableContainer component={Paper} elevation={3}>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell><strong>Ảnh</strong></TableCell>
+                                            <TableCell><strong>Tên dịch vụ</strong></TableCell>
+                                            <TableCell><strong>Địa chỉ</strong></TableCell>
+                                            <TableCell><strong>Người phụ trách</strong></TableCell>
+                                            <TableCell><strong>SĐT</strong></TableCell>
+                                            <TableCell><strong>Công ty</strong></TableCell>
+                                            <TableCell><strong>Địa điểm</strong></TableCell>
+                                            <TableCell><strong>Thao tác</strong></TableCell>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                            <TablePagination
-                                component="div"
-                                count={agencies.length}
-                                page={page}
-                                onPageChange={handleChangePage}
-                                rowsPerPage={rowsPerPage}
-                                onRowsPerPageChange={handleChangeRowsPerPage}
-                                labelRowsPerPage="Số dòng mỗi trang"
-                            />
-                        </TableContainer>
+                                    </TableHead>
+
+                                    <TableBody>
+                                        {displayedRows.map((agency) => (
+                                            <TableRow key={agency.id}>
+                                                <TableCell>
+                                                    <Avatar src={agency.avatarUrl} alt={agency.fullname} />
+                                                </TableCell>
+                                                <TableCell>{agency.name}</TableCell>
+                                                <TableCell>{agency.address}</TableCell>
+                                                <TableCell>{agency.fullname}</TableCell>
+                                                <TableCell>{agency.phoneNumber}</TableCell>
+                                                <TableCell>{agency.companyName}</TableCell>
+                                                <TableCell>{agency.spotName}</TableCell>
+                                                <TableCell>
+                                                    <IconButton onClick={() => handleOpenEdit(agency)}>
+                                                        <FiEdit />
+                                                    </IconButton>
+                                                    <IconButton onClick={() => handleOpenDelete(agency)}>
+                                                        <FiTrash2 />
+                                                    </IconButton>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                                <TablePagination
+                                    component="div"
+                                    count={agencies.length}
+                                    page={page}
+                                    onPageChange={handleChangePage}
+                                    rowsPerPage={rowsPerPage}
+                                    onRowsPerPageChange={handleChangeRowsPerPage}
+                                    labelRowsPerPage="Số dòng mỗi trang"
+                                />
+                            </TableContainer>
+                        )}
                     </div>
                     {agencyToDelete && (
                         <Dialog open={openDelete} onClose={handleCloseDelete}>
@@ -288,13 +294,10 @@ const Agency = () => {
                                 <Button
                                     onClick={handleDeleteConfirmed}
                                     variant="contained"
-                                    sx={{
-                                        backgroundColor: '#7a1e1e',
-                                        color: 'white',
-                                        '&:hover': { backgroundColor: '#5c1515' },
-                                    }}
+                                    sx={{ backgroundColor: '#7a1e1e', color: 'white' }}
+                                    disabled={deleting}
                                 >
-                                    Xoá
+                                    {deleting ? 'Đang xoá...' : 'Xoá'}
                                 </Button>
                                 <Button
                                     onClick={handleCloseDelete}
@@ -368,13 +371,10 @@ const Agency = () => {
                                 <Button
                                     onClick={handleSaveEdit}
                                     variant="contained"
-                                    sx={{
-                                        backgroundColor: '#215858',
-                                        color: 'white',
-                                        '&:hover': { backgroundColor: '#1a4646' },
-                                    }}
+                                    sx={{ backgroundColor: '#215858', color: 'white' }}
+                                    disabled={saving}
                                 >
-                                    Lưu
+                                    {saving ? 'Đang lưu...' : 'Lưu'}
                                 </Button>
                             </DialogActions>
                         </Dialog>

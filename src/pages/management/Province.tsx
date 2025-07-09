@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import { FiEye, FiEdit, FiTrash2 } from 'react-icons/fi';
 import { useState, useEffect } from 'react';
+import CircularProgress from '@mui/material/CircularProgress';
 import MuiAlert, { type AlertColor } from '@mui/material/Alert';
 import axios from '../../utils/axiosInstance';
 
@@ -22,6 +23,9 @@ const Province = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>('success');
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     const handleCloseSnackbar = () => {
         setSnackbarOpen(false);
@@ -38,14 +42,19 @@ const Province = () => {
     }, []);
 
     const fetchProvinceList = () => {
+        setLoading(true);
         axios.get('/provinces')
             .then((res) => {
                 setProvinceList(res.data.data);
             })
             .catch((err) => {
                 console.error('Lỗi khi lấy danh sách tỉnh:', err);
+            })
+            .finally(() => {
+                setLoading(false);
             });
     };
+
     useEffect(() => {
         fetchProvinceList();
     }, []);
@@ -109,57 +118,62 @@ const Province = () => {
                                     Thêm tỉnh
                                 </Button>
                             </div>
-
-                            <TableContainer component={Paper} elevation={3}>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell><strong>Tỉnh</strong></TableCell>
-                                            <TableCell><strong>Mô tả</strong></TableCell>
-                                            <TableCell><strong>Trạng thái</strong></TableCell>
-                                            <TableCell><strong>Thao tác</strong></TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {displayedRows.map((province) => (
-                                            <TableRow key={province.id}>
-                                                <TableCell>{province.name}</TableCell>
-                                                <TableCell>{province.description || '-'}</TableCell>
-                                                <TableCell>{province.isDeleted ? 'Ngừng hoạt động' : 'Hoạt động'}</TableCell>
-                                                <TableCell>
-                                                    <IconButton sx={{ color: '#215858' }}>
-                                                        <FiEye />
-                                                    </IconButton>
-                                                    <IconButton sx={{ color: '#215858' }}
-                                                        onClick={() => {
-                                                            setSelectedProvince(province);
-                                                            setOpenEdit(true);
-                                                        }}>
-                                                        <FiEdit />
-                                                    </IconButton>
-                                                    <IconButton sx={{ color: '#215858' }}
-                                                        onClick={() => {
-                                                            setSelectedProvince(province);
-                                                            setOpenDelete(true);
-                                                        }}>
-                                                        <FiTrash2 />
-                                                    </IconButton>
-                                                </TableCell>
+                            {loading ? (
+                                <div className="flex justify-center items-center h-64">
+                                    <CircularProgress sx={{ color: '#215858' }} />
+                                </div>
+                            ) : (
+                                <TableContainer component={Paper} elevation={3}>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell><strong>Tỉnh</strong></TableCell>
+                                                <TableCell><strong>Mô tả</strong></TableCell>
+                                                <TableCell><strong>Trạng thái</strong></TableCell>
+                                                <TableCell><strong>Thao tác</strong></TableCell>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                                        </TableHead>
+                                        <TableBody>
+                                            {displayedRows.map((province) => (
+                                                <TableRow key={province.id}>
+                                                    <TableCell>{province.name}</TableCell>
+                                                    <TableCell>{province.description || '-'}</TableCell>
+                                                    <TableCell>{province.isDeleted ? 'Ngừng hoạt động' : 'Hoạt động'}</TableCell>
+                                                    <TableCell>
+                                                        <IconButton sx={{ color: '#215858' }}>
+                                                            <FiEye />
+                                                        </IconButton>
+                                                        <IconButton sx={{ color: '#215858' }}
+                                                            onClick={() => {
+                                                                setSelectedProvince(province);
+                                                                setOpenEdit(true);
+                                                            }}>
+                                                            <FiEdit />
+                                                        </IconButton>
+                                                        <IconButton sx={{ color: '#215858' }}
+                                                            onClick={() => {
+                                                                setSelectedProvince(province);
+                                                                setOpenDelete(true);
+                                                            }}>
+                                                            <FiTrash2 />
+                                                        </IconButton>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
 
-                                <TablePagination
-                                    component="div"
-                                    count={filteredRows.length}
-                                    page={page}
-                                    onPageChange={handleChangePage}
-                                    rowsPerPage={rowsPerPage}
-                                    onRowsPerPageChange={handleChangeRowsPerPage}
-                                    labelRowsPerPage="Số dòng mỗi trang"
-                                />
-                            </TableContainer>
+                                    <TablePagination
+                                        component="div"
+                                        count={filteredRows.length}
+                                        page={page}
+                                        onPageChange={handleChangePage}
+                                        rowsPerPage={rowsPerPage}
+                                        onRowsPerPageChange={handleChangeRowsPerPage}
+                                        labelRowsPerPage="Số dòng mỗi trang"
+                                    />
+                                </TableContainer>
+                            )}
                         </div>
                     </main>
                 </div>
@@ -200,6 +214,7 @@ const Province = () => {
                     <Button
                         onClick={async () => {
                             try {
+                                setSaving(true);
                                 if (selectedProvince?.id) {
                                     const { name, description } = selectedProvince;
                                     await axios.put(`/provinces/${selectedProvince.id}`, { name, description });
@@ -219,12 +234,15 @@ const Province = () => {
                                 setSnackbarMessage('Đã xảy ra lỗi khi lưu tỉnh!');
                                 setSnackbarSeverity('error');
                                 setSnackbarOpen(true);
+                            } finally {
+                                setSaving(false);
                             }
                         }}
                         variant="contained"
+                        disabled={saving}
                         sx={{ backgroundColor: '#215858', color: 'white', '&:hover': { backgroundColor: '#1a4646' } }}
                     >
-                        Lưu
+                        {saving ? 'Đang lưu...' : 'Lưu'}
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -241,6 +259,7 @@ const Province = () => {
                     <Button
                         onClick={async () => {
                             try {
+                                setDeleting(true);
                                 await axios.delete(`/provinces/${selectedProvince?.id}`);
                                 setProvinceList(prev => prev.filter(p => p.id !== selectedProvince?.id));
                                 setSnackbarMessage('Xoá tỉnh thành công!');
@@ -252,12 +271,15 @@ const Province = () => {
                                 setSnackbarMessage('Đã xảy ra lỗi khi xoá tỉnh!');
                                 setSnackbarSeverity('error');
                                 setSnackbarOpen(true);
+                            } finally {
+                                setDeleting(false);
                             }
                         }}
                         variant="contained"
+                        disabled={deleting}
                         sx={{ backgroundColor: '#7a1e1e', color: 'white', '&:hover': { backgroundColor: '#5c1515' } }}
                     >
-                        Xoá
+                        {deleting ? 'Đang xoá...' : 'Xoá'}
                     </Button>
                     <Button onClick={() => setOpenDelete(false)} variant="outlined"
                         sx={{ color: '#7a1e1e', borderColor: '#7a1e1e' }}>
