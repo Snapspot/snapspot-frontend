@@ -4,7 +4,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button
+  Button,
+  Snackbar
 } from '@mui/material';
 import { useState } from 'react';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
@@ -12,6 +13,8 @@ import Sidebar from '../../components/admin/Sidebar';
 import Navbar from '../../components/admin/Navbar';
 import { useEffect } from 'react';
 import axios from '../../utils/axiosInstance';
+import MuiAlert, { type AlertColor } from '@mui/material/Alert';
+
 
 interface CompanyType {
   id: string;
@@ -22,6 +25,7 @@ interface CompanyType {
   photo: string;
   userName: string;
   address: string;
+  pdfUrl: string;
 }
 
 const Company = () => {
@@ -29,6 +33,19 @@ const Company = () => {
   const [openEdit, setOpenEdit] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState<CompanyType | null>(null);
   const [partners, setPartners] = useState<CompanyType[]>([]);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>('success');
+
+  const showSnackbar = (message: string, severity: AlertColor) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
 
   useEffect(() => {
     axios.get('/companies')
@@ -75,26 +92,43 @@ const Company = () => {
       email: selectedPartner.email,
       address: selectedPartner.address,
       avatarUrl: selectedPartner.photo,
+      pdfUrl: selectedPartner.pdfUrl || '', // 👈 thêm dòng này
     };
 
     const url = `/companies/${selectedPartner.id}`;
 
+    console.log('📤 Đang gửi PUT request đến:', url);
+    console.log('📤 Request Body:', updatedData);
+
     axios.put(url, updatedData)
       .then((res) => {
-        console.log("Đã cập nhật:", res.data);
+        console.log('✅ Response Data:', res.data);
+        console.log('📨 Request Headers:', res.config.headers);
+        console.log('📨 Request Body (raw):', res.config.data); // dạng JSON string
 
         setPartners((prev) =>
           prev.map((p) =>
             p.id === selectedPartner.id ? { ...p, ...selectedPartner } : p
           )
         );
-
         handleCloseEdit();
+        showSnackbar('Cập nhật thành công!', 'success');
       })
       .catch((err) => {
-        console.error("Lỗi khi cập nhật đối tác:", err);
+        if (err.response) {
+          console.error('❌ Response Error Data:', err.response.data);
+          console.error('❌ Status:', err.response.status);
+          console.error('❌ Headers:', err.response.headers);
+          console.error('❌ Request Sent:', err.config.data); // xem dữ liệu gửi lên
+          showSnackbar(`Lỗi xác thực: ${JSON.stringify(err.response.data.errors ?? err.response.data)}`, 'error');
+        } else {
+          console.error('❌ Lỗi không có response (network, timeout?):', err);
+          showSnackbar('Có lỗi xảy ra. Vui lòng thử lại.', 'error');
+        }
       });
+
   };
+
 
 
   // Trong component:
@@ -119,16 +153,16 @@ const Company = () => {
     axios.delete(url)
       .then((res) => {
         console.log("Đã xoá thành công:", res.data);
-
-        // Cập nhật lại danh sách sau khi xoá
         setPartners((prev) => prev.filter((p) => p.id !== partnerToDelete.id));
-
         setOpenDelete(false);
         setPartnerToDelete(null);
+        showSnackbar('Xoá thành công!', 'success');
       })
       .catch((err) => {
         console.error("Lỗi khi xoá đối tác:", err);
+        showSnackbar('Xoá thất bại. Vui lòng thử lại.', 'error');
       });
+
   };
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -289,6 +323,13 @@ const Company = () => {
               value={selectedPartner.photo}
               onChange={(e) => handleEditChange('photo', e.target.value)}
             />
+            <TextField
+              label="PDF URL"
+              fullWidth
+              margin="dense"
+              value={selectedPartner.pdfUrl}
+              onChange={(e) => handleEditChange('pdfUrl', e.target.value)}
+            />
           </DialogContent>
           <DialogActions sx={{ backgroundColor: '#faebce' }}>
             <Button
@@ -350,6 +391,16 @@ const Company = () => {
           </DialogActions>
         </Dialog>
       )}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <MuiAlert onClose={handleCloseSnackbar} severity={snackbarSeverity} elevation={6} variant="filled">
+          {snackbarMessage}
+        </MuiAlert>
+      </Snackbar>
     </div >
   );
 };

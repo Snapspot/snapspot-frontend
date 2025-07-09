@@ -17,10 +17,12 @@ import {
     TextField,
     Button,
     Select,
-    MenuItem
+    MenuItem,
+    Snackbar,
 } from '@mui/material';
 import { FiEye, FiEdit, FiTrash2 } from 'react-icons/fi';
 import { useState } from 'react';
+import MuiAlert, { type AlertColor } from '@mui/material/Alert';
 import { useEffect } from 'react';
 import axios from '../../utils/axiosInstance';
 
@@ -51,26 +53,36 @@ const Spot = () => {
     const [selectedSpot, setSelectedSpot] = useState<SpotType | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [districts, setDistricts] = useState<{ id: string; name: string }[]>([]);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>('success');
 
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
+    };
 
     const handleDeleteConfirmed = async () => {
         if (!selectedSpot?.id) return;
 
         try {
-            // Gọi API DELETE
             await axios.delete(`/spots/${selectedSpot.id}`);
-            console.log('Deleted spot:', selectedSpot.id);
-
-            // Sau khi xoá, làm mới danh sách
             const res = await axios.get('/spots');
             setSpotList(res.data.data);
+
+            setSnackbarMessage('Xoá địa điểm thành công!');
+            setSnackbarSeverity('success');
+            setSnackbarOpen(true);
         } catch (error) {
             console.error('Lỗi khi xoá địa điểm:', error);
+            setSnackbarMessage('Lỗi khi xoá địa điểm!');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
         } finally {
             setOpenDelete(false);
             setSelectedSpot(null);
         }
     };
+
 
     useEffect(() => {
         const fetchSpots = axios.get('/spots');
@@ -112,11 +124,9 @@ const Spot = () => {
 
         try {
             if (selectedSpot.id) {
-                // PUT - Cập nhật
                 await axios.put(`/spots/${selectedSpot.id}`, selectedSpot);
-                console.log('Đã cập nhật:', selectedSpot.id);
+                setSnackbarMessage('Cập nhật địa điểm thành công!');
             } else {
-                // POST - Thêm mới
                 const spotToCreate = {
                     name: selectedSpot.name,
                     description: selectedSpot.description,
@@ -124,16 +134,20 @@ const Spot = () => {
                     longitude: selectedSpot.longitude,
                     districtId: selectedSpot.districtId,
                 };
-
-                console.log('Gửi dữ liệu POST:', spotToCreate);
                 await axios.post('/spots', spotToCreate);
-                console.log('Đã thêm mới địa điểm');
+                setSnackbarMessage('Thêm địa điểm mới thành công!');
             }
+
+            setSnackbarSeverity('success');
+            setSnackbarOpen(true);
 
             const res = await axios.get('/spots');
             setSpotList(res.data.data);
         } catch (error) {
             console.error('Lỗi khi lưu địa điểm:', error);
+            setSnackbarMessage('Lỗi khi lưu địa điểm!');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
         } finally {
             setOpenEdit(false);
             setSelectedSpot(null);
@@ -399,7 +413,21 @@ const Spot = () => {
                     <Button variant="contained" onClick={() => setIsAddOpen(false)}>Thêm</Button>
                 </DialogActions>
             </Dialog>
-
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={4000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <MuiAlert
+                    onClose={handleCloseSnackbar}
+                    severity={snackbarSeverity}
+                    elevation={6}
+                    variant="filled"
+                >
+                    {snackbarMessage}
+                </MuiAlert>
+            </Snackbar>
         </div>
     );
 };

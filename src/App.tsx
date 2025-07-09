@@ -5,7 +5,6 @@ import './index.css'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Dashboard from './pages/management/Dashboard'
-import Location from './pages/management/Location'
 import Review from './pages/management/Review'
 import System from './pages/management/System'
 import PartnerApproval from './pages/management/PartnerApproval'
@@ -41,7 +40,6 @@ function App() {
         {/* Protected routes (role = Admin) */}
         <Route element={<PrivateRoute allowedRoles={['Admin']} />}>
           <Route path="/admin/dashboard" element={<Dashboard />} />
-          <Route path="/admin/locations" element={<Location />} />
           <Route path="/admin/seller-packages" element={<SellerPackage />} />
           <Route path="/admin/companies" element={<Company />} />
           <Route path="/admin/reviews" element={<Review />} />

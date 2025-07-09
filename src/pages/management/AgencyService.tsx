@@ -17,9 +17,11 @@ import {
   DialogContent,
   DialogActions,
   Button,
+  Snackbar
 } from '@mui/material';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import { useEffect, useState } from 'react';
+import MuiAlert, { type AlertColor } from '@mui/material/Alert';
 import axios from '../../utils/axiosInstance';
 
 const AgencyService = () => {
@@ -29,6 +31,14 @@ const AgencyService = () => {
   const [selectedService, setSelectedService] = useState<any | null>(null);
   const [services, setServices] = useState<any[]>([]);
   const [openAdd, setOpenAdd] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>('success');
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
+
   const [newService, setNewService] = useState({
     name: '',
     color: '',
@@ -72,11 +82,18 @@ const AgencyService = () => {
         setServices(prev =>
           prev.map(s => (s.id === selectedService.id ? res.data : s))
         );
+        setSnackbarMessage('Cập nhật dịch vụ thành công!');
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
         handleCloseEdit();
       })
       .catch(err => {
         console.error('Lỗi khi cập nhật dịch vụ:', err);
+        setSnackbarMessage('Lỗi khi cập nhật dịch vụ!');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
       });
+
   };
 
   const handleOpenDelete = (service: any) => {
@@ -93,11 +110,18 @@ const AgencyService = () => {
     axios.delete(`/agencyservices/${selectedService.id}`)
       .then(() => {
         setServices(prev => prev.filter(s => s.id !== selectedService.id));
+        setSnackbarMessage('Xoá dịch vụ thành công!');
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
         handleCloseDelete();
       })
       .catch(err => {
         console.error('Lỗi khi xoá dịch vụ:', err);
+        setSnackbarMessage('Lỗi khi xoá dịch vụ!');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
       });
+
   };
 
   const handleOpenAdd = () => {
@@ -121,13 +145,19 @@ const AgencyService = () => {
 
     axios.post('/agencyservices', payload)
       .then(res => {
-        console.log("🔥 Thêm thành công:", res.data);
         setServices(prev => [...prev, res.data]);
+        setSnackbarMessage('Thêm dịch vụ thành công!');
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
         handleCloseAdd();
       })
       .catch(err => {
         console.error('❌ Lỗi khi thêm dịch vụ:', err);
+        setSnackbarMessage('Lỗi khi thêm dịch vụ!');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
       });
+
   };
 
 
@@ -376,6 +406,21 @@ const AgencyService = () => {
           </DialogActions>
         </Dialog>
       )}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <MuiAlert
+          onClose={handleCloseSnackbar}
+          severity={snackbarSeverity}
+          elevation={6}
+          variant="filled"
+        >
+          {snackbarMessage}
+        </MuiAlert>
+      </Snackbar>
     </div>
   );
 };

@@ -1,10 +1,12 @@
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
     Paper, IconButton, TextField, Avatar, TablePagination, Dialog, Button,
-    DialogTitle, DialogContent, DialogActions
+    DialogTitle, DialogContent, DialogActions,
+    Snackbar
 } from '@mui/material';
 import { useState } from 'react';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
+import MuiAlert from '@mui/material/Alert';
 import Sidebar from '../../components/admin/Sidebar';
 import Navbar from '../../components/admin/Navbar';
 import { useEffect } from 'react';
@@ -20,9 +22,12 @@ type Agency = {
     avatarUrl: string;
     rating: number;
     companyName: string;
+    companyId: string; // 👈 thêm dòng này
     spotName: string;
+    spotId: string; // 👈 nếu cần
     description: string;
 };
+
 
 
 
@@ -31,6 +36,18 @@ const Agency = () => {
     const [openEdit, setOpenEdit] = useState(false);
     const [agencyToEdit, setAgencyToEdit] = useState<Agency | null>(null);
     const [agencies, setAgencies] = useState<Agency[]>([]);
+    const [snackbar, setSnackbar] = useState({
+        open: false,
+        message: '',
+        severity: 'success' as 'success' | 'error' | 'info' | 'warning',
+    });
+
+    const showSnackbar = (
+        message: string,
+        severity: 'success' | 'error' | 'info' | 'warning' = 'success'
+    ) => {
+        setSnackbar({ open: true, message, severity });
+    };
 
     // 🔁 Lấy danh sách agency khi load
     useEffect(() => {
@@ -76,19 +93,38 @@ const Agency = () => {
             avatarUrl: agencyToEdit.avatarUrl,
             address: agencyToEdit.address,
             description: agencyToEdit.description,
+            companyId: agencyToEdit.companyId, // thêm nếu backend yêu cầu
+            spotId: agencyToEdit.spotId,       // thêm nếu backend yêu cầu
         };
 
+        console.log("📤 updateBody:", updateBody);
+
         try {
-            await axios.put(`/agencies/${agencyToEdit.id}`, updateBody);
-            console.log('Cập nhật agency thành công:', updateBody);
-            fetchAgencies(); // cập nhật lại danh sách
-            setOpenEdit(false);
-            setAgencyToEdit(null);
-        } catch (error) {
-            console.error('Lỗi khi cập nhật agency:', error);
-            alert("Cập nhật không thành công. Vui lòng thử lại.");
+            const res = await axios.put(`/agencies/${agencyToEdit.id}`, updateBody);
+            console.log("✅ RESPONSE DATA:", res.data);
+            console.log("📨 REQUEST HEADERS:", res.config.headers);
+            console.log("📨 REQUEST BODY:", res.config.data);
+
+            if (res.data.success) {
+                fetchAgencies();
+                setOpenEdit(false);
+                setAgencyToEdit(null);
+                showSnackbar('Cập nhật thành công!', 'success');
+            } else {
+                showSnackbar('Cập nhật thất bại: ' + res.data.message, 'error');
+            }
+        } catch (error: any) {
+            if (error.response) {
+                console.error("❌ RESPONSE ERROR DATA:", error.response.data);
+                console.error("❌ RESPONSE ERROR HEADERS:", error.response.headers);
+                console.error("❌ RESPONSE ERROR CONFIG:", error.response.config);
+            } else {
+                console.error('❌ Lỗi không xác định:', error);
+            }
         }
     };
+
+
 
     // 🗑️ Xoá
     const [openDelete, setOpenDelete] = useState(false);
@@ -110,6 +146,7 @@ const Agency = () => {
         try {
             await axios.delete(`/agencies/${agencyToDelete.id}`);
             console.log('Xoá agency thành công:', agencyToDelete.id);
+            showSnackbar('Xoá thành công!', 'success');
 
             setAgencies((prev) => prev.filter((a) => a.id !== agencyToDelete.id));
 
@@ -118,6 +155,7 @@ const Agency = () => {
         } catch (error) {
             console.error('Lỗi khi xoá agency:', error);
             alert("Xoá không thành công. Vui lòng thử lại.");
+            showSnackbar('Xoá thất bại.', 'error');
         }
     };
 
@@ -343,6 +381,22 @@ const Agency = () => {
                     )}
                 </div>
             </div>
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={4000}
+                onClose={() => setSnackbar({ ...snackbar, open: false })}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <MuiAlert
+                    onClose={() => setSnackbar({ ...snackbar, open: false })}
+                    severity={snackbar.severity}
+                    elevation={6}
+                    variant="filled" // 👈 Cho màu nền tương ứng severity
+                    sx={{ width: '100%' }}
+                >
+                    {snackbar.message}
+                </MuiAlert>
+            </Snackbar>
         </div>
     );
 };
