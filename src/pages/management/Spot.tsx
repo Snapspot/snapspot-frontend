@@ -19,6 +19,7 @@ import {
     Select,
     MenuItem,
     Snackbar,
+    CircularProgress,
 } from '@mui/material';
 import { FiEye, FiEdit, FiTrash2 } from 'react-icons/fi';
 import { useState } from 'react';
@@ -55,6 +56,9 @@ const Spot = () => {
     const [districts, setDistricts] = useState<{ id: string; name: string }[]>([]);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [loadingFetch, setLoadingFetch] = useState(false);
+    const [loadingSave, setLoadingSave] = useState(false);
+    const [loadingDelete, setLoadingDelete] = useState(false);
     const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>('success');
 
     const handleCloseSnackbar = () => {
@@ -64,6 +68,7 @@ const Spot = () => {
     const handleDeleteConfirmed = async () => {
         if (!selectedSpot?.id) return;
 
+        setLoadingDelete(true);
         try {
             await axios.delete(`/spots/${selectedSpot.id}`);
             const res = await axios.get('/spots');
@@ -78,6 +83,7 @@ const Spot = () => {
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
         } finally {
+            setLoadingDelete(false);
             setOpenDelete(false);
             setSelectedSpot(null);
         }
@@ -85,21 +91,27 @@ const Spot = () => {
 
 
     useEffect(() => {
-        const fetchSpots = axios.get('/spots');
-        const fetchDistricts = axios.get('/districts');
-
-        Promise.all([fetchSpots, fetchDistricts])
-            .then(([spotsRes, districtsRes]) => {
+        const fetchData = async () => {
+            setLoadingFetch(true);
+            try {
+                const [spotsRes, districtsRes] = await Promise.all([
+                    axios.get('/spots'),
+                    axios.get('/districts')
+                ]);
                 setSpotList(spotsRes.data.data);
-                const mappedDistricts = districtsRes.data.map((d: any) => ({
-                    id: d.id,
-                    name: d.name,
-                }));
-                setDistricts(mappedDistricts);
-            })
-            .catch((err) => {
+                setDistricts(
+                    districtsRes.data.map((d: any) => ({
+                        id: d.id,
+                        name: d.name,
+                    }))
+                );
+            } catch (err) {
                 console.error('Lỗi khi lấy dữ liệu:', err);
-            });
+            } finally {
+                setLoadingFetch(false);
+            }
+        };
+        fetchData();
     }, []);
 
     const [page, setPage] = useState(0);
@@ -122,6 +134,7 @@ const Spot = () => {
     const handleSaveSpot = async () => {
         if (!selectedSpot) return;
 
+        setLoadingSave(true);
         try {
             if (selectedSpot.id) {
                 await axios.put(`/spots/${selectedSpot.id}`, selectedSpot);
@@ -149,10 +162,12 @@ const Spot = () => {
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
         } finally {
+            setLoadingSave(false);
             setOpenEdit(false);
             setSelectedSpot(null);
         }
     };
+
 
     return (
         <div className="flex min-h-screen w-screen">
@@ -212,71 +227,77 @@ const Spot = () => {
                                     THÊM ĐỊA ĐIỂM
                                 </Button>
                             </div>
-                            <TableContainer component={Paper} elevation={3}>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell><strong>Tên địa điểm</strong></TableCell>
-                                            <TableCell style={{ width: '200px' }}><strong>Mô tả</strong></TableCell>
-                                            <TableCell><strong>Vị trí</strong></TableCell>
-                                            <TableCell><strong>Vĩ độ</strong></TableCell>
-                                            <TableCell><strong>Kinh độ</strong></TableCell>
-                                            <TableCell><strong>Địa chỉ</strong></TableCell>
-                                            <TableCell><strong>Ảnh</strong></TableCell>
-                                            <TableCell><strong>Trạng thái</strong></TableCell>
-                                            <TableCell><strong>Thao tác</strong></TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {displayedRows.map((spot) => (
-                                            <TableRow key={spot.id}>
-                                                <TableCell>{spot.name}</TableCell>
-                                                <TableCell>{spot.description}</TableCell>
-                                                <TableCell>{`${spot.districtName}, ${spot.provinceName}`}</TableCell>
-                                                <TableCell>{spot.latitude}</TableCell>
-                                                <TableCell>{spot.longitude}</TableCell>
-                                                <TableCell>{spot.address}</TableCell>
-                                                <TableCell>
-                                                    {spot.imageUrl && (
-                                                        <img
-                                                            src={spot.imageUrl}
-                                                            alt={spot.name}
-                                                            style={{ width: 100, height: 70, objectFit: 'cover', borderRadius: 8 }}
-                                                        />
-                                                    )}
-                                                </TableCell>
-                                                <TableCell>{spot.isDeleted ? 'Ngừng hoạt động' : 'Hoạt động'}</TableCell>
-                                                <TableCell>
-                                                    <IconButton sx={{ color: '#215858' }}>
-                                                        <FiEye />
-                                                    </IconButton>
-                                                    <IconButton sx={{ color: '#215858' }} onClick={() => {
-                                                        setSelectedSpot(spot);
-                                                        setOpenEdit(true);
-                                                    }}>
-                                                        <FiEdit />
-                                                    </IconButton>
-                                                    <IconButton sx={{ color: '#215858' }} onClick={() => {
-                                                        setSelectedSpot(spot);
-                                                        setOpenDelete(true);
-                                                    }}>
-                                                        <FiTrash2 />
-                                                    </IconButton>
-                                                </TableCell>
+                            {loadingFetch ? (
+                                <div className="flex justify-center items-center h-64">
+                                    <CircularProgress sx={{ color: '#215858' }} />
+                                </div>
+                            ) : (
+                                <TableContainer component={Paper} elevation={3}>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell><strong>Tên địa điểm</strong></TableCell>
+                                                <TableCell style={{ width: '200px' }}><strong>Mô tả</strong></TableCell>
+                                                <TableCell><strong>Vị trí</strong></TableCell>
+                                                <TableCell><strong>Vĩ độ</strong></TableCell>
+                                                <TableCell><strong>Kinh độ</strong></TableCell>
+                                                <TableCell><strong>Địa chỉ</strong></TableCell>
+                                                <TableCell><strong>Ảnh</strong></TableCell>
+                                                <TableCell><strong>Trạng thái</strong></TableCell>
+                                                <TableCell><strong>Thao tác</strong></TableCell>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                                <TablePagination
-                                    component="div"
-                                    count={filteredRows.length}
-                                    page={page}
-                                    onPageChange={handleChangePage}
-                                    rowsPerPage={rowsPerPage}
-                                    onRowsPerPageChange={handleChangeRowsPerPage}
-                                    labelRowsPerPage="Số dòng mỗi trang"
-                                />
-                            </TableContainer>
+                                        </TableHead>
+                                        <TableBody>
+                                            {displayedRows.map((spot) => (
+                                                <TableRow key={spot.id}>
+                                                    <TableCell>{spot.name}</TableCell>
+                                                    <TableCell>{spot.description}</TableCell>
+                                                    <TableCell>{`${spot.districtName}, ${spot.provinceName}`}</TableCell>
+                                                    <TableCell>{spot.latitude}</TableCell>
+                                                    <TableCell>{spot.longitude}</TableCell>
+                                                    <TableCell>{spot.address}</TableCell>
+                                                    <TableCell>
+                                                        {spot.imageUrl && (
+                                                            <img
+                                                                src={spot.imageUrl}
+                                                                alt={spot.name}
+                                                                style={{ width: 100, height: 70, objectFit: 'cover', borderRadius: 8 }}
+                                                            />
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell>{spot.isDeleted ? 'Ngừng hoạt động' : 'Hoạt động'}</TableCell>
+                                                    <TableCell>
+                                                        <IconButton sx={{ color: '#215858' }}>
+                                                            <FiEye />
+                                                        </IconButton>
+                                                        <IconButton sx={{ color: '#215858' }} onClick={() => {
+                                                            setSelectedSpot(spot);
+                                                            setOpenEdit(true);
+                                                        }}>
+                                                            <FiEdit />
+                                                        </IconButton>
+                                                        <IconButton sx={{ color: '#215858' }} onClick={() => {
+                                                            setSelectedSpot(spot);
+                                                            setOpenDelete(true);
+                                                        }}>
+                                                            <FiTrash2 />
+                                                        </IconButton>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                    <TablePagination
+                                        component="div"
+                                        count={filteredRows.length}
+                                        page={page}
+                                        onPageChange={handleChangePage}
+                                        rowsPerPage={rowsPerPage}
+                                        onRowsPerPageChange={handleChangeRowsPerPage}
+                                        labelRowsPerPage="Số dòng mỗi trang"
+                                    />
+                                </TableContainer>
+                            )}
                         </div>
                     </main>
                 </div>
@@ -364,8 +385,14 @@ const Spot = () => {
                             color: 'white',
                             '&:hover': { backgroundColor: '#1a4646' },
                         }}
+                        disabled={loadingSave}
                     >
-                        Lưu
+                        {loadingSave ? (
+                            <>
+                                <CircularProgress size={20} sx={{ color: 'white', mr: 1 }} />
+                                Đang lưu...
+                            </>
+                        ) : 'Lưu'}
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -386,8 +413,14 @@ const Spot = () => {
                             color: 'white',
                             '&:hover': { backgroundColor: '#5c1515' },
                         }}
+                        disabled={loadingDelete}
                     >
-                        Xoá
+                        {loadingDelete ? (
+                            <>
+                                <CircularProgress size={20} sx={{ color: 'white', mr: 1 }} />
+                                Đang xoá...
+                            </>
+                        ) : 'Xoá'}
                     </Button>
                     <Button
                         onClick={() => setOpenDelete(false)}

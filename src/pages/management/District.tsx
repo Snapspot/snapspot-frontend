@@ -3,7 +3,8 @@ import Navbar from '../../components/admin/Navbar';
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination,
     Paper, IconButton, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField,
-    Select, MenuItem, Snackbar
+    Select, MenuItem, Snackbar,
+    CircularProgress
 } from '@mui/material';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import { useState, type SetStateAction, useEffect } from 'react';
@@ -31,6 +32,9 @@ const District = () => {
     const [provinces, setProvinces] = useState<{ id: string; name: string }[]>([]);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [loadingFetch, setLoadingFetch] = useState(false);
+    const [loadingSave, setLoadingSave] = useState(false);
+    const [loadingDelete, setLoadingDelete] = useState(false);
     const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>('success');
 
     const handleCloseSnackbar = () => {
@@ -44,8 +48,8 @@ const District = () => {
 
     const fetchDistricts = async () => {
         try {
+            setLoadingFetch(true);
             const response = await axios.get('/districts');
-            console.log("🔍 API Districts trả về:", response.data.data);
             const mapped = response.data.data.map((d: any) => ({
                 id: d.id,
                 name: d.name,
@@ -56,7 +60,9 @@ const District = () => {
             }));
             setDistricts(mapped);
         } catch (error) {
-            console.error('Lỗi khi gọi GET /api/districts:', error);
+            console.error('Lỗi khi gọi GET /districts:', error);
+        } finally {
+            setLoadingFetch(false);
         }
     };
 
@@ -104,6 +110,7 @@ const District = () => {
         };
 
         try {
+            setLoadingSave(true);
             if (selectedDistrict.id !== '') {
                 await axios.put(`/districts/${selectedDistrict.id}`, payload);
                 setSnackbarMessage('Cập nhật Huyện/Thị xã thành công!');
@@ -122,24 +129,28 @@ const District = () => {
             setSnackbarMessage('Đã xảy ra lỗi khi lưu Huyện/Thị xã!');
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
+        } finally {
+            setLoadingSave(false);
         }
     };
 
     const handleDeleteConfirmed = async () => {
         try {
+            setLoadingDelete(true);
             await axios.delete(`/districts/${selectedDistrict?.id}`);
             await fetchDistricts();
 
             setSnackbarMessage('Xoá Huyện/Thị xã thành công!');
             setSnackbarSeverity('success');
             setSnackbarOpen(true);
-
             setOpenDelete(false);
         } catch (error) {
             console.error('Lỗi khi xoá District:', error);
             setSnackbarMessage('Đã xảy ra lỗi khi xoá Huyện/Thị xã!');
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
+        } finally {
+            setLoadingDelete(false);
         }
     };
 
@@ -194,47 +205,52 @@ const District = () => {
                                     Thêm Huyện / Thị xã
                                 </Button>
                             </div>
-
-                            <TableContainer component={Paper} elevation={3}>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell sx={{ width: 200 }}><strong>Huyện / Thị xã</strong></TableCell>
-                                            <TableCell sx={{ width: 700 }}><strong>Mô tả</strong></TableCell>
-                                            <TableCell><strong>Thuộc tỉnh</strong></TableCell>
-                                            <TableCell><strong>Trạng thái</strong></TableCell>
-                                            <TableCell><strong>Thao tác</strong></TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {displayedRows.map((district) => (
-                                            <TableRow key={district.id}>
-                                                <TableCell>{district.name}</TableCell>
-                                                <TableCell>{district.description}</TableCell>
-                                                <TableCell>{district.provinceName}</TableCell>
-                                                <TableCell>{district.isDeleted ? 'Ngừng hoạt động' : 'Hoạt động'}</TableCell>
-                                                <TableCell>
-                                                    <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenEdit(district)}>
-                                                        <FiEdit />
-                                                    </IconButton>
-                                                    <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenDelete(district)}>
-                                                        <FiTrash2 />
-                                                    </IconButton>
-                                                </TableCell>
+                            {loadingFetch ? (
+                                <div className="flex justify-center items-center h-[300px]">
+                                    <CircularProgress sx={{ color: '#215858' }} />
+                                </div>
+                            ) : (
+                                <TableContainer component={Paper} elevation={3}>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell sx={{ width: 200 }}><strong>Huyện / Thị xã</strong></TableCell>
+                                                <TableCell sx={{ width: 700 }}><strong>Mô tả</strong></TableCell>
+                                                <TableCell><strong>Thuộc tỉnh</strong></TableCell>
+                                                <TableCell><strong>Trạng thái</strong></TableCell>
+                                                <TableCell><strong>Thao tác</strong></TableCell>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                                <TablePagination
-                                    component="div"
-                                    count={filteredRows.length}
-                                    page={page}
-                                    onPageChange={handleChangePage}
-                                    rowsPerPage={rowsPerPage}
-                                    onRowsPerPageChange={handleChangeRowsPerPage}
-                                    labelRowsPerPage="Số dòng mỗi trang"
-                                />
-                            </TableContainer>
+                                        </TableHead>
+                                        <TableBody>
+                                            {displayedRows.map((district) => (
+                                                <TableRow key={district.id}>
+                                                    <TableCell>{district.name}</TableCell>
+                                                    <TableCell>{district.description}</TableCell>
+                                                    <TableCell>{district.provinceName}</TableCell>
+                                                    <TableCell>{district.isDeleted ? 'Ngừng hoạt động' : 'Hoạt động'}</TableCell>
+                                                    <TableCell>
+                                                        <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenEdit(district)}>
+                                                            <FiEdit />
+                                                        </IconButton>
+                                                        <IconButton sx={{ color: '#215858' }} onClick={() => handleOpenDelete(district)}>
+                                                            <FiTrash2 />
+                                                        </IconButton>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                    <TablePagination
+                                        component="div"
+                                        count={filteredRows.length}
+                                        page={page}
+                                        onPageChange={handleChangePage}
+                                        rowsPerPage={rowsPerPage}
+                                        onRowsPerPageChange={handleChangeRowsPerPage}
+                                        labelRowsPerPage="Số dòng mỗi trang"
+                                    />
+                                </TableContainer>
+                            )}
                         </div>
                     </main>
                 </div>
@@ -294,8 +310,22 @@ const District = () => {
                         <Button onClick={() => setOpenEdit(false)} variant="outlined" sx={{ color: '#215858', borderColor: '#215858' }}>
                             Hủy
                         </Button>
-                        <Button onClick={handleSaveEdit} variant="contained" sx={{ backgroundColor: '#215858', color: 'white' }}>
-                            Lưu
+                        <Button
+                            onClick={handleSaveEdit}
+                            variant="contained"
+                            sx={{
+                                backgroundColor: '#215858',
+                                color: 'white',
+                                '&:hover': { backgroundColor: '#1a4646' },
+                            }}
+                            disabled={loadingSave}
+                        >
+                            {loadingSave ? (
+                                <>
+                                    <CircularProgress size={20} sx={{ color: 'white', mr: 1 }} />
+                                    Đang lưu...
+                                </>
+                            ) : 'Lưu'}
                         </Button>
                     </DialogActions>
                 </Dialog>
@@ -311,8 +341,22 @@ const District = () => {
                         <p>Bạn có chắc chắn muốn xoá <strong>{selectedDistrict.name}</strong> không?</p>
                     </DialogContent>
                     <DialogActions sx={{ backgroundColor: '#faebce' }}>
-                        <Button onClick={handleDeleteConfirmed} variant="contained" sx={{ backgroundColor: '#7a1e1e', color: 'white' }}>
-                            Xoá
+                        <Button
+                            onClick={handleDeleteConfirmed}
+                            variant="contained"
+                            sx={{
+                                backgroundColor: '#7a1e1e',
+                                color: 'white',
+                                '&:hover': { backgroundColor: '#5c1515' },
+                            }}
+                            disabled={loadingDelete}
+                        >
+                            {loadingDelete ? (
+                                <>
+                                    <CircularProgress size={20} sx={{ color: 'white', mr: 1 }} />
+                                    Đang xoá...
+                                </>
+                            ) : 'Xoá'}
                         </Button>
                         <Button onClick={() => setOpenDelete(false)} variant="outlined" sx={{ color: '#7a1e1e', borderColor: '#7a1e1e' }}>
                             Huỷ

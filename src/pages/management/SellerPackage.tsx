@@ -20,6 +20,7 @@ import {
   Snackbar,
 } from '@mui/material';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
+import CircularProgress from '@mui/material/CircularProgress';
 import { useState, useEffect } from 'react';
 import axios from '../../utils/axiosInstance';
 import MuiAlert, { type AlertColor } from '@mui/material/Alert';
@@ -76,6 +77,9 @@ const SellerPackage = () => {
   const [selectedPackage, setSelectedPackage] = useState<any>(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
@@ -132,6 +136,7 @@ const SellerPackage = () => {
 
   const handleSaveEdit = async () => {
     if (!editingPackage) return;
+    setSaving(true); // 🟡 Bắt đầu loading
 
     try {
       const numericPrice = Number(editingPackage.price) || 0;
@@ -144,21 +149,17 @@ const SellerPackage = () => {
       };
 
       if (editingPackage.id) {
-        // Cập nhật
         await axios.put(`/SellerPackages/${editingPackage.id}`, {
           ...payload,
           isDeleted: editingPackage.status === 'inactive',
         });
-
         setSnackbar({
           open: true,
           message: 'Cập nhật gói thành công!',
           severity: 'success',
         });
       } else {
-        // Thêm mới
         await axios.post('/SellerPackages', payload);
-
         setSnackbar({
           open: true,
           message: 'Thêm gói mới thành công!',
@@ -166,7 +167,7 @@ const SellerPackage = () => {
         });
       }
 
-      // Làm mới danh sách
+      // Làm mới dữ liệu
       const response = await axios.get('/SellerPackages');
       const mapped = response.data.data.map((pkg: SellerPackageType) => ({
         id: pkg.id,
@@ -181,7 +182,6 @@ const SellerPackage = () => {
         status: pkg.isDeleted ? 'inactive' : 'active',
       }));
       setPackages(mapped);
-
       handleCloseEdit();
     } catch (error: any) {
       console.error('Lỗi khi cập nhật gói:', error);
@@ -190,8 +190,11 @@ const SellerPackage = () => {
         message: 'Đã xảy ra lỗi khi lưu gói!',
         severity: 'error',
       });
+    } finally {
+      setSaving(false); // ✅ Kết thúc loading
     }
   };
+
 
 
 
@@ -206,19 +209,17 @@ const SellerPackage = () => {
   };
 
   const handleConfirmDelete = async () => {
+    if (!selectedPackage?.id) return;
+    setDeleting(true); // ⏳ Loading xoá
+
     try {
-      if (!selectedPackage?.id) return;
-
       await axios.delete(`/SellerPackages/${selectedPackage.id}`);
-      console.log(`Đã xoá gói: ${selectedPackage.name}`);
-
       setSnackbar({
         open: true,
         message: `Đã xoá gói "${selectedPackage.name}"`,
         severity: 'success',
       });
 
-      // Làm mới danh sách
       const response = await axios.get('/SellerPackages');
       const mapped = response.data.data.map((pkg: SellerPackageType) => ({
         id: pkg.id,
@@ -239,9 +240,10 @@ const SellerPackage = () => {
         message: 'Xoá gói thất bại!',
         severity: 'error',
       });
+    } finally {
+      setDeleting(false); // ✅ Kết thúc loading
     }
   };
-
 
   const handleChangePage = (_event: unknown, newPage: number) => setPage(newPage);
 
@@ -312,7 +314,9 @@ const SellerPackage = () => {
             </div>
 
             {loading ? (
-              <p className="text-center text-lg text-[#215858] mt-10">Đang tải dữ liệu...</p>
+              <div className="flex justify-center items-center h-64">
+                <CircularProgress sx={{ color: '#215858' }} />
+              </div>
             ) : (
               <TableContainer component={Paper} elevation={3}>
                 <Table>
@@ -379,8 +383,22 @@ const SellerPackage = () => {
           <Button onClick={handleCloseDelete} variant="outlined" sx={{ color: '#7a1e1e', borderColor: '#7a1e1e' }}>
             Hủy
           </Button>
-          <Button onClick={handleConfirmDelete} variant="contained" sx={{ backgroundColor: '#7a1e1e', color: 'white', '&:hover': { backgroundColor: '#1a4646' } }}>
-            Xoá
+          <Button
+            onClick={handleConfirmDelete}
+            variant="contained"
+            disabled={deleting}
+            sx={{
+              backgroundColor: '#7a1e1e',
+              color: 'white',
+              '&:hover': { backgroundColor: '#5c1515' },
+            }}
+          >
+            {deleting ? (
+              <>
+                <CircularProgress size={20} sx={{ color: 'white', mr: 1 }} />
+                Đang xoá...
+              </>
+            ) : 'Xoá'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -456,7 +474,23 @@ const SellerPackage = () => {
         </DialogContent>
         <DialogActions sx={{ backgroundColor: '#faebce' }}>
           <Button onClick={handleCloseEdit} variant="outlined" sx={{ color: '#215858', borderColor: '#215858' }}>Hủy</Button>
-          <Button onClick={handleSaveEdit} variant="contained" sx={{ backgroundColor: '#215858', color: 'white', '&:hover': { backgroundColor: '#1a4646' } }}>Lưu</Button>
+          <Button
+            onClick={handleSaveEdit}
+            variant="contained"
+            disabled={saving}
+            sx={{
+              backgroundColor: '#215858',
+              color: 'white',
+              '&:hover': { backgroundColor: '#1a4646' },
+            }}
+          >
+            {saving ? (
+              <>
+                <CircularProgress size={20} sx={{ color: 'white', mr: 1 }} />
+                Đang lưu...
+              </>
+            ) : 'Lưu'}
+          </Button>
         </DialogActions>
       </Dialog>
       <Snackbar
