@@ -1,4 +1,5 @@
-import { FaFacebookF, FaInstagram, FaDiscord } from "react-icons/fa";
+import { FaFacebookF, FaInstagram } from "react-icons/fa";
+import { SiTiktok } from "react-icons/si";
 
 const Footer = () => {
   return (
@@ -65,7 +66,13 @@ const Footer = () => {
               <FaFacebookF className="hover:opacity-80 cursor-pointer" />
             </a>
             <FaInstagram className="hover:opacity-80 cursor-pointer" />
-            <FaDiscord className="hover:opacity-80 cursor-pointer" />
+            <a
+              href="https://www.tiktok.com/@snapspotteam217?fbclid=IwY2xjawLjLPpleHRuA2FlbQIxMABicmlkETE0bXpoWUM2aFJ5T05NUTNXAR61nEmYBGa1q-9eI-zTSpuLKjuhnceVbOUJz-PRtbvKfJkNJDTcgAK5JXmpPQ_aem_7rBAOgT2S06YKZHB32Hxew"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <SiTiktok className="hover:opacity-80 cursor-pointer" />
+            </a>
           </div>
         </div>
       </div>

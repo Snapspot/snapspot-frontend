@@ -1,16 +1,64 @@
 import { FiMail, FiMapPin, FiPhone } from "react-icons/fi";
 import Slider from "react-slick";
+import { Link } from "react-router-dom";
 
 const images = [
-    "https://cdn3.ivivu.com/2015/02/vinhhanlongdiadiemselfiledepnhathanhtinh-ivivu-1.jpg",
-    "https://mytourcdn.com/upload_images/Image/Location/5_11_2015/dia-diem-du-lich-viet-nam-mytour-14.jpg",
-    "https://media.vov.vn/sites/default/files/styles/front_large_watermark/public/2021-11/du-lich-mot-minh-phu-quoc.jpg?resize=p_8,w_",
-    "https://bvhttdl.mediacdn.vn/2020/6/10/sun-world-ba-na-hills-24-15895192875941793928359-1591751128894-15917511288942046241021.jpg",
-    "https://cdn2.tuoitre.vn/zoom/480_300/471584752817336320/2024/5/30/du-lich-ha-noi-1703495521958912478347-180-470-963-1723-crop-17170584767591570643890.jpg",
-    "https://dulichviet.com.vn/images/bandidau/NOI-DIA/Con-Dao/du-lich-con-dao-mua-he-2025-du-lich-viet.jpg",
-    "https://www.elle.vn/wp-content/uploads/2017/06/30/8-tips-de-co-nhung-buc-anh-tuyet-dep-khi-di-du-lich-mot-minh-ellevn.jpg",
-    "https://images.baoangiang.com.vn/image/fckeditor/upload/2024/20240131/images/8f0d986ccf20267e7f31.jpg",
+    {
+        id: "vinh-ha-long",
+        url: "https://cdn3.ivivu.com/2015/02/vinhhanlongdiadiemselfiledepnhathanhtinh-ivivu-1.jpg",
+        title: "Vịnh Hạ Long – Kỳ quan thiên nhiên",
+        description: "Một trong 7 kỳ quan thiên nhiên thế giới với hàng nghìn đảo đá vôi kỳ vĩ.",
+        date: "15/07/2025",
+    },
+    {
+        id: "cao-nguyen-da-dong-van",
+        url: "https://mytourcdn.com/upload_images/Image/Location/5_11_2015/dia-diem-du-lich-viet-nam-mytour-14.jpg",
+        title: "Cao nguyên đá Đồng Văn",
+        description: "Vùng đất đá hoang sơ nhưng đầy sức sống ở cực Bắc Việt Nam.",
+        date: "14/07/2025",
+    },
+    {
+        id: "phu-quoc",
+        url: "https://media.vov.vn/sites/default/files/styles/front_large_watermark/public/2021-11/du-lich-mot-minh-phu-quoc.jpg?resize=p_8,w_",
+        title: "Phú Quốc – Thiên đường biển đảo",
+        description: "Nơi lý tưởng để thư giãn, khám phá và lưu giữ khoảnh khắc đáng nhớ.",
+        date: "12/07/2025",
+    },
+    {
+        id: "ba-na-hills",
+        url: "https://bvhttdl.mediacdn.vn/2020/6/10/sun-world-ba-na-hills-24-15895192875941793928359-1591751128894-15917511288942046241021.jpg",
+        title: "Bà Nà Hills – xứ sở thần tiên giữa núi rừng Đà Nẵng",
+        description: "Khu nghỉ dưỡng nổi tiếng với cầu Vàng và khí hậu mát mẻ quanh năm.",
+        date: "11/07/2025",
+    },
+    {
+        id: "ha-noi",
+        url: "https://cdn2.tuoitre.vn/zoom/480_300/471584752817336320/2024/5/30/du-lich-ha-noi-1703495521958912478347-180-470-963-1723-crop-17170584767591570643890.jpg",
+        title: "Hà Nội – nơi giao thoa giữa hiện đại và cổ kính",
+        description: "Thủ đô ngàn năm văn hiến với hồ Gươm, phố cổ và nền ẩm thực đặc sắc.",
+        date: "10/07/2025",
+    },
+    {
+        id: "con-dao",
+        url: "https://dulichviet.com.vn/images/bandidau/NOI-DIA/Con-Dao/du-lich-con-dao-mua-he-2025-du-lich-viet.jpg",
+        title: "Côn Đảo – thiên nhiên hoang sơ, yên bình và thiêng liêng",
+        description: "Hòn đảo linh thiêng với những bãi biển hoang sơ và giá trị lịch sử sâu sắc.",
+        date: "08/07/2025",
+    },
+    {
+        url: "https://www.elle.vn/wp-content/uploads/2017/06/30/8-tips-de-co-nhung-buc-anh-tuyet-dep-khi-di-du-lich-mot-minh-ellevn.jpg",
+        title: "Hành trình khám phá bản thân qua từng bước chân du lịch",
+        description: "Du lịch không chỉ là khám phá thế giới, mà còn là hành trình tìm lại chính mình.",
+        date: "06/07/2025",
+    },
+    {
+        url: "https://images.baoangiang.com.vn/image/fckeditor/upload/2024/20240131/images/8f0d986ccf20267e7f31.jpg",
+        title: "Rừng Tràm Trà Sư – không gian xanh thanh bình của miền Tây",
+        description: "Nơi lý tưởng để thả mình giữa thiên nhiên ngập nước và chim trời ríu rít.",
+        date: "05/07/2025",
+    }
 ];
+
 
 const features = [
     {
@@ -80,16 +128,33 @@ const BlogSection = () => {
             {/* Slider ảnh bên dưới */}
             <div className="w-full max-w-7xl mx-auto px-2 -mx-2 mt-12">
                 <Slider {...settings}>
-                    {images.map((img, index) => (
-                        <div key={index} className="px-2">
-                            <img
-                                src={img}
-                                alt={`Image ${index + 1}`}
-                                className="w-full h-[400px] object-cover rounded-xl shadow-lg"
-                            />
+                    {images.map((item, index) => (
+                        <div key={index} className="px-3">
+                            <Link to={`/blog/${item.id}`}>
+                                <div className="group relative bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl max-h-[400px]">
+
+                                    {/* Ảnh — chiếm toàn bộ chiều cao */}
+                                    <div className="overflow-hidden">
+                                        <img
+                                            src={item.url}
+                                            alt={item.title}
+                                            className="w-full h-[400px] object-cover transition-transform duration-500 group-hover:-translate-y-24"
+                                        />
+                                    </div>
+
+                                    {/* Nội dung xuất hiện khi hover */}
+                                    <div className="absolute bottom-0 left-0 w-full bg-white px-4 py-3 opacity-0 group-hover:opacity-100 translate-y-full group-hover:translate-y-0 transition-all duration-500 ease-in-out">
+                                        <h3 className="text-base font-semibold text-[#215858] mb-1">{item.title}</h3>
+                                        <p className="text-sm text-gray-600 mb-1">{item.description}</p>
+                                        <span className="text-xs text-gray-400">{item.date}</span>
+                                    </div>
+
+                                </div>
+                            </Link>
                         </div>
                     ))}
                 </Slider>
+
             </div>
 
             <div className="relative z-10 text-white text-center mt-16 px-4">
