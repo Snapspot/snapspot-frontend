@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet";
 import Navbar from "../components/home/Navbar";
 import Footer from "../components/home/Footer";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
 const blogPosts = [
     {
@@ -29,7 +30,7 @@ const blogPosts = [
         description: "Vùng đất đá hoang sơ nhưng đầy sức sống ở cực Bắc Việt Nam.",
         url: "https://mytourcdn.com/upload_images/Image/Location/5_11_2015/dia-diem-du-lich-viet-nam-mytour-14.jpg",
         date: "14/07/2025",
-content: `Cao nguyên đá Đồng Văn thuộc tỉnh Hà Giang, là Công viên địa chất toàn cầu UNESCO với cảnh sắc hùng vĩ. Đây là nơi giao thoa văn hóa của nhiều dân tộc thiểu số và có các điểm đến nổi bật như Dinh Vua Mèo, Cột cờ Lũng Cú và đèo Mã Pí Lèng.
+        content: `Cao nguyên đá Đồng Văn thuộc tỉnh Hà Giang, là Công viên địa chất toàn cầu UNESCO với cảnh sắc hùng vĩ. Đây là nơi giao thoa văn hóa của nhiều dân tộc thiểu số và có các điểm đến nổi bật như Dinh Vua Mèo, Cột cờ Lũng Cú và đèo Mã Pí Lèng.
 
         Điểm nhấn của cao nguyên là những thửa ruộng bậc thang uốn lượn theo sườn núi, tạo nên bức tranh thiên nhiên tuyệt đẹp. Mùa thu là thời điểm lý tưởng để chiêm ngưỡng những cánh đồng lúa chín vàng, trong khi mùa xuân được điểm tô bởi sắc hoa đào, hoa mận trắng tinh khôi.
 
@@ -100,7 +101,7 @@ Ngoài ra, bạn có thể tham gia các lễ hội đường phố, thưởng t
         title: "Côn Đảo – thiên nhiên hoang sơ, yên bình và thiêng liêng",
         description: "Hòn đảo linh thiêng với những bãi biển hoang sơ và giá trị lịch sử sâu sắc.",
         date: "08/07/2025",
-content: `Côn Đảo là điểm đến lý tưởng cho những ai yêu thiên nhiên và muốn tìm về sự tĩnh lặng. Với bãi biển hoang sơ, làn nước trong xanh cùng hệ sinh thái phong phú, nơi đây là thiên đường nghỉ dưỡng và khám phá sinh thái.
+        content: `Côn Đảo là điểm đến lý tưởng cho những ai yêu thiên nhiên và muốn tìm về sự tĩnh lặng. Với bãi biển hoang sơ, làn nước trong xanh cùng hệ sinh thái phong phú, nơi đây là thiên đường nghỉ dưỡng và khám phá sinh thái.
 
         Bên cạnh vẻ đẹp tự nhiên, Côn Đảo còn là vùng đất thiêng liêng gắn với lịch sử dân tộc. Nghĩa trang Hàng Dương và mộ cô Sáu là nơi nhiều người tìm đến để tưởng niệm và cầu bình an.
 
@@ -137,6 +138,11 @@ const BlogDetail = () => {
         );
     }
 
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }, [id]);
+
+
     return (
         <div className="relative w-screen min-h-screen overflow-x-hidden text-gray-800">
             <Helmet>
@@ -152,7 +158,7 @@ const BlogDetail = () => {
                         "url('https://static1.squarespace.com/static/63f8b23b0626755198127ae3/63fc8c7f15e5ba00f5bf5e84/63fd08a2e559cd5c7086f8b2/1677527755377/vietnam-halong-bay...t=1500w')",
                 }}
             />
-<div className="absolute inset-0 bg-[#f5eacc] opacity-60 z-0"></div>
+            <div className="absolute inset-0 bg-[#f5eacc] opacity-60 z-0"></div>
 
             <div className="relative z-10">
                 <Navbar />

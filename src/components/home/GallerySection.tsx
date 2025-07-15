@@ -7,7 +7,6 @@ interface PlaceType {
     name: string;
     location: string;
     description: string;
-    rating: number;
     bestTime: string;
     features: string[];
     gallery: string[];
@@ -21,7 +20,6 @@ const images = [
         name: "Hồ Gươm",
         location: "Hà Nội",
         description: "Biểu tượng văn hóa ngàn năm của Thủ đô Hà Nội, nơi gắn liền với truyền thuyết rùa thần và là trái tim của khu phố cổ.",
-        rating: 4.6,
         bestTime: "5:00 - 9:00 hoặc 17:00 - 20:00",
         features: ["Di tích lịch sử", "Không gian xanh", "Văn hóa truyền thống", "Cà phê vỉa hè"],
         gallery: [
@@ -40,7 +38,6 @@ const images = [
         name: "Tây Ninh",
         location: "Tây Ninh",
         description: "Nơi giao thoa giữa tôn giáo và thiên nhiên với núi Bà Đen hùng vĩ và Tòa Thánh Cao Đài độc đáo.",
-        rating: 4.4,
         bestTime: "7:00 - 17:00",
         features: ["Núi non", "Tín ngưỡng tôn giáo", "Cáp treo", "Tòa thánh độc đáo"],
         gallery: [
@@ -59,7 +56,6 @@ const images = [
         name: "Chợ đêm Ninh Thuận",
         location: "Ninh Thuận",
         description: "Không gian rực rỡ sắc màu về đêm, mang đậm phong vị miền Trung với ẩm thực đường phố và văn hóa bản địa.",
-        rating: 4.0,
         bestTime: "18:00 - 22:00",
         features: ["Ẩm thực đường phố", "Văn hóa bản địa", "Đèn lồng lung linh", "Đặc sản địa phương"],
         gallery: [
@@ -78,7 +74,6 @@ const images = [
         name: "Đà Nẵng",
         location: "Đà Nẵng",
         description: "Nổi tiếng với bãi biển Mỹ Khê tuyệt đẹp, thành phố đáng sống Đà Nẵng là điểm đến lý tưởng cho nghỉ dưỡng.",
-        rating: 4.8,
         bestTime: "Tháng 3 - Tháng 8",
         features: ["Bãi biển đẹp", "Cầu Rồng", "Ẩm thực phong phú", "Thành phố đáng sống"],
         gallery: [
@@ -97,7 +92,6 @@ const images = [
         name: "Đại Nội Huế",
         location: "Thừa Thiên Huế",
         description: "Quần thể di tích cổ kính ghi dấu vương triều nhà Nguyễn, mang đậm nét hoài cổ và di sản văn hóa cung đình.",
-        rating: 4.5,
         bestTime: "7:00 - 17:00",
         features: ["Di sản văn hóa", "Kiến trúc cung đình", "Trang phục truyền thống", "Cảnh chụp cổ điển"],
         gallery: [
@@ -116,7 +110,6 @@ const images = [
         name: "Phú Quốc",
         location: "Kiên Giang",
         description: "Thiên đường biển đảo với làn nước trong xanh, bãi cát trắng mịn và những khu nghỉ dưỡng đẳng cấp quốc tế.",
-        rating: 4.7,
         bestTime: "Tháng 11 - Tháng 4",
         features: ["Bãi biển", "Resort cao cấp", "Hải sản tươi sống", "Hoàng hôn đẹp"],
         gallery: [
@@ -135,7 +128,7 @@ const images = [
         name: "Bình Thuận",
         location: "Bình Thuận",
         description: "Vùng đất nắng gió với đồi cát bay Mũi Né, những bãi biển hoang sơ và văn hóa Chăm độc đáo.",
-        rating: 4.3,
+
         bestTime: "Tháng 12 - Tháng 5",
         features: ["Đồi cát bay", "Tháp Chăm", "Biển hoang sơ", "Hải sản giá rẻ"],
         gallery: [
@@ -239,9 +232,6 @@ const GallerySection = () => {
                                             alt={item.name}
                                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                         />
-                                        <div className="absolute top-3 right-3 bg-white text-yellow-500 text-sm font-semibold px-2 py-1 rounded-full shadow">
-                                            ⭐ {item.rating}
-                                        </div>
                                         <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 via-black/30 to-transparent text-white p-4 text-left">
                                             <h3 className="text-lg font-bold">{item.name}</h3>
                                             <p className="text-sm flex items-center gap-1 text-gray-200">
