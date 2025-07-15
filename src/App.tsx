@@ -23,6 +23,8 @@ import Company from './pages/management/Company';
 import SellerPackage from './pages/management/SellerPackage';
 import Agency from './pages/management/Agency';
 import AgencyService from './pages/management/AgencyService';
+import Blog from './pages/Blog';
+import BlogDetail from './pages/BlogDetail';
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:id" element={<BlogDetail />} />
 
         {/* Redirect "/" to "/home" */}
         <Route path="/" element={<Navigate to="/home" replace />} />
