@@ -7,11 +7,11 @@ import InfoSection from '../components/home/InfoSection';
 
 const Home = () => {
   return (
-    <div className="relative w-screen h-screen">
+    <div className="relative w-screen min-h-screen">
       <Navbar />
       <div>
         {/* Section 1: Spot */}
-        <div className="flex h-screen w-screen">
+        <div className="flex min-h-screen w-screen">
           <SpotSection
             title="Vịnh Hạ Long"
             description="Vịnh Hạ Long là địa điểm du lịch Quảng Ninh hấp dẫn bậc nhất..."
@@ -20,7 +20,7 @@ const Home = () => {
         </div>
 
         {/* Section 2: Gallery */}
-        <div className="flex h-screen w-screen">
+        <div className="flex min-h-screen w-screen">
           <GallerySection />
         </div>
 

@@ -131,21 +131,21 @@ const BlogSection = () => {
                     {images.map((item, index) => (
                         <div key={index} className="px-3">
                             <Link to={`/blog/${item.id}`}>
-                                <div className="group relative bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl max-h-[400px]">
+                                <div className="bg-white rounded-xl shadow-lg overflow-hidden h-[400px] flex flex-col justify-between transition-all duration-500 hover:shadow-2xl">
 
-                                    {/* Ảnh — chiếm toàn bộ chiều cao */}
-                                    <div className="overflow-hidden">
+                                    {/* Ảnh — chiếm khoảng 65% chiều cao */}
+                                    <div className="h-[65%] overflow-hidden">
                                         <img
                                             src={item.url}
                                             alt={item.title}
-                                            className="w-full h-[400px] object-cover transition-transform duration-500 group-hover:-translate-y-24"
+                                            className="w-full h-full object-cover"
                                         />
                                     </div>
 
-                                    {/* Nội dung xuất hiện khi hover */}
-                                    <div className="absolute bottom-0 left-0 w-full bg-white px-4 py-3 opacity-0 group-hover:opacity-100 translate-y-full group-hover:translate-y-0 transition-all duration-500 ease-in-out">
-                                        <h3 className="text-base font-semibold text-[#215858] mb-1">{item.title}</h3>
-                                        <p className="text-sm text-gray-600 mb-1">{item.description}</p>
+                                    {/* Nội dung — chiếm 35% chiều cao */}
+                                    <div className="h-[35%] px-4 py-3 bg-white">
+                                        <h3 className="text-base font-semibold text-[#215858] mb-1 line-clamp-2">{item.title}</h3>
+                                        <p className="text-sm text-gray-600 mb-1 line-clamp-2">{item.description}</p>
                                         <span className="text-xs text-gray-400">{item.date}</span>
                                     </div>
 
@@ -154,7 +154,6 @@ const BlogSection = () => {
                         </div>
                     ))}
                 </Slider>
-
             </div>
 
             <div className="relative z-10 text-white text-center mt-16 px-4">
