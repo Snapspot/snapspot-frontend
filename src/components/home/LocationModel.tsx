@@ -6,7 +6,6 @@ interface LocationData {
   name: string;
   location: string;
   description: string;
-  rating: number;
   bestTime: string;
   features: string[];
   gallery: string[];
@@ -72,9 +71,6 @@ const LocationModal: React.FC<LocationModalProps> = ({ data, isOpen, onClose }) 
           <div>
             <h2 className="text-2xl font-bold">{data.name}</h2>
             <p className="text-sm text-gray-600">📍 {data.location}</p>
-          </div>
-          <div className="bg-yellow-400 text-white text-sm font-bold px-3 py-1 rounded-full">
-            ⭐ {data.rating}
           </div>
         </div>
 
