@@ -4,36 +4,46 @@ import { useNavigate } from "react-router-dom";
 const Navbar = () => {
   const navigate = useNavigate();
 
-  return (
-    <nav className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-8 py-4 bg-transparent text-white">
-      {/* Logo từ thư mục public */}
+ return (
+    <nav className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-8 py-4 bg-white">
+      {/* Logo */}
       <div className="flex items-center">
-        <img src="/images/logo-03.png" alt="SnapSpot Logo" className="h-10 w-auto" />
+        <img src="/images/logo-03.png" alt="SnapSpot Logo" className="h-5 w-auto" />
       </div>
 
-      {/* Menu */}
-      <div className="flex space-x-8 text-[#ffffff] font-semibold">
-        <button onClick={() => navigate("/home")} className="hover:underline">Home</button>
-        <button onClick={() => navigate("/services")} className="hover:underline">Service</button>
-        <button onClick={() => navigate("/about")} className="hover:underline">About Us</button>
-        <button onClick={() => navigate("/blog")} className="hover:underline">Blog</button>
-      </div>
-
-      <div className="flex space-x-4">
-        {/* Nút Register */}
-        <button
-          onClick={() => navigate("/register")}
-          className="border border-white px-4 py-2 rounded hover:bg-white hover:text-black text-white transition-colors duration-300"
-        >
-          Register
+      {/* Menu chính */}
+      <div className="flex items-center space-x-12">
+        <button onClick={() => navigate("/home")} 
+          className="text-[#215858] hover:text-[#0267CF] text-lg font-medium">
+          Trang chủ
         </button>
+        <button onClick={() => navigate("/services")}
+          className="text-[#215858] hover:text-[#0267CF] text-lg font-medium">
+          Dịch vụ
+        </button>
+        <button onClick={() => navigate("/blog")}
+          className="text-[#215858] hover:text-[#0267CF] text-lg font-medium">
+          Blog
+        </button>
+          <button onClick={() => navigate("/about")}
+          className="text-[#215858] hover:text-[#0267CF] text-lg font-medium">
+          Về chúng tôi
+        </button>
+        <button onClick={() => navigate("/contact")}
+          className="text-[#215858] hover:text-[#0267CF] text-lg font-medium">
+          Liên hệ
+        </button>
+      </div>
 
-        {/* Nút Login */}
-        <button
-          onClick={() => navigate("/login")}
-          className="border border-white px-4 py-2 rounded hover:bg-white hover:text-black text-white transition-colors duration-300"
-        >
-          Login
+      {/* Buttons đăng nhập/đăng ký */}
+      <div className="flex items-center space-x-4">
+        <button onClick={() => navigate("/login")}
+          className="bg-[#215858] text-white px-4 py-2 rounded-md hover:bg-[#1a4646] transition duration-300">
+          Đăng nhập
+        </button>
+        <button onClick={() => navigate("/register")}
+          className="bg-[#215858] text-white px-4 py-2 rounded-md hover:bg-[#1a4646] transition duration-300">
+          Đăng ký
         </button>
       </div>
     </nav>
