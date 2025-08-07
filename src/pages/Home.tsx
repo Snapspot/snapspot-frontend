@@ -20,8 +20,6 @@ const Home = () => {
           {/* Section 1: Spot */}
           <div className="flex min-h-screen w-screen">
             <SpotSection
-              title="Vịnh Hạ Long"
-              description="Vịnh Hạ Long là địa điểm du lịch Quảng Ninh hấp dẫn bậc nhất..."
               onClick={() => console.log("Đi đến trang chi tiết")}
             />
           </div>
