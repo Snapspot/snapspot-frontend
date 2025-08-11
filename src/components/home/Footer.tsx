@@ -30,26 +30,29 @@ const Footer = () => {
           </p>
         </div>
 
-           {/* Menu */}
-<div className="flex flex-col items-start ml-30">
-  <h3 className="text-lg font-bold uppercase tracking-wide mb-5">Menu</h3>
-  <ul className="space-y-5 text-sm opacity-80 text-left">
-    <li>Map</li>
-    <li>About Us</li>
-    <li>Blog</li>
-  </ul>
-</div>
+        {/* Menu */}
+        <div className="flex flex-col items-start ml-30">
+          <h3 className="text-lg font-bold uppercase tracking-wide mb-5">
+            Menu
+          </h3>
+          <ul className="space-y-5 text-sm opacity-80 text-left">
+            <li>Map</li>
+            <li>About Us</li>
+            <li>Blog</li>
+          </ul>
+        </div>
 
-
-{/* Contact info */}
-<div className="flex flex-col items-start">
-    <h3 className="text-lg font-bold uppercase tracking-wide mb-5">Thông tin liên hệ</h3>
-    <ul className="space-y-5 text-sm opacity-80 text-left">
-        <li>(+84) 123 456 789</li>
-        <li>snapspot@gmail.com</li>
-        <li>Thành phố Hồ Chí Minh, Việt Nam</li>
-    </ul>
-</div>
+        {/* Contact info */}
+        <div className="flex flex-col items-start">
+          <h3 className="text-lg font-bold uppercase tracking-wide mb-5">
+            Thông tin liên hệ
+          </h3>
+          <ul className="space-y-5 text-sm opacity-80 text-left">
+            <li>(+84) 123 456 789</li>
+            <li>snapspot@gmail.com</li>
+            <li>Thành phố Hồ Chí Minh, Việt Nam</li>
+          </ul>
+        </div>
 
         {/* Mạng xã hội */}
         <div className="flex flex-col items-start text-[#215858]">

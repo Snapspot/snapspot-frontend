@@ -25,7 +25,7 @@ import Agency from './pages/management/Agency';
 import AgencyService from './pages/management/AgencyService';
 import Blog from './pages/Blog';
 import BlogDetail from './pages/BlogDetail';
-
+import Aboutus from './pages/Aboutus';
 function App() {
   return (
     <Router>
@@ -36,7 +36,7 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:id" element={<BlogDetail />} />
-
+        <Route path="/about" element={<Aboutus />} />
         {/* Redirect "/" to "/home" */}
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/services" element={<Services/>} />

@@ -29,10 +29,7 @@ const Navbar = () => {
           className="text-[#215858] hover:text-[#0267CF] text-lg font-medium">
           Về chúng tôi
         </button>
-        <button onClick={() => navigate("/contact")}
-          className="text-[#215858] hover:text-[#0267CF] text-lg font-medium">
-          Liên hệ
-        </button>
+       
       </div>
 
       {/* Buttons đăng nhập/đăng ký */}
