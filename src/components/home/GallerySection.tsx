@@ -244,7 +244,7 @@ const GallerySection = () => {
                 </div>
 
                 {/* Slider responsive */}
-                <div className="w-full max-w-7xl mx-auto px-1 sm:px-2 md:px-4">
+                <div className="w-full max-w-8xl mx-auto px-1 sm:px-2 md:px-4">
                     <Slider {...settings}>
                         {images.map((item, index) => (
                             <div key={index} className="px-1 sm:px-2 md:px-3">

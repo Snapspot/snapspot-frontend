@@ -6,8 +6,16 @@ const Navbar = () => {
    return (
     <nav className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-8 py-4 bg-white">
       {/* Logo */}
-      <div className="flex items-center">
-        <img src="/images/logo-03.png" alt="SnapSpot Logo" className="h-5 w-auto" />
+          <div className="flex items-center">
+        <button
+          onClick={() => navigate("/home")} 
+          className="focus:outline-none"
+        >
+          <img
+            src="/images/logo-03.png"
+            className="h-5 w-auto cursor-pointer"
+          />
+        </button>
       </div>
 
       {/* Menu chính */}

@@ -1,6 +1,5 @@
 import Navbar from '../components/home/TransparentNavbar';
-import Footer from '../components/home/GreenFooter';
-import BlogSection from '../components/home/BlogSection';
+import GreenFooter from '../components/home/GreenFooter';
 import InfoSection from '../components/home/InfoSection';
 import { Helmet } from "react-helmet";
 import HeroSection from '../components/home/HeroSection';
@@ -50,7 +49,7 @@ const AboutUs = () => {
           </div>
         </div>
         
-        <Footer />
+        <GreenFooter />
       </div>
     </>
   );

@@ -51,20 +51,35 @@ const images = [
     date: "08/07/2025",
   },
   {
-    id: "travel-journey",
-    url: "https://www.elle.vn/wp-content/uploads/2017/06/30/8-tips-de-co-nhung-buc-anh-tuyet-dep-khi-di-du-lich-mot-minh-ellevn.jpg",
-    title: "Hành trình khám phá bản thân qua từng bước chân du lịch",
+    id: "sapa",
+    url: "https://i.pinimg.com/736x/2a/5b/9f/2a5b9f7b6914558a30af108a2b92c325.jpg",
+    title: "Sa Pa – Thiên đường mây trắng",
     description:
-      "Du lịch không chỉ là khám phá thế giới, mà còn là hành trình tìm lại chính mình.",
-    date: "06/07/2025",
+      "Sapa, một thị trấn vùng cao Tây Bắc, luôn là điểm đến mơ ước của những tâm hồn yêu thiên nhiên và muốn khám phá .",
+    date: "05/07/2025",
   },
   {
-    id: "rung-tram-tra-su",
-    url: "https://images.baoangiang.com.vn/image/fckeditor/upload/2024/20240131/images/8f0d986ccf20267e7f31.jpg",
-    title: "Rừng Tràm Trà Sư – không gian xanh thanh bình của miền Tây",
+    id: "hoi-an",
+    url: "https://i.pinimg.com/1200x/18/16/8b/18168b400406687b8371b743d77e1154.jpg",
+    title: "Hội An – Phố cổ quyến rũ",
+    description: "Thành phố cổ với những ngôi nhà cổ kính và đèn lồng rực rỡ.",
+    date: "03/07/2025",
+  },
+  {
+    id: "nha-trang",
+    url: "https://i.pinimg.com/1200x/22/07/03/220703bd07c427acc9ca6d1d7455c263.jpg",
+    title: "Nha Trang – Bãi biển xanh ngắt",
     description:
-      "Nơi lý tưởng để thả mình giữa thiên nhiên ngập nước và chim trời ríu rít.",
-    date: "05/07/2025",
+      "Thành phố biển xinh đẹp với làn nước trong xanh và cát trắng mịn.",
+    date: "01/07/2025",
+  },
+  {
+    id: "Viện Hải Dương Học Nha Trang",
+    url: "https://i.pinimg.com/736x/3e/e8/09/3ee8095fe6d0749af8a2c9d3353839ce.jpg",
+    title: "Khám phá Viện Hải Dương Học Nha Trang",
+    description:
+      "Địa chỉ Viện Hải Dương Học Nha Trang là vấn đề được rất nhiều người quan tâm và thắc mắc. Nơi đây là một trong những điểm đến thú vị cho những ai yêu thích những sinh vật biển độc đáo.",
+    date: "01/04/2024",
   },
 ];
 
@@ -168,7 +183,7 @@ const BlogSection = () => {
       <div className="absolute inset-0 bg-[#f5eacc] opacity-60" />
 
       {/* Blog Slider Section */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-2 sm:px-4 md:px-6 mb-12 sm:mb-16 md:mb-20">
+      <div className="relative z-10 w-full max-w-8xl mx-auto px-2 sm:px-4 md:px-6 mb-12 sm:mb-16 md:mb-20">
         <Slider {...settings}>
           {images.map((item, index) => (
             <div key={index} className="px-2 sm:px-3">
