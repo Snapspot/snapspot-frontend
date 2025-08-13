@@ -1,5 +1,5 @@
 import Navbar from '../components/home/TransparentNavbar';
-import Footer from '../components/home/GreenFooter';
+import GreenFooter from '../components/home/GreenFooter';
 import { Helmet } from "react-helmet";
 import { useEffect, useState } from 'react';
 import axiosInstance from '../utils/axiosInstance';
@@ -20,9 +20,9 @@ const imageMap: Record<string, string> = {
 };
 
 const saveTagMap: Record<string, string> = {
-  'Gói Cơ Bản': 'Tiết kiệm 66%',
-  'Gói Tiêu Chuẩn': 'Tiết kiệm 37%',
-  'Gói Cao Cấp': 'Tiết kiệm 33%',
+  'Gói Cơ Bản': 'Tiết kiệm 83%',
+  'Gói Tiêu Chuẩn': 'Tiết kiệm 80%',
+  'Gói Cao Cấp': 'Tiết kiệm 77%',
 };
 
 const descriptionMap: Record<string, string[]> = {
@@ -56,8 +56,8 @@ const descriptionMap: Record<string, string[]> = {
 
 const originalPriceMap: { [key: string]: number } = {
   'Gói Cơ Bản': 299000,
-  'Gói Tiêu Chuẩn': 399000,
-  'Gói Cao Cấp': 750000,
+  'Gói Tiêu Chuẩn': 500000,
+  'Gói Cao Cấp': 899000,
 };
 
 const subTextMap: Record<string, string> = {
@@ -243,7 +243,7 @@ const Services = () => {
             )}
           </div>
         </div>
-        <Footer />
+        <GreenFooter />
       </div>
     </>
   );
