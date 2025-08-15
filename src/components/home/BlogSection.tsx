@@ -245,13 +245,13 @@ const BlogSection = () => {
           <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium">
             Dễ dàng
           </span>
-          <span className="text-2xl sm:text-3xl md:text-4xl lg:text-4.5xl font-extrabold tracking-wide">
+          <span className="text-2xl sm:text-3xl md:text-4xl lg:text-4.5xl font-bold tracking-wide">
             tìm kiếm
           </span>
           <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium">
             địa điểm
           </span>
-          <span className="text-xl sm:text-2xl md:text-3xl lg:text-4.5xl font-bold">
+          <span className="text-2xl sm:text-3xl md:text-4xl lg:text-4.5xl font-bold">
             chụp ảnh
           </span>
           <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium">
@@ -260,7 +260,7 @@ const BlogSection = () => {
         </div>
 
         {/* Third line: TRÊN VIỆT NAM */}
-        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-6xl font-extrabold tracking-widest">
+        <h2 className="text-5xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-widest ">
           TRÊN VIỆT NAM
         </h2>
       </div>

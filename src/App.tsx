@@ -14,7 +14,7 @@ import Spot from './pages/management/Spot'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Home from './pages/Home';
-import Services from './pages/Services';
+import ServicesPage from './pages/ServicesPage';
 import ThirdpartyDashboard from './pages/thirdparty/Dashboard';
 import BranchManagement from './pages/thirdparty/Branch';
 import ThirdpartyRatings from './pages/thirdparty/Ratings';
@@ -39,7 +39,7 @@ function App() {
         <Route path="/about" element={<Aboutus />} />
         {/* Redirect "/" to "/home" */}
         <Route path="/" element={<Navigate to="/home" replace />} />
-        <Route path="/services" element={<Services/>} />
+        <Route path="/Services" element={<ServicesPage/>} />
 
         {/* Protected routes (role = Admin) */}
         <Route element={<PrivateRoute allowedRoles={['Admin']} />}>

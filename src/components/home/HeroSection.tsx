@@ -9,7 +9,6 @@ const EnhancedHeroSection = () => {
     offset: ["start start", "end start"],
   })
 
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"])
   const opacity = useTransform(scrollYProgress, [0, 1], [1, 0])
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0)

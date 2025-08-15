@@ -1,18 +1,13 @@
 "use client"
 
-import { motion, useScroll, useTransform } from "framer-motion"
-import { MapPin, Heart, Camera, Eye } from "lucide-react"
-import { useRef, useState } from "react"
+import { motion } from "framer-motion"
+import { MapPin, Camera } from "lucide-react"
+import { useRef } from "react"
 
 const GallerySectionAu = () => {
   const ref = useRef(null)
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  })
 
-  const y = useTransform(scrollYProgress, [0, 1], ["100px", "-100px"])
-  const [selectedImage, setSelectedImage] = useState<number | null>(null)
+  // Removed unused selectedImage state
 
   const galleryImages = [
     {
@@ -100,7 +95,6 @@ const GallerySectionAu = () => {
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
               className="group cursor-pointer"
-              onClick={() => setSelectedImage(index)}
             >
               <motion.div
                 className="relative overflow-hidden rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500"

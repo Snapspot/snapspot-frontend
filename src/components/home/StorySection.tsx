@@ -147,7 +147,7 @@ const StorySection = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.8 }}
                 viewport={{ once: true }}
-                className="font-extralight text-2xl text-slate-800 bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent"
+                className="font-extralight text-2xl bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent"
               >
                 SnapSpot Chụp ảnh đúng nơi - tỏa sáng đúng chất.
               </motion.p>

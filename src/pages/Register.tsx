@@ -52,7 +52,6 @@ const Register = () => {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
   });
 
-
   const [errors, setErrors] = useState<{
     fullName?: string;
     email?: string;
@@ -63,6 +62,10 @@ const Register = () => {
     agreeTerms?: string;
   }>({});
 
+  // Scroll to top khi component mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const validate = () => {
     const newErrors: typeof errors = {};

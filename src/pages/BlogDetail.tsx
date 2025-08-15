@@ -296,7 +296,7 @@ const formatDate = (dateStr: string) => {
 // =============== COMPONENT CHÍNH ===============
 const BlogDetail = () => {
   const { id } = useParams();
-  const [readingProgress, setReadingProgress] = useState(0);
+  // const [readingProgress, setReadingProgress] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
 
   // Tìm bài hiện tại
@@ -334,17 +334,18 @@ const BlogDetail = () => {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    const handleScroll = () => {
-      const totalScroll = document.documentElement.scrollTop;
-      const windowHeight =
-        document.documentElement.scrollHeight -
-        document.documentElement.clientHeight;
-      const scroll = `${totalScroll / windowHeight}`;
-      setReadingProgress(Math.round(parseFloat(scroll) * 100));
-    };
+    // Removed readingProgress logic since it's unused
+    // const handleScroll = () => {
+    //   const totalScroll = document.documentElement.scrollTop;
+    //   const windowHeight =
+    //     document.documentElement.scrollHeight -
+    //     document.documentElement.clientHeight;
+    //   const scroll = `${totalScroll / windowHeight}`;
+    //   setReadingProgress(Math.round(parseFloat(scroll) * 100));
+    // };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    // window.addEventListener("scroll", handleScroll);
+    // return () => window.removeEventListener("scroll", handleScroll);
   }, [id]);
 
   if (!post) {
@@ -419,7 +420,7 @@ const BlogDetail = () => {
         </div>
 
         {/* Main Content */}
-        <div className="container mx-auto px-4 pb-16">
+        <div className="container mx-auto px-8 pb-16">
           <div className="flex flex-col lg:flex-row gap-12">
             {/* Main Article - 70% */}
             <div className="w-full lg:w-[70%]">

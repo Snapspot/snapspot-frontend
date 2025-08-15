@@ -1,6 +1,5 @@
 import Navbar from "../components/home/TransparentNavbar";
 import GreenFooter from "../components/home/GreenFooter";
-import { Helmet } from "react-helmet";
 import HeroSection from "../components/home/HeroSection";
 import StorySection from "../components/home/StorySection";
 import FeaturesSection from "../components/home/FeaturesSection";
