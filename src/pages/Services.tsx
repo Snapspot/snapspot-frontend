@@ -143,6 +143,15 @@ const Services = () => {
         style={{ backgroundColor: "#FAEBCE" }}
         aria-labelledby="services-heading"
       >
+        {/* Background Image Layer */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat -z-20"
+          style={{
+            backgroundImage: "url('https://static1.squarespace.com/static/63f8b23b0626755198127ae3/63fc8c7f15e5ba00f5bf5e84/63fd08a2e559cd5c7086f8b2/1677527755377/vietnam-halong-bay-01.jpg?format=1500w')",
+            opacity: 0.5
+          }}
+        />
+
         {/* Decorative background elements */}
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/30 via-transparent to-teal-50/30 -z-10" />
         <div className="hidden md:block absolute top-20 left-10 w-20 h-20 bg-emerald-200/20 rounded-full blur-xl -z-10" />
@@ -151,6 +160,7 @@ const Services = () => {
         <div className="mx-auto max-w-7xl px-4 md:px-8 py-12 md:py-16 lg:py-24">
           {/* Header Section */}
           <div className="text-center mb-12 md:mb-16 lg:mb-20">
+            
             {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-100 to-teal-100 border border-emerald-200 px-4 py-2 rounded-full mb-6">
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />

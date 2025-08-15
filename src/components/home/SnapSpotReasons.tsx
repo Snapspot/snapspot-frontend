@@ -140,6 +140,15 @@ const SnapSpotReasonsRedesigned = ({
       style={{ backgroundColor: "#FAEBCE" }}
       aria-labelledby="snapspot-reasons-heading"
     >
+      {/* Background Image Layer */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat -z-20"
+        style={{
+          backgroundImage: "url('https://i.pinimg.com/736x/9b/5d/1d/9b5d1dba22aa80a8607b2cea6cd9db8b.jpg')",
+          opacity: 0.5
+        }}
+      />
+
       <div className="absolute inset-0 bg-gradient-to-br from-primary/3 via-transparent to-accent/3 -z-10" />
 
       {/* Decorative elements - ẩn trên mobile để tránh lộn xộn */}

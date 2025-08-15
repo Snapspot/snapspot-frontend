@@ -324,290 +324,296 @@ const Blog = () => {
       </Helmet>
 
       {/* Background */}
-      <div
-        className="absolute inset-0 bg-cover bg-center grayscale brightness-75 z-0"
-        style={{
-          backgroundImage:
-            "url('https://static1.squarespace.com/static/63f8b23b0626755198127ae3/63fc8c7f15e5ba00f5bf5e84/63fd08a2e559cd5c7086f8b2/1677527755377/vietnam-halong-bay-01.jpg?format=1500w')",
-        }}
-      ></div>
-      <div className="absolute inset-0 bg-[#f5eacc] opacity-60 z-0"></div>
+      <section
+        className="relative isolate w-full min-h-screen"
+        style={{ backgroundColor: "#f5eacc" }}
+        aria-labelledby="blog-page-heading"
+      >
+        {/* Background Image Layer */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat -z-20"
+          style={{
+            backgroundImage: "url('https://static1.squarespace.com/static/63f8b23b0626755198127ae3/63fc8c7f15e5ba00f5bf5e84/63fd08a2e559cd5c7086f8b2/1677527755377/vietnam-halong-bay-01.jpg?format=1500w')",
+            opacity: 0.5
+          }}
+        />
 
-      <div className="relative z-10">
-        <Navbar />
+        <div className="relative z-10">
+          <Navbar />
 
-        {/* Header */}
-        <div className="text-center py-16 mt-16">
-          <h1 className="text-5xl font-bold text-[#216565]">
-            Blog Du Lịch Việt Nam
-          </h1>
-          <p className="text-gray-600 mt-4 text-lg">
-            Khám phá vẻ đẹp khắp mọi miền tổ quốc
-          </p>
-        </div>
+          {/* Header */}
+          <div className="text-center py-16 mt-16">
+            <h1 id="blog-page-heading" className="text-5xl font-bold text-[#216565]">
+              Blog Du Lịch Việt Nam
+            </h1>
+            <p className="text-gray-600 mt-4 text-lg">
+              Khám phá vẻ đẹp khắp mọi miền tổ quốc
+            </p>
+          </div>
 
-        {/* Search + Content */}
-        <div className="max-w-7xl mx-auto px-4 pb-16 grid grid-cols-1 lg:grid-cols-4 gap-10">
-          {/* Main Content */}
-          <div className="lg:col-span-3 space-y-6">
-            {/* Search & Filter */}
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
-              <input
-                type="text"
-                placeholder="Tìm kiếm bài viết..."
-                className="w-full sm:w-2/3 px-4 py-2 border rounded-lg"
-                value={searchQuery}
-                onChange={handleSearchChange}
-              />
-              <select
-                className="w-full sm:w-1/3 px-4 py-2 border rounded-lg"
-                value={selectedCategory}
-                onChange={(e) => handleFilterChange(e.target.value)}
-              >
-                <option>Tất cả chủ đề</option>
-                <option>Biển đảo</option>
-                <option>Văn hóa</option>
-                <option>Khám phá</option>
-              </select>
+          {/* Search + Content */}
+          <div className="max-w-7xl mx-auto px-4 pb-16 grid grid-cols-1 lg:grid-cols-4 gap-10">
+            {/* Main Content */}
+            <div className="lg:col-span-3 space-y-6">
+              {/* Search & Filter */}
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm bài viết..."
+                  className="w-full sm:w-2/3 px-4 py-2 border rounded-lg"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                />
+                <select
+                  className="w-full sm:w-1/3 px-4 py-2 border rounded-lg"
+                  value={selectedCategory}
+                  onChange={(e) => handleFilterChange(e.target.value)}
+                >
+                  <option>Tất cả chủ đề</option>
+                  <option>Biển đảo</option>
+                  <option>Văn hóa</option>
+                  <option>Khám phá</option>
+                </select>
+              </div>
+
+              {/* Blog Grid */}
+              {currentPosts.length > 0 ? (
+                <div className="grid sm:grid-cols-2 gap-6">
+                  {currentPosts.map((post) => (
+                    <Link to={`/blog/${post.id}`} key={post.id}>
+                      <div className="flex flex-col h-full bg-white bg-opacity-90 backdrop-blur-sm rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden cursor-pointer">
+                        <img
+                          src={post.url}
+                          alt={post.title}
+                          className="w-full h-[200px] object-cover"
+                        />
+                        <div className="p-4 flex flex-col flex-grow">
+                          <h3 className="text-lg font-semibold text-[#215858]">
+                            {post.title}
+                          </h3>
+                          <p className="text-sm text-gray-600 mb-2 line-clamp-2 flex-grow">
+                            {post.description}
+                          </p>
+                          <span className="text-xs text-gray-500">
+                            {formatDate(post.date)}
+                          </span>
+                          <div className="mt-2">
+                            <span className="text-sm text-[#215858] font-medium hover:underline">
+                              Xem thêm
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12 bg-white bg-opacity-90 backdrop-blur-sm rounded-xl">
+                  <svg
+                    className="w-16 h-16 mx-auto text-gray-400 mb-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.044-5.709-2.566M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <h3 className="text-xl font-semibold text-gray-600 mb-2">
+                    Không tìm thấy bài viết
+                  </h3>
+                  <p className="text-gray-500">
+                    Thử thay đổi từ khóa tìm kiếm hoặc chọn chủ đề khác
+                  </p>
+                </div>
+              )}
+
+              {/* Pagination chính */}
+              <Pagination />
             </div>
 
-            {/* Blog Grid */}
-            {currentPosts.length > 0 ? (
-              <div className="grid sm:grid-cols-2 gap-6">
-                {currentPosts.map((post) => (
-                  <Link to={`/blog/${post.id}`} key={post.id}>
-                    <div className="flex flex-col h-full bg-white bg-opacity-90 backdrop-blur-sm rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden cursor-pointer">
-                      <img
-                        src={post.url}
-                        alt={post.title}
-                        className="w-full h-[200px] object-cover"
-                      />
-                      <div className="p-4 flex flex-col flex-grow">
-                        <h3 className="text-lg font-semibold text-[#215858]">
-                          {post.title}
-                        </h3>
-                        <p className="text-sm text-gray-600 mb-2 line-clamp-2 flex-grow">
-                          {post.description}
-                        </p>
-                        <span className="text-xs text-gray-500">
-                          {formatDate(post.date)}
-                        </span>
-                        <div className="mt-2">
-                          <span className="text-sm text-[#215858] font-medium hover:underline">
-                            Xem thêm
+            {/* Sidebar */}
+            <div className="lg:col-span-1">
+              {/* Featured Posts + pagination */}
+              <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-6 mb-8 sticky top-6">
+                <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                  <svg
+                    className="w-5 h-5 text-emerald-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                    />
+                  </svg>
+                  Bài viết nổi bật
+                </h3>
+
+                <div className="space-y-4">
+                  {featuredCurrent.map((post) => (
+                    <Link to={`/blog/${post.id}`} key={post.id} className="block group">
+                      <div className="flex gap-3 hover:bg-gray-50 p-3 rounded-lg transition-colors">
+                        <img
+                          src={post.url}
+                          alt={post.title}
+                          className="w-16 h-16 object-cover rounded-lg flex-shrink-0 group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src =
+                              "https://via.placeholder.com/64x64?text=Ảnh";
+                          }}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm font-semibold text-gray-800 line-clamp-2 mb-1 group-hover:text-emerald-600 transition-colors">
+                            {post.title}
+                          </h4>
+                          <p className="text-xs text-gray-500">
+                            {formatDate(post.date)}
+                          </p>
+                          <span className="text-xs bg-emerald-100 text-emerald-600 px-2 py-1 rounded-full mt-1 inline-block">
+                            {post.category}
                           </span>
                         </div>
                       </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12 bg-white bg-opacity-90 backdrop-blur-sm rounded-xl">
-                <svg
-                  className="w-16 h-16 mx-auto text-gray-400 mb-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.044-5.709-2.566M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <h3 className="text-xl font-semibold text-gray-600 mb-2">
-                  Không tìm thấy bài viết
-                </h3>
-                <p className="text-gray-500">
-                  Thử thay đổi từ khóa tìm kiếm hoặc chọn chủ đề khác
-                </p>
-              </div>
-            )}
+                    </Link>
+                  ))}
+                </div>
 
-            {/* Pagination chính */}
-            <Pagination />
-          </div>
-
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            {/* Featured Posts + pagination */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-6 mb-8 sticky top-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                <svg
-                  className="w-5 h-5 text-emerald-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-                  />
-                </svg>
-                Bài viết nổi bật
-              </h3>
-
-              <div className="space-y-4">
-                {featuredCurrent.map((post) => (
-                  <Link to={`/blog/${post.id}`} key={post.id} className="block group">
-                    <div className="flex gap-3 hover:bg-gray-50 p-3 rounded-lg transition-colors">
-                      <img
-                        src={post.url}
-                        alt={post.title}
-                        className="w-16 h-16 object-cover rounded-lg flex-shrink-0 group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => {
-                          (e.currentTarget as HTMLImageElement).src =
-                            "https://via.placeholder.com/64x64?text=Ảnh";
-                        }}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-semibold text-gray-800 line-clamp-2 mb-1 group-hover:text-emerald-600 transition-colors">
-                          {post.title}
-                        </h4>
-                        <p className="text-xs text-gray-500">
-                          {formatDate(post.date)}
-                        </p>
-                        <span className="text-xs bg-emerald-100 text-emerald-600 px-2 py-1 rounded-full mt-1 inline-block">
-                          {post.category}
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-
-              {/* Phân trang sidebar */}
-              {featTotalPages > 1 && (
-                <div className="mt-5 flex items-center justify-center gap-1">
-                  <button
-                    onClick={() => changeFeatPage(featPage - 1)}
-                    disabled={featPage === 1}
-                    className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
-                      featPage === 1
-                        ? "text-gray-400 border-gray-200 cursor-not-allowed"
-                        : "text-gray-700 border-gray-200 hover:bg-gray-50"
-                    }`}
-                  >
-                    Trước
-                  </button>
-
-                  {/* First + ... */}
-                  {featPages[0] > 1 && (
-                    <>
-                      <button
-                        onClick={() => changeFeatPage(1)}
-                        className="px-3 py-1.5 text-sm rounded-lg border text-gray-700 border-gray-200 hover:bg-gray-50"
-                      >
-                        1
-                      </button>
-                      {featPages[0] > 2 && (
-                        <span className="px-2 text-gray-400">…</span>
-                      )}
-                    </>
-                  )}
-
-                  {featPages.map((p) => (
+                {/* Phân trang sidebar */}
+                {featTotalPages > 1 && (
+                  <div className="mt-5 flex items-center justify-center gap-1">
                     <button
-                      key={p}
-                      onClick={() => changeFeatPage(p)}
+                      onClick={() => changeFeatPage(featPage - 1)}
+                      disabled={featPage === 1}
                       className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
-                        featPage === p
-                          ? "bg-emerald-600 border-emerald-600 text-white"
+                        featPage === 1
+                          ? "text-gray-400 border-gray-200 cursor-not-allowed"
                           : "text-gray-700 border-gray-200 hover:bg-gray-50"
                       }`}
                     >
-                      {p}
+                      Trước
+                    </button>
+
+                    {/* First + ... */}
+                    {featPages[0] > 1 && (
+                      <>
+                        <button
+                          onClick={() => changeFeatPage(1)}
+                          className="px-3 py-1.5 text-sm rounded-lg border text-gray-700 border-gray-200 hover:bg-gray-50"
+                        >
+                          1
+                        </button>
+                        {featPages[0] > 2 && (
+                          <span className="px-2 text-gray-400">…</span>
+                        )}
+                      </>
+                    )}
+
+                    {featPages.map((p) => (
+                      <button
+                        key={p}
+                        onClick={() => changeFeatPage(p)}
+                        className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
+                          featPage === p
+                            ? "bg-emerald-600 border-emerald-600 text-white"
+                            : "text-gray-700 border-gray-200 hover:bg-gray-50"
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    ))}
+
+                    {/* ... + Last */}
+                    {featPages[featPages.length - 1] < featTotalPages && (
+                      <>
+                        {featPages[featPages.length - 1] < featTotalPages - 1 && (
+                          <span className="px-2 text-gray-400">…</span>
+                        )}
+                        <button
+                          onClick={() => changeFeatPage(featTotalPages)}
+                          className="px-3 py-1.5 text-sm rounded-lg border text-gray-700 border-gray-200 hover:bg-gray-50"
+                        >
+                          {featTotalPages}
+                        </button>
+                      </>
+                    )}
+
+                    <button
+                      onClick={() => changeFeatPage(featPage + 1)}
+                      disabled={featPage === featTotalPages}
+                      className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
+                        featPage === featTotalPages
+                          ? "text-gray-400 border-gray-200 cursor-not-allowed"
+                          : "text-gray-700 border-gray-200 hover:bg-gray-50"
+                      }`}
+                    >
+                      Sau
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Popular Tags */}
+              <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-6">
+                <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                  <svg
+                    className="w-5 h-5 text-emerald-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                    />
+                  </svg>
+                  Chủ đề phổ biến
+                </h3>
+                <div className="space-y-3">
+                  {popularTags.map((tag) => (
+                    <button
+                      key={tag.name}
+                      onClick={() => handleFilterChange(tag.name)}
+                      className={`flex items-center justify-between w-full p-3 rounded-lg transition-colors group ${
+                        selectedCategory === tag.name
+                          ? "bg-emerald-100 text-emerald-700"
+                          : "hover:bg-emerald-50"
+                      }`}
+                    >
+                      <span
+                        className={`font-medium ${
+                          selectedCategory === tag.name
+                            ? "text-emerald-700"
+                            : "text-gray-700 group-hover:text-emerald-600"
+                        }`}
+                      >
+                        {tag.name}
+                      </span>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          selectedCategory === tag.name
+                            ? "bg-emerald-200 text-emerald-700"
+                            : "bg-gray-100 text-gray-600 group-hover:bg-emerald-100 group-hover:text-emerald-600"
+                        }`}
+                      >
+                        {tag.count}
+                      </span>
                     </button>
                   ))}
-
-                  {/* ... + Last */}
-                  {featPages[featPages.length - 1] < featTotalPages && (
-                    <>
-                      {featPages[featPages.length - 1] < featTotalPages - 1 && (
-                        <span className="px-2 text-gray-400">…</span>
-                      )}
-                      <button
-                        onClick={() => changeFeatPage(featTotalPages)}
-                        className="px-3 py-1.5 text-sm rounded-lg border text-gray-700 border-gray-200 hover:bg-gray-50"
-                      >
-                        {featTotalPages}
-                      </button>
-                    </>
-                  )}
-
-                  <button
-                    onClick={() => changeFeatPage(featPage + 1)}
-                    disabled={featPage === featTotalPages}
-                    className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
-                      featPage === featTotalPages
-                        ? "text-gray-400 border-gray-200 cursor-not-allowed"
-                        : "text-gray-700 border-gray-200 hover:bg-gray-50"
-                    }`}
-                  >
-                    Sau
-                  </button>
                 </div>
-              )}
-            </div>
-
-            {/* Popular Tags */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                <svg
-                  className="w-5 h-5 text-emerald-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-                  />
-                </svg>
-                Chủ đề phổ biến
-              </h3>
-              <div className="space-y-3">
-                {popularTags.map((tag) => (
-                  <button
-                    key={tag.name}
-                    onClick={() => handleFilterChange(tag.name)}
-                    className={`flex items-center justify-between w-full p-3 rounded-lg transition-colors group ${
-                      selectedCategory === tag.name
-                        ? "bg-emerald-100 text-emerald-700"
-                        : "hover:bg-emerald-50"
-                    }`}
-                  >
-                    <span
-                      className={`font-medium ${
-                        selectedCategory === tag.name
-                          ? "text-emerald-700"
-                          : "text-gray-700 group-hover:text-emerald-600"
-                      }`}
-                    >
-                      {tag.name}
-                    </span>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        selectedCategory === tag.name
-                          ? "bg-emerald-200 text-emerald-700"
-                          : "bg-gray-100 text-gray-600 group-hover:bg-emerald-100 group-hover:text-emerald-600"
-                      }`}
-                    >
-                      {tag.count}
-                    </span>
-                  </button>
-                ))}
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       <GreenFooter />
     </div>

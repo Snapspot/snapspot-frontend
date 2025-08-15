@@ -169,18 +169,19 @@ const BlogSection = () => {
   };
 
   return (
-    <div className="relative w-full py-8 sm:py-12 md:py-16 lg:py-20">
-      {/* Background with overlay */}
-      <div
-        className="absolute inset-0 bg-cover bg-center grayscale brightness-80"
+    <section
+      className="relative isolate w-full py-8 sm:py-12 md:py-16 lg:py-20"
+      style={{ backgroundColor: "#FAEBCE" }}
+      aria-labelledby="blog-heading"
+    >
+      {/* Background Image Layer */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat -z-20"
         style={{
-          backgroundImage:
-            "url('https://static1.squarespace.com/static/63f8b23b0626755198127ae3/63fc8c7f15e5ba00f5bf5e84/63fd08a2e559cd5c7086f8b2/1677527755377/vietnam-halong-bay-01.jpg?format=1500w')",
-          backgroundPosition: "center center",
-          backgroundAttachment: "fixed",
+                        backgroundImage: "url('https://i.pinimg.com/736x/b0/d3/ac/b0d3ac2622306a97cdd74da2eef38c5c.jpg')",
+          opacity: 0.5
         }}
       />
-      <div className="absolute inset-0 bg-[#f5eacc] opacity-60" />
 
       {/* Blog Slider Section */}
       <div className="relative z-10 w-full max-w-8xl mx-auto px-2 sm:px-4 md:px-6 mb-12 sm:mb-16 md:mb-20">
@@ -224,17 +225,17 @@ const BlogSection = () => {
       </div>
 
       {/* Main Title Section - Updated layout to match image */}
-      <div className="relative z-10 text-white text-center mt-8 sm:mt-12 md:mt-16 px-4 sm:px-6 mb-12 sm:mb-16 md:mb-20">
+      <div className="relative z-10 text-emerald-900 text-center mt-8 sm:mt-12 md:mt-16 px-4 sm:px-6 mb-12 sm:mb-16 md:mb-20">
         {/* First line: SNAPSPOT giúp người dùng */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 md:gap-6 mb-4 sm:mb-6">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-6xl font-extrabold tracking-wider">
+          <h1 id="blog-heading" className="text-5xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-6xl font-bold tracking-widest">
             SNAPSPOT
           </h1>
           <div className="flex items-center gap-2 sm:gap-3">
-            <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium">
+            <span className="text-4xl sm:text-5xl md:text-6xl lg:text-4xl font-medium">
               giúp
             </span>
-            <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-4.5xl font-bold tracking-wide">
+            <span className="text-4xl sm:text-5xl md:text-6xl lg:text-4xl font-bold tracking-wide">
               người dùng
             </span>
           </div>
@@ -242,25 +243,25 @@ const BlogSection = () => {
 
         {/* Second line: Dễ dàng tìm kiếm địa điểm chụp ảnh đẹp */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 md:gap-4 mb-6 sm:mb-8">
-          <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium">
+          <span className="text-lg sm:text-xl md:text-2xl lg:text-4xl font-medium">
             Dễ dàng
           </span>
-          <span className="text-2xl sm:text-3xl md:text-4xl lg:text-4.5xl font-bold tracking-wide">
+          <span className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl font-bold tracking-wide">
             tìm kiếm
           </span>
-          <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium">
+          <span className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl font-medium">
             địa điểm
           </span>
-          <span className="text-2xl sm:text-3xl md:text-4xl lg:text-4.5xl font-bold">
+          <span className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl font-bold">
             chụp ảnh
           </span>
-          <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium">
+          <span className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl font-medium">
             đẹp
           </span>
         </div>
 
         {/* Third line: TRÊN VIỆT NAM */}
-        <h2 className="text-5xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-widest ">
+        <h2 className="text-5xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-6xl font-bold tracking-widest ">
           TRÊN VIỆT NAM
         </h2>
       </div>
@@ -390,7 +391,7 @@ const BlogSection = () => {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

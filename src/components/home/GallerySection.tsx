@@ -13,7 +13,6 @@ interface PlaceType {
     tips: string[];
 }
 
-
 const images = [
     {
         url: "https://static1.cafeland.vn/cafelandnew/hinh-anh/2022/12/06/95/hoguom2.jpg",
@@ -128,7 +127,6 @@ const images = [
         name: "Bình Thuận",
         location: "Bình Thuận",
         description: "Vùng đất nắng gió với đồi cát bay Mũi Né, những bãi biển hoang sơ và văn hóa Chăm độc đáo.",
-
         bestTime: "Tháng 12 - Tháng 5",
         features: ["Đồi cát bay", "Tháp Chăm", "Biển hoang sơ", "Hải sản giá rẻ"],
         gallery: [
@@ -142,69 +140,66 @@ const images = [
             "Uống nước dừa hoặc thanh long tại chỗ"
         ]
     }
-
 ];
 
-
-
 const GallerySection = () => {
-   const settings = {
-    dots: true,
-    infinite: false,
-    speed: 600,
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    arrows: true,
-    autoplay: true,
-    autoplaySpeed: 4000,
-    responsive: [
-        {
-            breakpoint: 1280, // xl
-            settings: {
-                slidesToShow: 4,
-                slidesToScroll: 1,
+    const settings = {
+        dots: true,
+        infinite: false,
+        speed: 600,
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        arrows: true,
+        autoplay: true,
+        autoplaySpeed: 4000,
+        responsive: [
+            {
+                breakpoint: 1280, // xl
+                settings: {
+                    slidesToShow: 4,
+                    slidesToScroll: 1,
+                },
             },
-        },
-        {
-            breakpoint: 1024, // lg
-            settings: {
-                slidesToShow: 3,
-                slidesToScroll: 1,
-                arrows: false, // Ẩn mũi tên trên tablet
+            {
+                breakpoint: 1024, // lg
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 1,
+                    arrows: false, // Ẩn mũi tên trên tablet
+                },
             },
-        },
-        {
-            breakpoint: 768, // md
-            settings: {
-                slidesToShow: 2,
-                slidesToScroll: 1,
-                arrows: false,
-                dots: true,
+            {
+                breakpoint: 768, // md
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 1,
+                    arrows: false,
+                    dots: true,
+                },
             },
-        },
-        {
-            breakpoint: 640, // sm
-            settings: {
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                arrows: false,
-                dots: true,
-                centerMode: true,
-                centerPadding: '40px',
+            {
+                breakpoint: 640, // sm
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    arrows: false,
+                    dots: true,
+                    centerMode: true,
+                    centerPadding: '40px',
+                },
             },
-        },
-        {
-            breakpoint: 480, // xs
-            settings: {
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                arrows: false,
-                dots: false,
-                centerMode: false,
+            {
+                breakpoint: 480, // xs
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    arrows: false,
+                    dots: false,
+                    centerMode: false,
+                },
             },
-        },
-    ],
-};
+        ],
+    };
 
     const [selectedPlace, setSelectedPlace] = useState<PlaceType | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -219,69 +214,71 @@ const GallerySection = () => {
         setSelectedPlace(null);
     };
 
-    
     return (
-    <>
-        <div className="relative w-full overflow-hidden py-8 sm:py-12 md:py-16 lg:py-20">
-            {/* Background responsive */}
-            <div
-                className="absolute inset-0 bg-cover bg-center grayscale brightness-80"
-                style={{
-                    backgroundImage: "url('https://static1.squarespace.com/static/63f8b23b0626755198127ae3/63fc8c7f15e5ba00f5bf5e84/63fd08a2e559cd5c7086f8b2/1677527755377/vietnam-halong-bay-01.jpg?format=1500w')",
-                    backgroundPosition: 'center center',
-                }}
-            />
-            <div className="absolute inset-0 bg-[#f5eacc] opacity-60" />
+        <>
+            <section
+                className="relative isolate w-full overflow-hidden py-8 sm:py-12 md:py-16 lg:py-20"
+                style={{ backgroundColor: "#FAEBCE" }}
+                aria-labelledby="gallery-heading"
+            >
+                {/* Background Image Layer */}
+                <div 
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat -z-20"
+                    style={{
+                        backgroundImage: "url('https://static1.squarespace.com/static/63f8b23b0626755198127ae3/63fc8c7f15e5ba00f5bf5e84/63fd08a2e559cd5c7086f8b2/1677527755377/vietnam-halong-bay-01.jpg?format=1500w')",
+                        opacity: 0.5
+                    }}
+                />
 
-            <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 sm:px-6 md:px-8">
-                {/* Tiêu đề responsive */}
-                <div className="w-full flex items-center justify-center px-2 sm:px-4 mb-6 sm:mb-8 md:mb-12">
-                    <div className="flex-grow h-[2px] sm:h-[3px] bg-[#215858]" />
-                    <h2 className="px-2 sm:px-4 text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold text-[#215858] whitespace-nowrap text-center">
-                        CÁC ĐỊA ĐIỂM NỔI BẬT
-                    </h2>
-                    <div className="flex-grow h-[2px] sm:h-[3px] bg-[#215858]" />
-                </div>
+                <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 sm:px-6 md:px-8">
+                    {/* Tiêu đề responsive */}
+                    <div className="w-full flex items-center justify-center px-2 sm:px-4 mb-6 sm:mb-8 md:mb-12">
+                        <div className="flex-grow h-[2px] sm:h-[3px] bg-[#215858]" />
+                        <h2 id="gallery-heading" className="px-2 sm:px-4 text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold text-[#215858] whitespace-nowrap text-center">
+                            CÁC ĐỊA ĐIỂM NỔI BẬT
+                        </h2>
+                        <div className="flex-grow h-[2px] sm:h-[3px] bg-[#215858]" />
+                    </div>
 
-                {/* Slider responsive */}
-                <div className="w-full max-w-8xl mx-auto px-1 sm:px-2 md:px-4">
-                    <Slider {...settings}>
-                        {images.map((item, index) => (
-                            <div key={index} className="px-1 sm:px-2 md:px-3">
-                                <div className="relative rounded-lg sm:rounded-xl overflow-hidden shadow-lg group h-[300px] sm:h-[350px] md:h-[400px]">
-                                    <img
-                                        src={item.url}
-                                        alt={item.name}
-                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                    />
-                                    <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 via-black/30 to-transparent text-white p-3 sm:p-4 text-left">
-                                        <h3 className="text-base sm:text-lg md:text-xl font-bold mb-1">
-                                            {item.name}
-                                        </h3>
-                                        <p className="text-xs sm:text-sm flex items-center gap-1 text-gray-200 mb-1">
-                                            📍 {item.location}
-                                        </p>
-                                        <p className="text-xs sm:text-sm text-gray-300 line-clamp-2 mb-2">
-                                            {item.description}
-                                        </p>
-                                        <button
-                                            onClick={() => handleOpen(item)}
-                                            className="bg-blue-600 text-white text-xs sm:text-sm font-semibold px-2 sm:px-3 py-1 rounded hover:bg-blue-700 transition"
-                                        >
-                                            Xem chi tiết
-                                        </button>
+                    {/* Slider responsive */}
+                    <div className="w-full max-w-8xl mx-auto px-1 sm:px-2 md:px-4">
+                        <Slider {...settings}>
+                            {images.map((item, index) => (
+                                <div key={index} className="px-1 sm:px-2 md:px-3">
+                                    <div className="relative rounded-lg sm:rounded-xl overflow-hidden shadow-lg group h-[300px] sm:h-[350px] md:h-[400px]">
+                                        <img
+                                            src={item.url}
+                                            alt={item.name}
+                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                        />
+                                        <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 via-black/30 to-transparent text-white p-3 sm:p-4 text-left">
+                                            <h3 className="text-base sm:text-lg md:text-xl font-bold mb-1">
+                                                {item.name}
+                                            </h3>
+                                            <p className="text-xs sm:text-sm flex items-center gap-1 text-gray-200 mb-1">
+                                                📍 {item.location}
+                                            </p>
+                                            <p className="text-xs sm:text-sm text-gray-300 line-clamp-2 mb-2">
+                                                {item.description}
+                                            </p>
+                                            <button
+                                                onClick={() => handleOpen(item)}
+                                                className="bg-blue-600 text-white text-xs sm:text-sm font-semibold px-2 sm:px-3 py-1 rounded hover:bg-blue-700 transition"
+                                            >
+                                                Xem chi tiết
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                    </Slider>
+                            ))}
+                        </Slider>
+                    </div>
                 </div>
-            </div>
-        </div>
-        
-        <LocationModal data={selectedPlace} isOpen={isModalOpen} onClose={handleClose} />
-    </>
-);
+            </section>
+            
+            <LocationModal data={selectedPlace} isOpen={isModalOpen} onClose={handleClose} />
+        </>
+    );
 }
 
 export default GallerySection;

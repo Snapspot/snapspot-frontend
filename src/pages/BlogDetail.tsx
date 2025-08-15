@@ -184,10 +184,10 @@ Ngoài ra, bạn có thể tham quan các di tích lịch sử như nhà tù Cô
       avatar: "/api/placeholder/40/40",
       bio: "Người kể chuyện núi rừng, đam mê trekking và văn hóa bản địa",
     },
-    content: `Sa Pa nằm ở độ cao hơn 1.500m so với mực nước biển, thuộc tỉnh Lào Cai, là điểm du lịch nổi tiếng với khí hậu mát mẻ quanh năm và cảnh quan núi rừng hùng vĩ. Không chỉ là “thiên đường mây trắng” của miền Bắc, Sa Pa còn là nơi giao thoa văn hóa của nhiều dân tộc thiểu số, tạo nên sức hút đặc biệt cho bất kỳ ai đặt chân đến.
+    content: `Sa Pa nằm ở độ cao hơn 1.500m so với mực nước biển, thuộc tỉnh Lào Cai, là điểm du lịch nổi tiếng với khí hậu mát mẻ quanh năm và cảnh quan núi rừng hùng vĩ. Không chỉ là "thiên đường mây trắng" của miền Bắc, Sa Pa còn là nơi giao thoa văn hóa của nhiều dân tộc thiểu số, tạo nên sức hút đặc biệt cho bất kỳ ai đặt chân đến.
 
 Trải nghiệm thực tế và hoạt động cụ thể
-Khi đến Sa Pa, bạn có thể thử trekking đến đỉnh Fansipan – “nóc nhà Đông Dương” cao 3.143m. Nếu chọn trekking, hành trình thường kéo dài 2-3 ngày, băng qua rừng trúc, dốc đá và những con suối nhỏ, mang lại cảm giác chinh phục đầy phấn khích. Nếu muốn nhẹ nhàng hơn, bạn có thể đi cáp treo từ ga Hoàng Liên, chỉ mất 15 phút để lên gần đỉnh và ngắm toàn cảnh mây núi hùng vĩ. Bên cạnh đó, thung lũng Mường Hoa là điểm chụp ảnh nổi tiếng với ruộng bậc thang trải dài và bãi đá cổ có niên đại hàng trăm năm. Các bản làng như Cát Cát, Tả Van, Lao Chải, Tả Phìn mang đến trải nghiệm homestay ấm cúng, nơi bạn có thể tham gia dệt thổ cẩm, học nấu món ăn truyền thống hoặc tắm lá thuốc Dao đỏ. Buổi sáng, bạn có thể dạo bộ trên những con đường quanh co giữa núi rừng, ngắm sương mù tan chậm, còn buổi tối thì nhâm nhi ly trà nóng bên bếp lửa.
+Khi đến Sa Pa, bạn có thể thử trekking đến đỉnh Fansipan – "nóc nhà Đông Dương" cao 3.143m. Nếu chọn trekking, hành trình thường kéo dài 2-3 ngày, băng qua rừng trúc, dốc đá và những con suối nhỏ, mang lại cảm giác chinh phục đầy phấn khích. Nếu muốn nhẹ nhàng hơn, bạn có thể đi cáp treo từ ga Hoàng Liên, chỉ mất 15 phút để lên gần đỉnh và ngắm toàn cảnh mây núi hùng vĩ. Bên cạnh đó, thung lũng Mường Hoa là điểm chụp ảnh nổi tiếng với ruộng bậc thang trải dài và bãi đá cổ có niên đại hàng trăm năm. Các bản làng như Cát Cát, Tả Van, Lao Chải, Tả Phìn mang đến trải nghiệm homestay ấm cúng, nơi bạn có thể tham gia dệt thổ cẩm, học nấu món ăn truyền thống hoặc tắm lá thuốc Dao đỏ. Buổi sáng, bạn có thể dạo bộ trên những con đường quanh co giữa núi rừng, ngắm sương mù tan chậm, còn buổi tối thì nhâm nhi ly trà nóng bên bếp lửa.
 
 Mùa đẹp nhất để đi
 Mùa xuân từ tháng 2 đến tháng 4 là thời điểm hoa đào, hoa mận nở rộ khắp sườn núi, thời tiết mát mẻ, dễ chịu, thích hợp để chụp ảnh. Mùa hè từ tháng 5 đến tháng 8 là lựa chọn lý tưởng để tránh nóng, ruộng bậc thang xanh mướt và không khí trong lành. Mùa thu từ tháng 9 đến tháng 10 là mùa lúa chín vàng rực rỡ, đẹp nhất để ngắm cảnh và săn ảnh. Mùa đông từ tháng 12 đến tháng 1 có thể xuất hiện băng tuyết, tạo khung cảnh hiếm có tại Việt Nam, đặc biệt thu hút những ai muốn trải nghiệm không khí lạnh giá vùng cao.
@@ -364,241 +364,247 @@ const BlogDetail = () => {
       </Helmet>
 
       {/* Background */}
-      <div
-        className="absolute inset-0 bg-cover bg-center grayscale brightness-75 z-0"
-        style={{
-          backgroundImage:
-            "url('https://static1.squarespace.com/static/63f8b23b0626755198127ae3/63fc8c7f15e5ba00f5bf5e84/63fd08a2e559cd5c7086f8b2/1677527755377/vietnam-halong-bay-01.jpg')",
-        }}
-      />
-      <div className="absolute inset-0 bg-[#f5eacc] opacity-60 z-0" />
+      <section
+        className="relative isolate w-full min-h-screen"
+        style={{ backgroundColor: "#f5eacc" }}
+        aria-labelledby="blog-detail-heading"
+      >
+        {/* Background Image Layer */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat -z-20"
+          style={{
+            backgroundImage: "url('https://static1.squarespace.com/static/63f8b23b0626755198127ae3/63fc8c7f15e5ba00f5bf5e84/63fd08a2e559cd5c7086f8b2/1677527755377/vietnam-halong-bay-01.jpg')",
+            opacity: 0.5
+          }}
+        />
 
-      <div className="relative z-10">
-        {/* Navbar */}
-        <Navbar />
+        <div className="relative z-10">
+          {/* Navbar */}
+          <Navbar />
 
-        {/* Hero Section */}
-        <div className="container mx-auto px-4 mb-8">
-          <div className="relative w-full overflow-hidden rounded-2xl shadow-2xl">
-            <img
-              src={post.url}
-              alt={post.title}
-              className="w-full h-[400px] md:h-[400px] object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          {/* Hero Section */}
+          <div className="container mx-auto px-4 mb-8">
+            <div className="relative w-full overflow-hidden rounded-2xl shadow-2xl">
+              <img
+                src={post.url}
+                alt={post.title}
+                className="w-full h-[400px] md:h-[400px] object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
-            {/* Title Overlay */}
-            <div className="absolute bottom-3 left-8 right-8">
-              <div className="bg-white/95 backdrop-blur-sm border-0 shadow-xl rounded-xl p-6 md:p-8">
-                <span className="inline-block mb-4 px-3 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full text-sm font-medium">
-                  {post.category}
-                </span>
-                <h1 className="text-2xl md:text-4xl font-bold text-gray-800 mb-4 leading-tight">
-                  {post.title}
-                </h1>
-                <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                  {post.description}
-                </p>
+              {/* Title Overlay */}
+              <div className="absolute bottom-3 left-8 right-8">
+                <div className="bg-white/95 backdrop-blur-sm border-0 shadow-xl rounded-xl p-6 md:p-8">
+                  <span className="inline-block mb-4 px-3 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full text-sm font-medium">
+                    {post.category}
+                  </span>
+                  <h1 id="blog-detail-heading" className="text-2xl md:text-4xl font-bold text-gray-800 mb-4 leading-tight">
+                    {post.title}
+                  </h1>
+                  <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+                    {post.description}
+                  </p>
 
-                <div className="flex flex-wrap items-center gap-6 text-gray-500">
-                  <div className="flex items-center gap-2">
-                    <User className="w-4 h-4" />
-                    <span className="font-medium">{post.author.name}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
-                    {formatDate(post.date)}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4" />
-                    {post.readTime}
+                  <div className="flex flex-wrap items-center gap-6 text-gray-500">
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4" />
+                      <span className="font-medium">{post.author.name}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      {formatDate(post.date)}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4" />
+                      {post.readTime}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Main Content */}
-        <div className="container mx-auto px-8 pb-16">
-          <div className="flex flex-col lg:flex-row gap-12">
-            {/* Main Article - 70% */}
-            <div className="w-full lg:w-[70%]">
-              <div className="bg-white/95 backdrop-blur-sm border-0 shadow-xl rounded-xl">
-                <div className="p-6 md:p-12">
-                  {/* Article Content */}
-                  <div className="prose prose-lg max-w-none">
-                    <div className="text-lg text-gray-700 leading-8 whitespace-pre-line mb-8">
-                      {post.content}
+          {/* Main Content */}
+          <div className="container mx-auto px-8 pb-16">
+            <div className="flex flex-col lg:flex-row gap-12">
+              {/* Main Article - 70% */}
+              <div className="w-full lg:w-[70%]">
+                <div className="bg-white/95 backdrop-blur-sm border-0 shadow-xl rounded-xl">
+                  <div className="p-6 md:p-12">
+                    {/* Article Content */}
+                    <div className="prose prose-lg max-w-none">
+                      <div className="text-lg text-gray-700 leading-8 whitespace-pre-line mb-8">
+                        {post.content}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Social Actions */}
-                  <div className="flex items-center justify-between pt-6 border-t">
-                    <div className="flex items-center gap-4">
-                      <button
-                        onClick={() => setIsLiked(!isLiked)}
-                        className={`inline-flex items-center px-4 py-2 rounded-lg border transition-colors ${
-                          isLiked
-                            ? "text-red-600 border-red-200 bg-red-50"
-                            : "text-gray-600 border-gray-200 hover:bg-gray-50"
-                        }`}
-                      >
-                        <Heart
-                          className={`w-4 h-4 mr-2 ${
-                            isLiked ? "fill-current" : ""
+                    {/* Social Actions */}
+                    <div className="flex items-center justify-between pt-6 border-t">
+                      <div className="flex items-center gap-4">
+                        <button
+                          onClick={() => setIsLiked(!isLiked)}
+                          className={`inline-flex items-center px-4 py-2 rounded-lg border transition-colors ${
+                            isLiked
+                              ? "text-red-600 border-red-200 bg-red-50"
+                              : "text-gray-600 border-gray-200 hover:bg-gray-50"
                           }`}
-                        />
-                        {isLiked ? "Đã thích" : "Thích bài viết"}
-                      </button>
+                        >
+                          <Heart
+                            className={`w-4 h-4 mr-2 ${
+                              isLiked ? "fill-current" : ""
+                            }`}
+                          />
+                          {isLiked ? "Đã thích" : "Thích bài viết"}
+                        </button>
+                        <button className="inline-flex items-center px-4 py-2 rounded-lg border text-gray-600 border-gray-200 hover:bg-gray-50 transition-colors">
+                          <ThumbsUp className="w-4 h-4 mr-2" />
+                          Hữu ích
+                        </button>
+                        <button className="inline-flex items-center px-4 py-2 rounded-lg border text-gray-600 border-gray-200 hover:bg-gray-50 transition-colors">
+                          <MessageCircle className="w-4 h-4 mr-2" />
+                          Bình luận
+                        </button>
+                      </div>
                       <button className="inline-flex items-center px-4 py-2 rounded-lg border text-gray-600 border-gray-200 hover:bg-gray-50 transition-colors">
-                        <ThumbsUp className="w-4 h-4 mr-2" />
-                        Hữu ích
-                      </button>
-                      <button className="inline-flex items-center px-4 py-2 rounded-lg border text-gray-600 border-gray-200 hover:bg-gray-50 transition-colors">
-                        <MessageCircle className="w-4 h-4 mr-2" />
-                        Bình luận
+                        <Share2 className="w-4 h-4 mr-2" />
+                        Chia sẻ
                       </button>
                     </div>
-                    <button className="inline-flex items-center px-4 py-2 rounded-lg border text-gray-600 border-gray-200 hover:bg-gray-50 transition-colors">
-                      <Share2 className="w-4 h-4 mr-2" />
-                      Chia sẻ
-                    </button>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Sidebar - 30% */}
-            <div className="w-full lg:w-[30%] space-y-8">
-              {/* Related Posts */}
-              <div className="bg-white/95 backdrop-blur-sm border-0 shadow-xl rounded-xl sticky top-8">
-                <div className="p-6">
-                  <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                    <BookOpen className="w-6 h-6 text-emerald-600" />
-                    Bài viết liên quan
-                  </h2>
+              {/* Sidebar - 30% */}
+              <div className="w-full lg:w-[30%] space-y-8">
+                {/* Related Posts */}
+                <div className="bg-white/95 backdrop-blur-sm border-0 shadow-xl rounded-xl sticky top-8">
+                  <div className="p-6">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                      <BookOpen className="w-6 h-6 text-emerald-600" />
+                      Bài viết liên quan
+                    </h2>
 
-                  {/* Danh sách có cuộn trong khung */}
-                  <div
-                    ref={relBoxRef}
-                    className="space-y-6 max-h-[60vh] overflow-auto pr-1"
-                  >
-                    {relCurrent.map((relatedPost) => (
-                      <Link key={relatedPost.id} to={`/blog/${relatedPost.id}`}>
-                        <div className="group cursor-pointer hover:bg-emerald-50 p-4 rounded-xl transition-all duration-300 border-b border-gray-100 last:border-b-0">
-                          <div className="relative overflow-hidden rounded-lg mb-3">
-                            <img
-                              src={relatedPost.url}
-                              alt={relatedPost.title}
-                              className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
-                              loading="lazy"
-                            />
-                            <div className="absolute top-2 left-2">
-                              <span className="inline-block px-2 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded text-xs">
-                                {relatedPost.category}
-                              </span>
+                    {/* Danh sách có cuộn trong khung */}
+                    <div
+                      ref={relBoxRef}
+                      className="space-y-6 max-h-[60vh] overflow-auto pr-1"
+                    >
+                      {relCurrent.map((relatedPost) => (
+                        <Link key={relatedPost.id} to={`/blog/${relatedPost.id}`}>
+                          <div className="group cursor-pointer hover:bg-emerald-50 p-4 rounded-xl transition-all duration-300 border-b border-gray-100 last:border-b-0">
+                            <div className="relative overflow-hidden rounded-lg mb-3">
+                              <img
+                                src={relatedPost.url}
+                                alt={relatedPost.title}
+                                className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
+                                loading="lazy"
+                              />
+                              <div className="absolute top-2 left-2">
+                                <span className="inline-block px-2 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded text-xs">
+                                  {relatedPost.category}
+                                </span>
+                              </div>
+                            </div>
+
+                            <h4 className="font-bold text-gray-800 group-hover:text-emerald-600 transition-colors line-clamp-2 mb-2">
+                              {relatedPost.title}
+                            </h4>
+
+                            <div className="flex items-center justify-between text-xs text-gray-500">
+                              <div className="flex items-center gap-1">
+                                <Calendar className="w-3 h-3" />
+                                {formatDate(relatedPost.date)}
+                              </div>
+                              <ChevronRight className="w-4 h-4 group-hover:text-emerald-600 transition-colors" />
                             </div>
                           </div>
+                        </Link>
+                      ))}
+                    </div>
 
-                          <h4 className="font-bold text-gray-800 group-hover:text-emerald-600 transition-colors line-clamp-2 mb-2">
-                            {relatedPost.title}
-                          </h4>
-
-                          <div className="flex items-center justify-between text-xs text-gray-500">
-                            <div className="flex items-center gap-1">
-                              <Calendar className="w-3 h-3" />
-                              {formatDate(relatedPost.date)}
-                            </div>
-                            <ChevronRight className="w-4 h-4 group-hover:text-emerald-600 transition-colors" />
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-
-                  {/* Pagination */}
-                  {relTotalPages > 1 && (
-                    <div className="mt-5 flex items-center justify-center gap-1">
-                      <button
-                        onClick={() => handleRelPageChange(relPage - 1)}
-                        disabled={relPage === 1}
-                        className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
-                          relPage === 1
-                            ? "text-gray-400 border-gray-200 cursor-not-allowed"
-                            : "text-gray-700 border-gray-200 hover:bg-gray-50"
-                        }`}
-                      >
-                        Trước
-                      </button>
-
-                      {/* Trang đầu nếu cần */}
-                      {getRelPages()[0] > 1 && (
-                        <>
-                          <button
-                            onClick={() => handleRelPageChange(1)}
-                            className="px-3 py-1.5 text-sm rounded-lg border text-gray-700 border-gray-200 hover:bg-gray-50"
-                          >
-                            1
-                          </button>
-                          {getRelPages()[0] > 2 && (
-                            <span className="px-2 text-gray-400">…</span>
-                          )}
-                        </>
-                      )}
-
-                      {getRelPages().map((p) => (
+                    {/* Pagination */}
+                    {relTotalPages > 1 && (
+                      <div className="mt-5 flex items-center justify-center gap-1">
                         <button
-                          key={p}
-                          onClick={() => handleRelPageChange(p)}
+                          onClick={() => handleRelPageChange(relPage - 1)}
+                          disabled={relPage === 1}
                           className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
-                            relPage === p
-                              ? "bg-emerald-600 border-emerald-600 text-white"
+                            relPage === 1
+                              ? "text-gray-400 border-gray-200 cursor-not-allowed"
                               : "text-gray-700 border-gray-200 hover:bg-gray-50"
                           }`}
                         >
-                          {p}
+                          Trước
                         </button>
-                      ))}
 
-                      {/* Trang cuối nếu cần */}
-                      {getRelPages().slice(-1)[0] < relTotalPages && (
-                        <>
-                          {getRelPages().slice(-1)[0] < relTotalPages - 1 && (
-                            <span className="px-2 text-gray-400">…</span>
-                          )}
+                        {/* Trang đầu nếu cần */}
+                        {getRelPages()[0] > 1 && (
+                          <>
+                            <button
+                              onClick={() => handleRelPageChange(1)}
+                              className="px-3 py-1.5 text-sm rounded-lg border text-gray-700 border-gray-200 hover:bg-gray-50"
+                            >
+                              1
+                            </button>
+                            {getRelPages()[0] > 2 && (
+                              <span className="px-2 text-gray-400">…</span>
+                            )}
+                          </>
+                        )}
+
+                        {getRelPages().map((p) => (
                           <button
-                            onClick={() => handleRelPageChange(relTotalPages)}
-                            className="px-3 py-1.5 text-sm rounded-lg border text-gray-700 border-gray-200 hover:bg-gray-50"
+                            key={p}
+                            onClick={() => handleRelPageChange(p)}
+                            className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
+                              relPage === p
+                                ? "bg-emerald-600 border-emerald-600 text-white"
+                                : "text-gray-700 border-gray-200 hover:bg-gray-50"
+                            }`}
                           >
-                            {relTotalPages}
+                            {p}
                           </button>
-                        </>
-                      )}
+                        ))}
 
-                      <button
-                        onClick={() => handleRelPageChange(relPage + 1)}
-                        disabled={relPage === relTotalPages}
-                        className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
-                          relPage === relTotalPages
-                            ? "text-gray-400 border-gray-200 cursor-not-allowed"
-                            : "text-gray-700 border-gray-200 hover:bg-gray-50"
-                        }`}
-                      >
-                        Sau
-                      </button>
-                    </div>
-                  )}
+                        {/* Trang cuối nếu cần */}
+                        {getRelPages().slice(-1)[0] < relTotalPages && (
+                          <>
+                            {getRelPages().slice(-1)[0] < relTotalPages - 1 && (
+                              <span className="px-2 text-gray-400">…</span>
+                            )}
+                            <button
+                              onClick={() => handleRelPageChange(relTotalPages)}
+                              className="px-3 py-1.5 text-sm rounded-lg border text-gray-700 border-gray-200 hover:bg-gray-50"
+                            >
+                              {relTotalPages}
+                            </button>
+                          </>
+                        )}
+
+                        <button
+                          onClick={() => handleRelPageChange(relPage + 1)}
+                          disabled={relPage === relTotalPages}
+                          className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
+                            relPage === relTotalPages
+                              ? "text-gray-400 border-gray-200 cursor-not-allowed"
+                              : "text-gray-700 border-gray-200 hover:bg-gray-50"
+                          }`}
+                        >
+                          Sau
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
+              {/* End Sidebar */}
             </div>
-            {/* End Sidebar */}
           </div>
-        </div>
 
-        {/* Footer */}
-        <GreenFooter />
-      </div>
+          {/* Footer */}
+          <GreenFooter />
+        </div>
+      </section>
     </div>
   );
 };

@@ -2,32 +2,26 @@
 
 const InfoSection = () => {
     return (
-        <div className="relative w-full py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6">
-            {/* Background trắng đen */}
-            <div
-                className="absolute inset-0 bg-cover bg-center grayscale brightness-90 z-0"
+        <section
+            className="relative isolate w-full py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6"
+                style={{ backgroundColor: "#FAEBCE" }}
+            aria-labelledby="team-heading"
+        >
+            {/* Background Image Layer */}
+            <div 
+                className="absolute inset-0 bg-cover bg-center bg-no-repeat -z-20"
                 style={{
-                    backgroundImage:
-                        "url('https://static1.squarespace.com/static/63f8b23b0626755198127ae3/63fc8c7f15e5ba00f5bf5e84/63fd08a2e559cd5c7086f8b2/1677527755377/vietnam-halong-bay-01.jpg?format=1500w')",
+                    backgroundImage: "url('https://i.pinimg.com/736x/9b/5d/1d/9b5d1dba22aa80a8607b2cea6cd9db8b.jpg')",
+                    opacity: 0.5
                 }}
             />
-            <div className="absolute inset-0 bg-[#f5eacc] opacity-60 z-0" />
-
-            {/* Divider trước OUR TEAM */}
-            <div className="w-full flex items-center justify-center px-4 sm:px-5">
-                <div className="flex-grow h-[2px] sm:h-px bg-[#215858]" />
-                <h2 className="px-2 sm:px-4 text-xl sm:text-2xl md:text-3xl font-semibold text-[#215858] whitespace-nowrap">
-                    OUR TEAM
-                </h2>
-                <div className="flex-grow h-[2px] sm:h-px bg-[#215858]" />
-            </div>
 
             <div className="relative z-10 w-full max-w-8xl mx-auto text-center px-4 sm:px-6 md:px-8 lg:px-10">
-                <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mt-[-30px] sm:mt-[-40px] md:mt-[-50px] mb-8 sm:mb-12 md:mb-[50px]">
+                <h2 id="team-heading" className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mt-[-30px] sm:mt-[-40px] md:mt-[-50px] mb-8 sm:mb-12 md:mb-[50px]">
                     <span
                         className="mr-1 sm:mr-2"
                         style={{
-                            WebkitTextStroke: "1px #215858",
+                            WebkitTextStroke: "3px #215858",
                             color: "transparent",
                         }}
                     >
@@ -72,7 +66,7 @@ const InfoSection = () => {
                     </p>
                 </div>
             </div>
-        </div>
+        </section>
     );
 };
 
