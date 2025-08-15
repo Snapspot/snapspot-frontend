@@ -12,33 +12,34 @@ interface LocationSlide {
 }
 
 const backgroundImages: LocationSlide[] = [
-    {
-        image: 'https://i.pinimg.com/736x/10/80/62/108062e7e8ad0929aa0ebdf683705b4e.jpg',
-        title: 'Vịnh Hạ Long',
-        description: 'Vịnh Hạ Long là địa điểm du lịch Quảng Ninh hấp dẫn bậc nhất bởi khung cảnh thiên nhiên hùng vĩ với những đảo đá vôi kỳ thú của mình. Nơi đây...'
-    },
-    {
-        image: 'https://vcdn1-dulich.vnecdn.net/2022/06/03/cau-vang-jpeg-mobile-4171-1654247848.jpg?w=0&h=0&q=100&dpr=1&fit=crop&s=xrjEn1shZLiHomFix1sHNQ',
-        title: 'Cầu Vàng',
-        description: 'Cầu Vàng Đà Nẵng là một trong những biểu tượng du lịch của Việt Nam gây ấn tượng mạnh với cộng đồng quốc tế ngay sau khi ra mắt...'
-    },
-    {
-        image: 'https://upload.wikimedia.org/wikipedia/commons/f/f4/Ho_Chi_Minh_City_panorama_2019_%28cropped2%29.jpg',
-        title: 'Thành phố Hồ Chí Minh',
-        description: 'Thành phố Hồ Chí Minh là trung tâm kinh tế lớn nhất Việt Nam, nơi giao thoa giữa hiện đại và truyền thống với những tòa nhà cao tầng...'
-    },
-    {
-        image: 'https://i.pinimg.com/1200x/1b/15/55/1b155537eb42a5b9101725aa982fea24.jpg',
-        title: 'Đèo Khau Phạ',
-        description: 'Đèo Khau Phạ là một trong những cung đường đèo quan có vị độc đáng thuộc hàng bậc nhất Việt Nam với vẻ đẹp đình núi Khau Pha, ngoạn...'
-    },
+   {
+    image: 'https://i.pinimg.com/736x/b0/d3/ac/b0d3ac2622306a97cdd74da2eef38c5c.jpg',
+    title: 'Trở Thành Đối Tác Cùng SnapSpot',
+    description: 'Cùng SnapSpot đưa địa điểm của bạn đến gần hơn với hàng ngàn người dùng đang tìm kiếm nơi chụp hình đẹp khắp Việt Nam. Đăng ký để được hiển thị nổi bật, hỗ trợ truyền thông, và tham gia hệ sinh thái du lịch – nhiếp ảnh năng động!'
+},
+{
+    image: 'https://i.pinimg.com/736x/16/92/9f/16929fd2fa04a3c9f6712caf47f366f1.jpg',
+    title: 'Tăng Lượt  Ghé Thăm và Doanh Thu',
+    description: 'Biến mỗi lượt check-in thành cơ hội kinh doanh. SnapSpot giúp bạn thu hút khách mới, giữ chân khách cũ và tạo hiệu ứng lan truyền mạnh mẽ trên mạng xã hội.'
+},
+{
+    image: 'https://i.pinimg.com/736x/61/27/e9/6127e9aa734fb9abfd43cec7af5debb2.jpg',
+    title: 'Hiển Thị Nổi Bật Trên Bản Đồ SnapSpot',
+    description: 'Địa điểm của bạn sẽ xuất hiện ở vị trí nổi bật trên bản đồ SnapSpot, giúp hàng ngàn khách hàng tiềm năng dễ dàng tìm thấy và ghé thăm.'
+},
+{
+    image: 'https://i.pinimg.com/736x/0e/a0/7b/0ea07bac1cce654d42381cc99066ed70.jpg',
+    title: 'Đồng Hành Cùng Cộng Đồng SnapSpot',
+    description: 'Kết nối với hàng ngàn nhiếp ảnh gia, travel blogger và du khách yêu thích khám phá. Cùng tạo nên những khoảnh khắc đáng nhớ và lan tỏa hình ảnh địa điểm của bạn.'
+}
+
 ];
 
 const fadeDuration = 3000; // ms
 const displayDuration = 6000; // ms
 
-const SpotSection: React.FC<SpotSectionProps> = ({
-    buttonText = "Tham gia cộng đồng SnapSpot",
+const ServiceSpotSection: React.FC<SpotSectionProps> = ({
+    buttonText = "Đăng ký ngay",
     onClick,
 }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -142,4 +143,4 @@ const SpotSection: React.FC<SpotSectionProps> = ({
     );
 };
 
-export default SpotSection;
+export default ServiceSpotSection;

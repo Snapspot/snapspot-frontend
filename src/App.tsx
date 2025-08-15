@@ -14,7 +14,7 @@ import Spot from './pages/management/Spot'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Home from './pages/Home';
-import Services from './pages/Services';
+import ServicesPage from './pages/ServicesPage';
 import ThirdpartyDashboard from './pages/thirdparty/Dashboard';
 import BranchManagement from './pages/thirdparty/Branch';
 import ThirdpartyRatings from './pages/thirdparty/Ratings';
@@ -25,7 +25,7 @@ import Agency from './pages/management/Agency';
 import AgencyService from './pages/management/AgencyService';
 import Blog from './pages/Blog';
 import BlogDetail from './pages/BlogDetail';
-
+import Aboutus from './pages/Aboutus';
 function App() {
   return (
     <Router>
@@ -36,10 +36,10 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:id" element={<BlogDetail />} />
-
+        <Route path="/about" element={<Aboutus />} />
         {/* Redirect "/" to "/home" */}
         <Route path="/" element={<Navigate to="/home" replace />} />
-        <Route path="/services" element={<Services/>} />
+        <Route path="/Services" element={<ServicesPage/>} />
 
         {/* Protected routes (role = Admin) */}
         <Route element={<PrivateRoute allowedRoles={['Admin']} />}>
