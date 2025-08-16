@@ -2,12 +2,14 @@ import Sidebar from '../../components/thirdparty/Sidebar';
 import Navbar from '../../components/thirdparty/Navbar';
 import {
     Table, TableBody, TableCell, TableContainer, TablePagination,
-    TableHead, TableRow, Paper, IconButton, Button, TextField
+    TableHead, TableRow, Paper, IconButton, Button, TextField, Dialog,
+    DialogActions, DialogContent, DialogTitle
 } from '@mui/material';
 import { FiEye, FiEdit, FiTrash2 } from 'react-icons/fi';
 import { Star, StarBorder } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
 import axios from '../../utils/axiosInstance';
+import { v4 as uuidv4 } from 'uuid';
 
 const BranchManagement = () => {
     const [agencyList, setAgencyList] = useState<any[]>([]);
@@ -15,7 +17,24 @@ const BranchManagement = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
+    // Dialog state
+    const [openAddDialog, setOpenAddDialog] = useState(false);
+    const [newAgency, setNewAgency] = useState({
+        name: '',
+        address: '',
+        fullname: '',
+        phoneNumber: '',
+        avatarUrl: '',
+        spotId: '',
+        description: '',
+        agencyServiceIds: [] as string[]
+    });
+
     useEffect(() => {
+        fetchAgencies();
+    }, []);
+
+    const fetchAgencies = () => {
         axios.get('/third-party/agencies')
             .then((res) => {
                 setAgencyList(res.data.data || []);
@@ -23,7 +42,7 @@ const BranchManagement = () => {
             .catch((err) => {
                 console.error('Lỗi khi lấy danh sách agency:', err);
             });
-    }, []);
+    };
 
     const filteredRows = agencyList.filter(agency =>
         agency.name?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -42,6 +61,48 @@ const BranchManagement = () => {
         }
         return stars;
     };
+
+    // Handle input change in dialog
+    const handleChange = (field: string, value: string | string[]) => {
+        setNewAgency(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    // Submit new agency
+    const handleAddAgency = () => {
+    const spotId = uuidv4(); // Tự sinh UUID ngẫu nhiên
+    axios.post('/agencies', {
+        createAgencyDto: {
+            ...newAgency,
+            spotId
+        }
+    })
+    .then(() => {
+        setOpenAddDialog(false);
+        setNewAgency({
+            name: '',
+            address: '',
+            fullname: '',
+            phoneNumber: '',
+            avatarUrl: '',
+            spotId: '',
+            description: '',
+            agencyServiceIds: []
+        });
+        fetchAgencies();
+    })
+    .catch(err => {
+        if (err.response) {
+            console.error("📌 API trả lỗi:", err.response.data);
+        } else if (err.request) {
+            console.error("📌 Không nhận được phản hồi từ server:", err.request);
+        } else {
+            console.error("📌 Lỗi khi setup request:", err.message);
+        }
+    });
+};
 
 
     return (
@@ -82,7 +143,11 @@ const BranchManagement = () => {
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
-                                <Button variant="contained" sx={{ backgroundColor: '#215858' }}>
+                                <Button
+                                    variant="contained"
+                                    sx={{ backgroundColor: '#215858' }}
+                                    onClick={() => setOpenAddDialog(true)}
+                                >
                                     Thêm chi nhánh
                                 </Button>
                             </div>
@@ -147,6 +212,29 @@ const BranchManagement = () => {
                     </main>
                 </div>
             </div>
+
+            {/* Add Agency Dialog */}
+            <Dialog open={openAddDialog} onClose={() => setOpenAddDialog(false)} fullWidth maxWidth="sm">
+                <DialogTitle>Thêm chi nhánh</DialogTitle>
+                <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+                    <TextField label="Tên dịch vụ" value={newAgency.name} onChange={(e) => handleChange('name', e.target.value)} />
+                    <TextField label="Người phụ trách" value={newAgency.fullname} onChange={(e) => handleChange('fullname', e.target.value)} />
+                    <TextField label="Số điện thoại" value={newAgency.phoneNumber} onChange={(e) => handleChange('phoneNumber', e.target.value)} />
+                    <TextField label="Địa chỉ" value={newAgency.address} onChange={(e) => handleChange('address', e.target.value)} />
+                    <TextField label="Avatar URL" value={newAgency.avatarUrl} onChange={(e) => handleChange('avatarUrl', e.target.value)} />
+                    <TextField label="Spot ID" value={newAgency.spotId} onChange={(e) => handleChange('spotId', e.target.value)} />
+                    <TextField label="Mô tả" multiline rows={3} value={newAgency.description} onChange={(e) => handleChange('description', e.target.value)} />
+                    <TextField
+                        label="Agency Service IDs (ngăn cách bởi dấu phẩy)"
+                        value={newAgency.agencyServiceIds.join(',')}
+                        onChange={(e) => handleChange('agencyServiceIds', e.target.value.split(',').map(id => id.trim()))}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenAddDialog(false)}>Hủy</Button>
+                    <Button variant="contained" sx={{ backgroundColor: '#215858' }} onClick={handleAddAgency}>Lưu</Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 };

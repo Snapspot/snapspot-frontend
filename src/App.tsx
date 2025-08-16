@@ -25,7 +25,9 @@ import Agency from './pages/management/Agency';
 import AgencyService from './pages/management/AgencyService';
 import Blog from './pages/Blog';
 import BlogDetail from './pages/BlogDetail';
-import Aboutus from './pages/Aboutus';
+import AboutUs from './pages/Aboutus';
+import User from './pages/management/User';
+
 function App() {
   return (
     <Router>
@@ -36,7 +38,7 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:id" element={<BlogDetail />} />
-        <Route path="/about" element={<Aboutus />} />
+        <Route path="/about" element={<AboutUs />} />
         {/* Redirect "/" to "/home" */}
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/Services" element={<ServicesPage/>} />
@@ -54,6 +56,7 @@ function App() {
           <Route path="/admin/provinces" element={<Province />} />
           <Route path="/admin/districts" element={<District />} />
           <Route path="/admin/spots" element={<Spot />} />
+          <Route path="/admin/user" element={<User />} />
         </Route>
 
                 {/* Protected routes (role = Admin) */}

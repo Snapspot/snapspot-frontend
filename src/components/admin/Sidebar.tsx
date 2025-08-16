@@ -1,4 +1,4 @@
-import { FiHome, FiUsers, FiPackage, FiMapPin, FiBook, FiStar, FiSettings, FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { FiHome, FiUsers, FiPackage, FiMapPin, FiBook, FiStar, FiSettings, FiChevronDown, FiChevronUp, FiUser } from 'react-icons/fi';
 import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -143,6 +143,10 @@ export default function Sidebar() {
         <Link to="/admin/agency-services" className="hover:bg-teal-700 px-4 py-3 rounded transition flex items-center space-x-3">
           <FiSettings />
           <span>Quản lý dịch vụ</span>
+        </Link>
+        <Link to="/admin/user" className="hover:bg-teal-700 px-4 py-3 rounded transition flex items-center space-x-3">
+          <FiUser />
+          <span>Quản lý người dùng</span>
         </Link>
       </nav>
       {/* NÚT ĐĂNG XUẤT */}
