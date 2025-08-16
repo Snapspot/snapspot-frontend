@@ -8,6 +8,8 @@ import {
     Link,
     Checkbox,
     FormControlLabel,
+    useMediaQuery,
+    useTheme,
 } from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
@@ -20,7 +22,6 @@ import Footer from '../components/home/Footer';
 import axiosInstance from '../utils/axiosInstance';
 import React from 'react';
 
-
 const backgroundImages = [
     'https://wander-lush.org/wp-content/uploads/2022/11/Hanoi-to-Halong-Bay-transport-guide-2023-new-DP-Junk-Boat.jpg',
     'https://vcdn1-dulich.vnecdn.net/2022/06/03/cau-vang-jpeg-mobile-4171-1654247848.jpg?w=0&h=0&q=100&dpr=1&fit=crop&s=xrjEn1shZLiHomFix1sHNQ',
@@ -31,8 +32,11 @@ const backgroundImages = [
 const fadeDuration = 3000; // ms
 const displayDuration = 6000; // ms
 
-
 const Login = () => {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const isSmallMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [fade, setFade] = useState(false);
 
@@ -74,7 +78,6 @@ const Login = () => {
         }
     }, []);
 
-
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -85,9 +88,11 @@ const Login = () => {
         message: '',
         severity: 'success' as 'success' | 'error' | 'info' | 'warning',
     });
+    
     const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
         return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
     });
+    
     const showSnackbar = (message: string, severity: 'success' | 'error' | 'info' | 'warning') => {
         setSnackbar({ open: true, message, severity });
     };
@@ -162,8 +167,6 @@ const Login = () => {
         }
     };
 
-
-
     useEffect(() => {
         const changeImage = () => {
             setFade(true); // fade out hiện tại
@@ -195,7 +198,11 @@ const Login = () => {
     return (
         <div className="min-h-screen w-screen flex flex-col relative overflow-hidden">
             <Navbar />
-            <div className="h-screen w-screen flex relative overflow-hidden">
+            <div 
+                className={`flex relative overflow-hidden ${
+                    isMobile ? 'min-h-screen' : 'h-screen'
+                } w-screen`}
+            >
                 {/* Background hiện tại */}
                 <div
                     className="absolute inset-0 bg-cover bg-center transition-opacity ease-in-out will-change-opacity"
@@ -215,28 +222,98 @@ const Login = () => {
                 />
 
                 {/* Nội dung */}
-                <div className="flex w-full h-full items-center justify-center gap-130 relative z-10">
-                    <div className="text-white text-4xl font-bold">
-                        <img src="/images/logo2-03.png" alt="Logo SnapSpot" className="mb-4 w-150 h-auto" />
-                        <p className="text-xl font-extralight tracking-wide">Chụp đúng nơi - Tỏa sáng đúng chất</p>
-
+                <div 
+                    className={`flex w-full h-full items-center justify-center relative z-10 ${
+                        isMobile 
+                            ? 'flex-col gap-8 py-8 px-4' 
+                            : 'gap-130'
+                    }`}
+                >
+                    {/* Logo Section */}
+                    <div 
+                        className={`text-white text-center ${
+                            isMobile 
+                                ? 'order-1' 
+                                : ''
+                        }`}
+                    >
+                        <img 
+                            src="/images/logo2-03.png" 
+                            alt="Logo SnapSpot" 
+                            className={`mb-4 h-auto mx-auto ${
+                                isSmallMobile 
+                                    ? 'w-32' 
+                                    : isMobile 
+                                        ? 'w-40' 
+                                        : 'w-150'
+                            }`} 
+                        />
+                        <Typography 
+                            variant={isSmallMobile ? 'h6' : isMobile ? 'h5' : 'h4'} 
+                            component="h1"
+                            sx={{ 
+                                fontWeight: 'bold',
+                                mb: 1
+                            }}
+                        >
+                            SnapSpot
+                        </Typography>
+                        <Typography 
+                            variant={isSmallMobile ? 'body2' : 'h6'}
+                            sx={{ 
+                                fontWeight: 'light',
+                                letterSpacing: '0.05em'
+                            }}
+                        >
+                            Chụp đúng nơi - Tỏa sáng đúng chất
+                        </Typography>
                     </div>
 
-                    <Paper elevation={6} sx={{ padding: 5, width: 400, minHeight: 500 }}>
-
-                        <Typography variant="h4" mb={1} textAlign="center" fontWeight="bold" color="#214848">
+                    {/* Form Section */}
+                    <Paper 
+                        elevation={6} 
+                        sx={{ 
+                            padding: isMobile ? 3 : 5, 
+                            width: isMobile ? '100%' : 400,
+                            maxWidth: isMobile ? '400px' : '400px',
+                            minHeight: isMobile ? 'auto' : 500,
+                            marginTop: isMobile ? 0 : 0,
+                            order: isMobile ? 2 : 'unset'
+                        }}
+                    >
+                        <Typography 
+                            variant={isMobile ? "h5" : "h4"} 
+                            mb={1} 
+                            textAlign="center" 
+                            fontWeight="bold" 
+                            color="#214848"
+                        >
                             Đăng nhập
                         </Typography>
-                        <Typography variant="body2" mb={3} textAlign="center" color="text.secondary">
+                        <Typography 
+                            variant="body2" 
+                            mb={3} 
+                            textAlign="center" 
+                            color="text.secondary"
+                        >
                             Vui lòng nhập thông tin tài khoản của bạn để tiếp tục
                         </Typography>
-                        <Box component="form" display="flex" flexDirection="column" gap={2} onSubmit={handleSubmit} noValidate>
+                        
+                        <Box 
+                            component="form" 
+                            display="flex" 
+                            flexDirection="column" 
+                            gap={2} 
+                            onSubmit={handleSubmit} 
+                            noValidate
+                        >
                             <TextField
                                 label="Email"
                                 variant="outlined"
                                 fullWidth
                                 name="email"
                                 id="email"
+                                size={isMobile ? "medium" : "medium"}
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
                                 error={Boolean(errors.email)}
@@ -251,6 +328,7 @@ const Login = () => {
                                 fullWidth
                                 name="password"
                                 id="password"
+                                size={isMobile ? "medium" : "medium"}
                                 value={password}
                                 onChange={e => setPassword(e.target.value)}
                                 error={Boolean(errors.password)}
@@ -258,18 +336,35 @@ const Login = () => {
                                 autoComplete="current-password"
                                 required
                             />
-                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                            
+                            <Box 
+                                display="flex" 
+                                justifyContent="space-between" 
+                                alignItems="center" 
+                                mb={1}
+                                flexDirection={isSmallMobile ? 'column' : 'row'}
+                                gap={isSmallMobile ? 1 : 0}
+                            >
                                 <FormControlLabel
                                     control={
                                         <Checkbox
                                             checked={remember}
                                             onChange={e => setRemember(e.target.checked)}
                                             color="primary"
+                                            size={isMobile ? "small" : "medium"}
                                         />
                                     }
-                                    label="Ghi nhớ đăng nhập"
+                                    label={
+                                        <Typography fontSize={isMobile ? 13 : 14}>
+                                            Ghi nhớ đăng nhập
+                                        </Typography>
+                                    }
                                 />
-                                <Link href="#" underline="hover" fontSize={14}>
+                                <Link 
+                                    href="#" 
+                                    underline="hover" 
+                                    fontSize={isMobile ? 13 : 14}
+                                >
                                     Quên mật khẩu?
                                 </Link>
                             </Box>
@@ -288,6 +383,7 @@ const Login = () => {
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                     gap: 1,
+                                    py: isMobile ? 1.5 : 1.2,
                                 }}
                             >
                                 {loading ? (
@@ -300,7 +396,13 @@ const Login = () => {
                                 )}
                             </Button>
 
-                            <Typography variant="body2" mt={2} textAlign="center" color="text.secondary">
+                            <Typography 
+                                variant="body2" 
+                                mt={2} 
+                                textAlign="center" 
+                                color="text.secondary"
+                                fontSize={isMobile ? 13 : 14}
+                            >
                                 Chưa có tài khoản?{' '}
                                 <Link href="/register" underline="hover">
                                     Đăng ký ngay
@@ -315,7 +417,10 @@ const Login = () => {
                 open={snackbar.open}
                 autoHideDuration={4000}
                 onClose={() => setSnackbar({ ...snackbar, open: false })}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }} // ⬅️ sửa chỗ này
+                anchorOrigin={{ 
+                    vertical: 'top', 
+                    horizontal: isMobile ? 'center' : 'right' 
+                }}
             >
                 <Alert
                     onClose={() => setSnackbar({ ...snackbar, open: false })}

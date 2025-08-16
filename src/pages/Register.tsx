@@ -8,6 +8,8 @@ import {
   Link,
   Checkbox,
   FormControlLabel,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -29,6 +31,10 @@ const fadeDuration = 3000; // ms
 const displayDuration = 6000; // ms
 
 const Register = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isSmallMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [fade, setFade] = useState(false);
   const navigate = useNavigate();
@@ -40,14 +46,17 @@ const Register = () => {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [dob, setDob] = useState(''); // dùng định dạng YYYY-MM-DD
+  
   const showSnackbar = (message: string, severity: 'success' | 'error' | 'info' | 'warning') => {
     setSnackbar({ open: true, message, severity });
   };
+  
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
     severity: 'success' as 'success' | 'error' | 'info' | 'warning',
   });
+  
   const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
   });
@@ -147,7 +156,11 @@ const Register = () => {
   return (
     <div className="min-h-screen w-screen flex flex-col relative overflow-hidden">
       <Navbar />
-      <div className="h-screen w-screen flex relative overflow-hidden">
+      <div 
+        className={`flex relative overflow-hidden ${
+          isMobile ? 'min-h-screen' : 'h-screen'
+        } w-screen`}
+      >
         {/* Background */}
         <div
           className="absolute inset-0 bg-cover bg-center transition-opacity ease-in-out will-change-opacity"
@@ -162,19 +175,83 @@ const Register = () => {
         <div className="absolute inset-0" style={{ backgroundColor: '#21484888', zIndex: -1 }} />
 
         {/* Content */}
-        <div className="flex w-full h-full items-center justify-center gap-130 relative z-10">
-          <div className="text-white text-4xl font-bold">
-            <img src="/images/logo2-03.png" alt="Logo SnapSpot" className="mb-4 w-150 h-auto" />
-            <p className="text-xl font-extralight tracking-wide">Chụp đúng nơi - Tỏa sáng đúng chất</p>
+        <div 
+          className={`flex w-full h-full items-center justify-center relative z-10 ${
+            isMobile 
+              ? 'flex-col gap-8 py-8 px-4' 
+              : 'gap-130'
+          }`}
+        >
+          {/* Logo Section */}
+          <div 
+            className={`text-white text-center ${
+              isMobile 
+                ? 'order-1' 
+                : ''
+            }`}
+          >
+            <img 
+              src="/images/logo2-03.png" 
+              alt="Logo SnapSpot" 
+              className={`mb-4 h-auto mx-auto ${
+                isSmallMobile 
+                  ? 'w-32' 
+                  : isMobile 
+                    ? 'w-40' 
+                    : 'w-150'
+              }`} 
+            />
+            <Typography 
+              variant={isSmallMobile ? 'h6' : isMobile ? 'h5' : 'h4'} 
+              component="h1"
+              sx={{ 
+                fontWeight: 'bold',
+                mb: 1
+              }}
+            >
+              SnapSpot
+            </Typography>
+            <Typography 
+              variant={isSmallMobile ? 'body2' : 'h6'}
+              sx={{ 
+                fontWeight: 'light',
+                letterSpacing: '0.05em'
+              }}
+            >
+              Chụp đúng nơi - Tỏa sáng đúng chất
+            </Typography>
           </div>
 
-          <Paper elevation={6} sx={{ padding: 5, width: 400, minHeight: 550, marginTop: 10 }}>
-            <Typography variant="h4" mb={1} textAlign="center" fontWeight="bold" color="#214848">
+          {/* Form Section */}
+          <Paper 
+            elevation={6} 
+            sx={{ 
+              padding: isMobile ? 3 : 5, 
+              width: isMobile ? '100%' : 400,
+              maxWidth: isMobile ? '400px' : '400px',
+              minHeight: isMobile ? 'auto' : 550,
+              marginTop: isMobile ? 0 : 10,
+              order: isMobile ? 2 : 'unset'
+            }}
+          >
+            <Typography 
+              variant={isMobile ? "h5" : "h4"} 
+              mb={1} 
+              textAlign="center" 
+              fontWeight="bold" 
+              color="#214848"
+            >
               Đăng ký
             </Typography>
-            <Typography variant="body2" mb={3} textAlign="center" color="text.secondary">
+            <Typography 
+              variant="body2" 
+              mb={3} 
+              textAlign="center" 
+              color="text.secondary"
+            >
               Vui lòng điền thông tin để tạo tài khoản mới
             </Typography>
+            
             <Box
               component="form"
               display="flex"
@@ -187,6 +264,7 @@ const Register = () => {
                 label="Email"
                 variant="outlined"
                 fullWidth
+                size={isMobile ? "medium" : "medium"}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 error={Boolean(errors.email)}
@@ -199,6 +277,7 @@ const Register = () => {
                 variant="outlined"
                 type="password"
                 fullWidth
+                size={isMobile ? "medium" : "medium"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 error={Boolean(errors.password)}
@@ -211,6 +290,7 @@ const Register = () => {
                 variant="outlined"
                 type="password"
                 fullWidth
+                size={isMobile ? "medium" : "medium"}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 error={Boolean(errors.confirmPassword)}
@@ -222,6 +302,7 @@ const Register = () => {
                 label="Số điện thoại"
                 variant="outlined"
                 fullWidth
+                size={isMobile ? "medium" : "medium"}
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 error={Boolean(errors.phoneNumber)}
@@ -235,22 +316,25 @@ const Register = () => {
                 variant="outlined"
                 fullWidth
                 type="date"
+                size={isMobile ? "medium" : "medium"}
                 InputLabelProps={{ shrink: true }}
                 value={dob}
                 onChange={(e) => setDob(e.target.value)}
                 error={Boolean(errors.dob)}
                 helperText={errors.dob}
               />
+              
               <FormControlLabel
                 control={
                   <Checkbox
                     checked={agreeTerms}
                     onChange={(e) => setAgreeTerms(e.target.checked)}
                     color="primary"
+                    size={isMobile ? "small" : "medium"}
                   />
                 }
                 label={
-                  <Typography fontSize={14}>
+                  <Typography fontSize={isMobile ? 13 : 14}>
                     Tôi đồng ý với{' '}
                     <Link href="#" underline="hover">
                       Điều khoản sử dụng
@@ -267,19 +351,26 @@ const Register = () => {
               <Button
                 type="submit"
                 variant="contained"
-                size="large"
+                size={isMobile ? "large" : "large"}
                 sx={{
                   backgroundColor: '#214848',
                   borderRadius: 2,
                   '&:hover': { backgroundColor: '#163838' },
                   fontWeight: 'bold',
                   mt: 1,
+                  py: isMobile ? 1.5 : 1.2,
                 }}
               >
                 Đăng ký
               </Button>
 
-              <Typography variant="body2" mt={2} textAlign="center" color="text.secondary">
+              <Typography 
+                variant="body2" 
+                mt={2} 
+                textAlign="center" 
+                color="text.secondary"
+                fontSize={isMobile ? 13 : 14}
+              >
                 Đã có tài khoản?{' '}
                 <Link href="/login" underline="hover">
                   Đăng nhập ngay
@@ -294,9 +385,16 @@ const Register = () => {
         open={snackbar.open}
         autoHideDuration={4000}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        anchorOrigin={{ 
+          vertical: 'top', 
+          horizontal: isMobile ? 'center' : 'right' 
+        }}
       >
-        <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: '100%' }}>
+        <Alert 
+          onClose={() => setSnackbar({ ...snackbar, open: false })} 
+          severity={snackbar.severity} 
+          sx={{ width: '100%' }}
+        >
           {snackbar.message}
         </Alert>
       </Snackbar>

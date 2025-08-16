@@ -81,6 +81,8 @@ const StarIcon = () => (
 const Services = () => {
   const [packages, setPackages] = useState<SellerPackage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedPackage, setSelectedPackage] = useState<SellerPackage | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
   // Function để xử lý đăng ký - LOGIC HOÀN CHỈNH
@@ -100,6 +102,19 @@ const Services = () => {
 
     // Option 3: Nếu bạn muốn mở trong tab mới
     // window.open('/register', '_blank');
+  };
+
+  // Modal functions
+  const openModal = (pkg: SellerPackage) => {
+    setSelectedPackage(pkg);
+    setIsModalOpen(true);
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedPackage(null);
+    document.body.style.overflow = "unset";
   };
 
   // LOGIC FETCH API HOÀN CHỈNH
@@ -131,11 +146,26 @@ const Services = () => {
     fetchPackages();
   }, []);
 
+  // Handle ESC key and cleanup
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && isModalOpen) {
+        closeModal();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscKey);
+    return () => {
+      document.removeEventListener("keydown", handleEscKey);
+      document.body.style.overflow = "unset";
+    };
+  }, [isModalOpen]);
+
   return (
     <>
       <Helmet>
-        <title>Dịch vụ</title>
-        <meta name="description" content="Khám phá những địa điểm nổi bật tại Việt Nam" />
+        <title>Dịch vụ - SnapSpot</title>
+        <meta name="description" content="Chọn gói dịch vụ phù hợp và bắt đầu phát triển thương hiệu của bạn ngay hôm nay" />
       </Helmet>
 
       <section
@@ -187,7 +217,7 @@ const Services = () => {
             <div className="mt-8 flex flex-wrap justify-center items-center gap-6 text-sm text-emerald-700 font-medium">
               <div className="flex items-center gap-2">
                 <span className="text-emerald-600 text-lg">👥</span>
-                <span> khách hàng tin tưởng</span>
+                <span>khách hàng tin tưởng</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-emerald-600 text-lg">⚡</span>
@@ -218,9 +248,10 @@ const Services = () => {
                 return (
                   <div
                     key={pkg.id}
-                    className={`group relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${
-                      isRecommended ? "ring-2 ring-emerald-400 scale-105 lg:scale-110 z-10" : "hover:scale-105"
+                    className={`group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden cursor-pointer transform hover:scale-110 hover:-translate-y-2 ${
+                      isRecommended ? "ring-2 ring-emerald-400 scale-105 lg:scale-110 z-10" : ""
                     }`}
+                    onClick={() => openModal(pkg)}
                   >
                     {/* Recommended badge */}
                     {isRecommended && (
@@ -242,7 +273,7 @@ const Services = () => {
                       <img
                         src={image}
                         alt={`${pkg.name} package`}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-125"
                         loading="lazy"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
@@ -272,10 +303,10 @@ const Services = () => {
                         <p className="text-emerald-700 text-sm font-medium">Tối đa {pkg.maxAgency} địa điểm</p>
                       </div>
 
-                      {/* Features - HIỂN THỊ FULL FEATURES */}
+                      {/* Features - HIỂN THỊ 5 FEATURES ĐẦU + "XEM THÊM" */}
                       <div className="mb-6">
                         <ul className="space-y-3">
-                          {features.map((feature, index) => (
+                          {features.slice(0, 5).map((feature, index) => (
                             <li key={index} className="flex items-start gap-3">
                               <div className="flex-shrink-0 mt-0.5">
                                 <div className="w-5 h-5 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center">
@@ -285,19 +316,27 @@ const Services = () => {
                               <span className="text-gray-700 text-sm leading-relaxed">{feature}</span>
                             </li>
                           ))}
+                          {features.length > 5 && (
+                            <li className="text-emerald-600 text-sm font-medium pl-8">
+                              +{features.length - 5} tính năng khác
+                            </li>
+                          )}
                         </ul>
                       </div>
 
                       {/* CTA Button */}
                       <button
-                        onClick={() => handleRegister(pkg.id, pkg.name)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openModal(pkg);
+                        }}
                         className={`w-full py-3 px-4 rounded-xl font-semibold transition-all duration-300 ${
                           isRecommended
                             ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow-lg hover:shadow-xl"
                             : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 hover:border-emerald-300"
                         }`}
                       >
-                        Đăng ký ngay
+                        Xem chi tiết
                       </button>
                     </div>
                   </div>
@@ -305,8 +344,122 @@ const Services = () => {
               })
             )}
           </div>
+
         </div>
       </section>
+
+      {/* MODAL POPUP */}
+      {isModalOpen && selectedPackage && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={closeModal}
+        >
+          <div
+            className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl transform transition-all duration-300 scale-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="relative">
+              <img
+                src={imageMap[selectedPackage.name] || 'https://placehold.co/600x400?text=SnapSpot'}
+                alt={`${selectedPackage.name} package`}
+                className="w-full h-64 object-cover rounded-t-3xl"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent rounded-t-3xl" />
+
+              <button
+                onClick={closeModal}
+                className="absolute top-4 right-4 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors duration-200"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              <div className="absolute bottom-6 left-6 right-6">
+                <h2 className="text-3xl font-bold text-white mb-2">{selectedPackage.name}</h2>
+                <p className="text-white/90 text-lg">{subTextMap[selectedPackage.name]}</p>
+              </div>
+            </div>
+
+            <div className="p-8">
+              <div className="mb-8 text-center">
+                <div className="flex items-baseline justify-center gap-2 mb-2">
+                  <span className="text-4xl font-bold text-emerald-800">
+                    {selectedPackage.price.toLocaleString("vi-VN")}đ
+                  </span>
+                  <span className="text-emerald-600 text-lg">/tháng</span>
+                  {originalPriceMap[selectedPackage.name] &&
+                    originalPriceMap[selectedPackage.name] > selectedPackage.price && (
+                      <span className="text-gray-400 text-lg line-through ml-2">
+                        {originalPriceMap[selectedPackage.name].toLocaleString("vi-VN")}đ
+                      </span>
+                    )}
+                </div>
+                <p className="text-emerald-700 text-lg font-medium">Tối đa {selectedPackage.maxAgency} địa điểm</p>
+                {saveTagMap[selectedPackage.name] && (
+                  <div className="inline-block bg-gradient-to-r from-orange-400 to-red-400 text-white px-4 py-2 rounded-full text-sm font-semibold mt-2">
+                    {saveTagMap[selectedPackage.name]}
+                  </div>
+                )}
+              </div>
+
+              <div className="mb-8">
+                <h3 className="text-xl font-bold text-emerald-800 mb-4">Tính năng bao gồm:</h3>
+                <div className="grid gap-3">
+                  {(descriptionMap[selectedPackage.name] || [selectedPackage.description]).map((feature, index) => (
+                    <div key={index} className="flex items-start gap-3 p-3 bg-emerald-50 rounded-lg">
+                      <div className="flex-shrink-0 mt-0.5">
+                        <div className="w-6 h-6 bg-emerald-500 text-white rounded-full flex items-center justify-center">
+                          <CheckIcon />
+                        </div>
+                      </div>
+                      <span className="text-gray-700 leading-relaxed">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mb-8 p-6 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl border border-emerald-100">
+                <h4 className="font-bold text-emerald-800 mb-2">Phù hợp cho:</h4>
+                <p className="text-emerald-700">{subTextMap[selectedPackage.name]}</p>
+
+                <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                  <div className="bg-white p-3 rounded-lg">
+                    <div className="text-2xl mb-1">⚡</div>
+                    <div className="text-sm font-medium text-emerald-700">Kích hoạt 24h</div>
+                  </div>
+                  <div className="bg-white p-3 rounded-lg">
+                    <div className="text-2xl mb-1">🛡️</div>
+                    <div className="text-sm font-medium text-emerald-700">Hỗ trợ 24/7</div>
+                  </div>
+                  <div className="bg-white p-3 rounded-lg">
+                    <div className="text-2xl mb-1">📊</div>
+                    <div className="text-sm font-medium text-emerald-700">Báo cáo chi tiết</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  onClick={() => {
+                    handleRegister(selectedPackage.id, selectedPackage.name);
+                    closeModal();
+                  }}
+                  className="flex-1 py-4 px-6 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-xl"
+                >
+                  Đăng ký gói {selectedPackage.name}
+                </button>
+                <button
+                  onClick={closeModal}
+                  className="flex-1 py-4 px-6 border border-emerald-300 text-emerald-700 rounded-xl font-semibold hover:bg-emerald-50 transition-colors duration-300"
+                >
+                  Xem gói khác
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
