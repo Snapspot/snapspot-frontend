@@ -128,6 +128,13 @@ const Login = () => {
             const decoded: any = jwtDecode(accessToken);
             const userRole = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
 
+            // Gọi API profile
+            const profileRes = await axiosInstance.get('/users/profile'); // axiosInstance đã set baseURL + headers
+            const profileData = profileRes.data.data;
+
+            // Lưu vào localStorage
+            localStorage.setItem('userProfile', JSON.stringify(profileData));
+
             showSnackbar('Đăng nhập thành công!', 'success');
 
             // Delay nhỏ trước khi redirect (tuỳ chọn)

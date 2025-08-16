@@ -25,25 +25,34 @@ axiosInstance.interceptors.response.use(
     async error => {
         const originalRequest = error.config;
 
-        // Nếu lỗi 401 và chưa thử refresh token thì xử lý
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
             try {
                 const refreshToken = localStorage.getItem('refreshToken');
-                const res = await axios.post('/v1/auth/refresh-token', {
-                    refreshToken: refreshToken
+                if (!refreshToken) throw new Error("No refresh token");
+
+                // Tạo instance riêng để tránh loop interceptor
+                const refreshInstance = axios.create({
+                    baseURL: 'http://14.225.217.24:8080/api',
+                    headers: { 'Content-Type': 'application/json' }
                 });
 
-                const newToken = res.data.token || res.data.accessToken;
-                localStorage.setItem('accessToken', newToken); // đổi đúng key
+                const res = await refreshInstance.post('/v1/auth/refresh-token', {
+                    refreshToken
+                });
 
-                // Gắn token mới vào request ban đầu và gửi lại
+                const newToken = res.data.data?.accessToken; // đảm bảo đúng field trả về
+                if (!newToken) throw new Error("No access token in refresh response");
+
+                localStorage.setItem('accessToken', newToken);
+
+                // Gắn token mới vào request cũ và gửi lại
                 originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
                 return axiosInstance(originalRequest);
+
             } catch (refreshError) {
                 console.error('Refresh token thất bại:', refreshError);
-                // Nếu không refresh được, redirect về login
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('refreshToken');
                 window.location.href = '/login';
