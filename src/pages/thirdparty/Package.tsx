@@ -58,8 +58,13 @@ const ThirdpartyPackage = () => {
     const fetchRegisteredPackage = async () => {
       try {
         const response = await axiosInstance.get('/third-party/sellerpackage-info');
-        if (response.data.success) {
+        if (response.data.success && response.data.data) {
           setRegisteredPackage(response.data.data);
+        } else {
+          // Nếu chưa có gói nào thì load luôn danh sách gói để user chọn
+          const res = await axiosInstance.get('/sellerpackages');
+          const packages = res.data.data.filter((pkg: PackageItem) => !pkg.isDeleted);
+          setAvailablePackages(packages);
         }
       } catch (error) {
         console.error('Error fetching package info:', error);
@@ -68,6 +73,7 @@ const ThirdpartyPackage = () => {
 
     fetchRegisteredPackage();
   }, []);
+
 
   // Nâng cấp gói - mở dialog + lấy danh sách gói khả dụng
   const handleUpgradeClick = async () => {
@@ -181,8 +187,8 @@ const ThirdpartyPackage = () => {
             </h1>
 
             <div style={{ padding: '24px' }}>
-              {/* Hiển thị gói hiện tại */}
-              {registeredPackage && (
+              {registeredPackage ? (
+                // Nếu đã có gói → giữ nguyên code cũ
                 <Paper
                   className="rounded-xl mb-6"
                   elevation={3}
@@ -244,7 +250,7 @@ const ThirdpartyPackage = () => {
                       <Button
                         fullWidth
                         variant="outlined"
-                        onClick={handleRenewClick} // ← đúng rồi
+                        onClick={handleRenewClick}
                         sx={{
                           borderColor: '#215b5b',
                           color: '#215b5b',
@@ -259,6 +265,57 @@ const ThirdpartyPackage = () => {
                       </Button>
                     </div>
                   </div>
+                </Paper>
+              ) : (
+                // Nếu chưa có gói → hiện danh sách gói
+                <Paper
+                  className="rounded-xl mb-6"
+                  elevation={3}
+                  sx={{ backgroundColor: '#fffdf6', p: { xs: 3, md: 5 } }}
+                >
+                  <Typography variant="h6" color="#215b5b" fontWeight="600" mb={2}>
+                    Bạn chưa đăng ký gói nào. Vui lòng chọn gói để bắt đầu:
+                  </Typography>
+                  <List>
+                    {availablePackages.map((pkg) => (
+                      <ListItemButton
+                        key={pkg.id}
+                        selected={selectedPackage?.id === pkg.id}
+                        onClick={() => setSelectedPackage(pkg)}
+                        sx={{
+                          mb: 1,
+                          borderRadius: 2,
+                          backgroundColor: selectedPackage?.id === pkg.id ? '#e0f2f1' : '#f5f5f5',
+                          border: selectedPackage?.id === pkg.id ? '2px solid #215b5b' : '1px solid #ccc',
+                        }}
+                      >
+                        <ListItemText
+                          primary={
+                            <Typography sx={{ fontWeight: 600, color: '#215b5b' }}>
+                              {pkg.name}
+                            </Typography>
+                          }
+                          secondary={
+                            <Typography variant="body2" sx={{ color: '#555' }}>
+                              {pkg.description} — {pkg.price.toLocaleString()} VNĐ
+                            </Typography>
+                          }
+                        />
+                        {selectedPackage?.id === pkg.id && (
+                          <CheckCircleIcon sx={{ color: '#215b5b', ml: 2 }} />
+                        )}
+                      </ListItemButton>
+                    ))}
+                  </List>
+                  <Box mt={2}>
+                    <Button
+                      variant="contained"
+                      sx={{ backgroundColor: '#215b5b' }}
+                      onClick={handleConfirmUpgrade} // dùng lại logic nâng cấp
+                    >
+                      Đăng ký gói
+                    </Button>
+                  </Box>
                 </Paper>
               )}
             </div>
