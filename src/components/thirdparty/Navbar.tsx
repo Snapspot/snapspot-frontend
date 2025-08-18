@@ -1,4 +1,4 @@
-import { FiSearch, FiBell, FiUser } from 'react-icons/fi';
+import { FiSearch, FiUser } from 'react-icons/fi';
 import { useEffect, useState } from 'react';
 import ProfileModal from '../admin/ProfileModal';
 
@@ -52,9 +52,6 @@ export default function Navbar() {
 
                 {/* User Info */}
                 <div className="flex items-center space-x-6 text-gray-600">
-                    <button aria-label="Notifications" className="hover:text-gray-800 transition">
-                        <FiBell size={20} />
-                    </button>
                     <button
                         aria-label="User Profile"
                         className="hover:text-gray-800 transition flex items-center space-x-2"
