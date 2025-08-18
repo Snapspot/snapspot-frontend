@@ -1,4 +1,4 @@
-import { FiSearch, FiUser } from 'react-icons/fi';
+import { FiUser } from 'react-icons/fi';
 import { useEffect, useState } from 'react';
 import ProfileModal from './ProfileModal';
 
@@ -35,15 +35,6 @@ export default function Navbar() {
     return (
         <>
             <header className="bg-[#fff5e2] shadow px-6 h-20 flex items-center justify-between">
-                {/* Search */}
-                <div className="flex items-center rounded-md px-3 py-1 w-1/3 bg-[#215858]">
-                    <FiSearch className="mr-2 text-[#faebce]" />
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        className="bg-transparent focus:outline-none w-full placeholder-[#faebce] text-[#faebce]"
-                    />
-                </div>
 
                 {/* User Info */}
                 <div className="flex items-center space-x-6 text-gray-600">

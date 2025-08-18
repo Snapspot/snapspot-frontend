@@ -77,6 +77,16 @@ export default function ThirdPartyDashboard() {
           </div>
 
           <main className="p-6 space-y-6 overflow-auto">
+            <h1 className="text-center flex items-center justify-center h-[50px] mt-4"
+              style={{
+                fontFamily: 'Inter, sans-serif',
+                fontWeight: 400,
+                fontSize: '40px',
+                letterSpacing: '0.1em',
+                color: '#215b5b',
+              }}>
+              Thông số
+            </h1>
             {/* Company Info */}
             {company && (
               <div className="bg-white p-6 rounded-lg shadow flex items-center gap-6">

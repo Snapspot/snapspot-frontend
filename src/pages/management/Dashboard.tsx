@@ -113,8 +113,15 @@ const Dashboard = () => {
         <div className="flex-1 relative flex flex-col overflow-hidden">
           <Navbar />
           <main className="flex-1 p-9 overflow-auto">
-            <h1 className="text-center mb-8 text-3xl font-bold text-[#215b5b]">
-              Dashboard
+            <h1 className="text-center flex items-center justify-center h-[50px] mb-7"
+              style={{
+                fontFamily: 'Inter, sans-serif',
+                fontWeight: 400,
+                fontSize: '40px',
+                letterSpacing: '0.1em',
+                color: '#215b5b',
+              }}>
+              Thông số
             </h1>
 
             {/* Cards thống kê */}
