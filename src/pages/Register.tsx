@@ -19,6 +19,7 @@ import type { AlertProps } from '@mui/material/Alert';
 import axios from '../utils/axiosInstance';
 import Navbar from '../components/home/Navbar';
 import Footer from '../components/home/Footer';
+import { Radio, RadioGroup, FormLabel } from '@mui/material';
 
 const backgroundImages = [
   'https://wander-lush.org/wp-content/uploads/2022/11/Hanoi-to-Halong-Bay-transport-guide-2023-new-DP-Junk-Boat.jpg',
@@ -34,7 +35,7 @@ const Register = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const isSmallMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  
+  const [role, setRole] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [fade, setFade] = useState(false);
   const navigate = useNavigate();
@@ -46,17 +47,17 @@ const Register = () => {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [dob, setDob] = useState(''); // dùng định dạng YYYY-MM-DD
-  
+
   const showSnackbar = (message: string, severity: 'success' | 'error' | 'info' | 'warning') => {
     setSnackbar({ open: true, message, severity });
   };
-  
+
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
     severity: 'success' as 'success' | 'error' | 'info' | 'warning',
   });
-  
+
   const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
   });
@@ -69,7 +70,9 @@ const Register = () => {
     phoneNumber?: string;
     dob?: string;
     agreeTerms?: string;
+    role?: string;
   }>({});
+
 
   // Scroll to top khi component mount
   useEffect(() => {
@@ -102,6 +105,9 @@ const Register = () => {
     if (!agreeTerms) {
       newErrors.agreeTerms = 'Bạn phải đồng ý với điều khoản';
     }
+    if (!role) {
+      newErrors.role = 'Vui lòng chọn vai trò';
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -116,6 +122,7 @@ const Register = () => {
           confirmPassword,
           phoneNumber,
           dob: new Date(dob).toISOString(),
+          role,
         });
 
         console.log('Đăng ký thành công:', response.data);
@@ -156,10 +163,9 @@ const Register = () => {
   return (
     <div className="min-h-screen w-screen flex flex-col relative overflow-hidden">
       <Navbar />
-      <div 
-        className={`flex relative overflow-hidden ${
-          isMobile ? 'min-h-screen' : 'h-screen'
-        } w-screen`}
+      <div
+        className={`flex relative overflow-hidden ${isMobile ? 'min-h-screen' : 'h-screen'
+          } w-screen`}
       >
         {/* Background */}
         <div
@@ -175,45 +181,42 @@ const Register = () => {
         <div className="absolute inset-0" style={{ backgroundColor: '#21484888', zIndex: -1 }} />
 
         {/* Content */}
-        <div 
-          className={`flex w-full h-full items-center justify-center relative z-10 ${
-            isMobile 
-              ? 'flex-col gap-8 py-8 px-4' 
-              : 'gap-130'
-          }`}
+        <div
+          className={`flex w-full h-full items-center justify-center relative z-10 ${isMobile
+            ? 'flex-col gap-8 py-8 px-4'
+            : 'gap-130'
+            }`}
         >
           {/* Logo Section */}
-          <div 
-            className={`text-white text-center ${
-              isMobile 
-                ? 'order-1' 
-                : ''
-            }`}
+          <div
+            className={`text-white text-center ${isMobile
+              ? 'order-1'
+              : ''
+              }`}
           >
-            <img 
-              src="/images/logo2-03.png" 
-              alt="Logo SnapSpot" 
-              className={`mb-4 h-auto mx-auto ${
-                isSmallMobile 
-                  ? 'w-32' 
-                  : isMobile 
-                    ? 'w-40' 
-                    : 'w-150'
-              }`} 
+            <img
+              src="/images/logo2-03.png"
+              alt="Logo SnapSpot"
+              className={`mb-4 h-auto mx-auto ${isSmallMobile
+                ? 'w-32'
+                : isMobile
+                  ? 'w-40'
+                  : 'w-150'
+                }`}
             />
-            <Typography 
-              variant={isSmallMobile ? 'h6' : isMobile ? 'h5' : 'h4'} 
+            <Typography
+              variant={isSmallMobile ? 'h6' : isMobile ? 'h5' : 'h4'}
               component="h1"
-              sx={{ 
+              sx={{
                 fontWeight: 'bold',
                 mb: 1
               }}
             >
               SnapSpot
             </Typography>
-            <Typography 
+            <Typography
               variant={isSmallMobile ? 'body2' : 'h6'}
-              sx={{ 
+              sx={{
                 fontWeight: 'light',
                 letterSpacing: '0.05em'
               }}
@@ -223,10 +226,10 @@ const Register = () => {
           </div>
 
           {/* Form Section */}
-          <Paper 
-            elevation={6} 
-            sx={{ 
-              padding: isMobile ? 3 : 5, 
+          <Paper
+            elevation={6}
+            sx={{
+              padding: isMobile ? 3 : 5,
               width: isMobile ? '100%' : 400,
               maxWidth: isMobile ? '400px' : '400px',
               minHeight: isMobile ? 'auto' : 550,
@@ -234,24 +237,24 @@ const Register = () => {
               order: isMobile ? 2 : 'unset'
             }}
           >
-            <Typography 
-              variant={isMobile ? "h5" : "h4"} 
-              mb={1} 
-              textAlign="center" 
-              fontWeight="bold" 
+            <Typography
+              variant={isMobile ? "h5" : "h4"}
+              mb={1}
+              textAlign="center"
+              fontWeight="bold"
               color="#214848"
             >
               Đăng ký
             </Typography>
-            <Typography 
-              variant="body2" 
-              mb={3} 
-              textAlign="center" 
+            <Typography
+              variant="body2"
+              mb={3}
+              textAlign="center"
               color="text.secondary"
             >
               Vui lòng điền thông tin để tạo tài khoản mới
             </Typography>
-            
+
             <Box
               component="form"
               display="flex"
@@ -323,7 +326,22 @@ const Register = () => {
                 error={Boolean(errors.dob)}
                 helperText={errors.dob}
               />
-              
+              <FormLabel component="legend">Chọn vai trò</FormLabel>
+              <RadioGroup
+                row
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+              >
+                <FormControlLabel value="User" control={<Radio />} label="User" />
+                <FormControlLabel value="Thirdparty" control={<Radio />} label="Thirdparty" />
+                <FormControlLabel value="Admin" control={<Radio />} label="Admin" />
+              </RadioGroup>
+              {errors.role && (
+                <Typography color="error" fontSize={12} mt={-1} mb={1}>
+                  {errors.role}
+                </Typography>
+              )}
+
               <FormControlLabel
                 control={
                   <Checkbox
@@ -364,10 +382,10 @@ const Register = () => {
                 Đăng ký
               </Button>
 
-              <Typography 
-                variant="body2" 
-                mt={2} 
-                textAlign="center" 
+              <Typography
+                variant="body2"
+                mt={2}
+                textAlign="center"
                 color="text.secondary"
                 fontSize={isMobile ? 13 : 14}
               >
@@ -385,14 +403,14 @@ const Register = () => {
         open={snackbar.open}
         autoHideDuration={4000}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
-        anchorOrigin={{ 
-          vertical: 'top', 
-          horizontal: isMobile ? 'center' : 'right' 
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: isMobile ? 'center' : 'right'
         }}
       >
-        <Alert 
-          onClose={() => setSnackbar({ ...snackbar, open: false })} 
-          severity={snackbar.severity} 
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
           sx={{ width: '100%' }}
         >
           {snackbar.message}
