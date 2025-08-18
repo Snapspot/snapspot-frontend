@@ -26,7 +26,6 @@ import AgencyService from './pages/management/AgencyService';
 import Blog from './pages/Blog';
 import BlogDetail from './pages/BlogDetail';
 import AboutUs from './pages/Aboutus';
-import User from './pages/management/User';
 
 function App() {
   return (
@@ -56,7 +55,6 @@ function App() {
           <Route path="/admin/provinces" element={<Province />} />
           <Route path="/admin/districts" element={<District />} />
           <Route path="/admin/spots" element={<Spot />} />
-          <Route path="/admin/user" element={<User />} />
         </Route>
 
                 {/* Protected routes (role = Admin) */}
