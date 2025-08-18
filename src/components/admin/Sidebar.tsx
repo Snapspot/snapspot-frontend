@@ -25,7 +25,7 @@ export default function Sidebar() {
 
 
   return (
-    <div className="w-72 min-h-screen bg-[#215858] text-[#faebce] flex flex-col p-6">
+    <div className="w-72 h-screen fixed left-0 top-0 bg-[#215858] text-[#faebce] flex flex-col p-6">
       <h2 className="text-2xl font-bold mb-10">SNAPSPOT</h2>
       <nav className="flex flex-col space-y-4">
         <Link
