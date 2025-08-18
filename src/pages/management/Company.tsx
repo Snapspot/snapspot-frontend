@@ -185,7 +185,7 @@ const Company = () => {
       <Sidebar />
 
       {/* Container phần còn lại */}
-      <div className="flex-1 relative flex flex-col overflow-hidden">
+      <div className="flex-1 ml-72 relative flex flex-col overflow-hidden">
 
         {/* Background ảnh thiên nhiên trắng đen */}
         <div
