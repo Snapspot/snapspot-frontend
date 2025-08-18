@@ -2,7 +2,7 @@ import Sidebar from '../../components/thirdparty/Sidebar';
 import Navbar from '../../components/thirdparty/Navbar';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead,
-  TableRow, Paper, TextField, Button, TablePagination
+  TableRow, Paper, TextField, TablePagination
 } from '@mui/material';
 import { Star, StarBorder } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
@@ -86,9 +86,6 @@ const ThirdpartyRatings = () => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                <Button variant="contained" sx={{ backgroundColor: '#215858' }}>
-                  Thêm đánh giá
-                </Button>
               </div>
 
               {/* Table */}
