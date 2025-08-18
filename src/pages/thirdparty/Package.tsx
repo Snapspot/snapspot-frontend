@@ -53,26 +53,39 @@ const ThirdpartyPackage = () => {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
   };
 
-
   useEffect(() => {
     const fetchRegisteredPackage = async () => {
       try {
         const response = await axiosInstance.get('/third-party/sellerpackage-info');
+        console.log("👉 sellerpackage-info response:", response.data);
+
         if (response.data.success && response.data.data) {
           setRegisteredPackage(response.data.data);
         } else {
-          // Nếu chưa có gói nào thì load luôn danh sách gói để user chọn
-          const res = await axiosInstance.get('/sellerpackages');
-          const packages = res.data.data.filter((pkg: PackageItem) => !pkg.isDeleted);
-          setAvailablePackages(packages);
+          setRegisteredPackage(null);
         }
       } catch (error) {
-        console.error('Error fetching package info:', error);
+        console.warn("Không có gói hiện tại hoặc lỗi khi lấy package info:", error);
+        setRegisteredPackage(null);
+      }
+
+      // ✅ Luôn load danh sách gói cho user chọn
+      try {
+        const res = await axiosInstance.get('/sellerpackages');
+        console.log("👉 sellerpackages response:", res.data);
+
+        const packages = res.data.data.filter((pkg: PackageItem) => !pkg.isDeleted);
+        setAvailablePackages(packages);
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách gói:", error);
       }
     };
 
     fetchRegisteredPackage();
   }, []);
+
+
+
 
 
   // Nâng cấp gói - mở dialog + lấy danh sách gói khả dụng
