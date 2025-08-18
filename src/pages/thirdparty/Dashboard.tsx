@@ -110,17 +110,6 @@ export default function ThirdPartyDashboard() {
                   <p>📧 {company.email}</p>
                   <p>📞 {company.phoneNumber}</p>
                   <p>📍 {company.address}</p>
-                  <p>
-                    🌐{" "}
-                    <a
-                      href={company.website}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-blue-600 underline hover:text-blue-800"
-                    >
-                      {company.website}
-                    </a>
-                  </p>
                 </div>
               </div>
             )}

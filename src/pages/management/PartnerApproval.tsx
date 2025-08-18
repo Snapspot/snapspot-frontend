@@ -91,7 +91,7 @@ const PartnerApproval = () => {
     return (
         <div className="flex h-screen w-screen">
             <Sidebar />
-            <div className="flex-1 relative flex flex-col overflow-hidden">
+            <div className="flex-1 ml-72 relative flex flex-col overflow-hidden">
                 {/* Background ảnh thiên nhiên trắng đen */}
                 <div
                     className="absolute inset-0 bg-cover bg-center grayscale brightness-80 opacity-150"
