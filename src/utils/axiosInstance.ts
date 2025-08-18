@@ -1,11 +1,12 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-    baseURL: 'http://14.225.217.24:8080/api',
+    baseURL: import.meta.env.VITE_API_URL,
     headers: {
         'Content-Type': 'application/json'
     }
 });
+
 
 // Interceptor: Gắn access token vào mọi request
 axiosInstance.interceptors.request.use(

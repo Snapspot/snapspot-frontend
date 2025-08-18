@@ -89,34 +89,42 @@ export default function ThirdPartyDashboard() {
             </h1>
             {/* Company Info */}
             {company && (
-              <div className="bg-white p-6 rounded-lg shadow flex items-center gap-6">
-                <img
-                  src={company.avarta}
-                  alt="logo"
-                  className="w-24 h-24 rounded-full object-cover border"
-                />
-                <div>
-                  <h2 className="text-2xl font-semibold text-gray-800">
-                    {company.companyName}
-                  </h2>
-                  <p className="text-yellow-500">⭐ {company.rating} / 5</p>
-                  <p className="text-gray-600">
-                    Chi nhánh: {company.agencyCount}
+              <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-6 grid grid-cols-2 gap-6 items-center">
+                {/* Left side */}
+                <div className="flex flex-col items-center text-center">
+                  <img
+                    src={company.avarta}
+                    alt="logo"
+                    className="w-28 h-28 rounded-full object-cover border-2 border-gray-200 shadow-sm mb-3"
+                  />
+                  <h2 className="text-2xl font-bold text-gray-800">{company.companyName}</h2>
+                  <div className="flex items-center justify-center gap-1 text-yellow-500 mt-1">
+                    <span>⭐</span>
+                    <span>{company.rating} / 5</span>
+                  </div>
+                </div>
+
+                {/* Right side */}
+                <div className="flex flex-col gap-1 text-gray-600 items-start">
+                  <p>🏢 Chi nhánh: {company.agencyCount}</p>
+                  <p>📧 {company.email}</p>
+                  <p>📞 {company.phoneNumber}</p>
+                  <p>📍 {company.address}</p>
+                  <p>
+                    🌐{" "}
+                    <a
+                      href={company.website}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-blue-600 underline hover:text-blue-800"
+                    >
+                      {company.website}
+                    </a>
                   </p>
-                  <p className="text-gray-600">📧 {company.email}</p>
-                  <p className="text-gray-600">📞 {company.phoneNumber}</p>
-                  <p className="text-gray-600">📍 {company.address}</p>
-                  <a
-                    href={company.website}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-blue-600 underline"
-                  >
-                    {company.website}
-                  </a>
                 </div>
               </div>
             )}
+
 
             {/* Views Chart */}
             <div className="bg-white p-6 rounded-lg shadow">

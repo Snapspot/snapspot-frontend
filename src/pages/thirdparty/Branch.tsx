@@ -1,5 +1,6 @@
 import Sidebar from '../../components/thirdparty/Sidebar';
 import Navbar from '../../components/thirdparty/Navbar';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import {
     Table, TableBody, TableCell, TableContainer, TablePagination,
     TableHead, TableRow, Paper, IconButton, TextField,
@@ -14,6 +15,32 @@ const BranchManagement = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [open, setOpen] = useState(false);
+    const [newAgency, setNewAgency] = useState({
+        name: "",
+        address: "",
+        fullname: "",
+        phoneNumber: "",
+        avatarUrl: "",
+        spotId: "",
+        description: "",
+        agencyServiceIds: [] as string[]
+    });
+
+    // mở / đóng modal
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    // submit form
+    const handleSubmit = async () => {
+        try {
+            await axios.post("http://14.225.217.24:8080/api/agencies", newAgency);
+            fetchAgencies(); // refresh danh sách
+            handleClose();
+        } catch (err) {
+            console.error("Lỗi khi thêm agency:", err);
+        }
+    };
 
     useEffect(() => {
         fetchAgencies();
@@ -78,7 +105,9 @@ const BranchManagement = () => {
 
                         <div style={{ padding: '24px' }}>
                             {/* Search + Add button */}
+                            {/* Search + Add button */}
                             <div className="flex justify-between items-center mb-4">
+                                {/* Ô tìm kiếm (bên trái) */}
                                 <TextField
                                     label="Tìm kiếm"
                                     variant="outlined"
@@ -86,6 +115,15 @@ const BranchManagement = () => {
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
+
+                                {/* Nút thêm chi nhánh (bên phải) */}
+                                <Button
+                                    variant="contained"
+                                    sx={{ backgroundColor: "#215b5b" }}
+                                    onClick={handleOpen}   // 👈 phải có dòng này
+                                >
+                                    + Thêm chi nhánh
+                                </Button>
                             </div>
 
                             {/* Table */}
@@ -93,7 +131,7 @@ const BranchManagement = () => {
                                 <Table>
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell><strong>Tên chi nhánh</strong></TableCell>
+                                            <TableCell><strong>Tên dịch vụ</strong></TableCell>
                                             <TableCell><strong>Người phụ trách</strong></TableCell>
                                             <TableCell><strong>SĐT</strong></TableCell>
                                             <TableCell><strong>Địa chỉ</strong></TableCell>
@@ -148,6 +186,70 @@ const BranchManagement = () => {
                     </main>
                 </div>
             </div>
+            {/* Modal thêm chi nhánh */}
+            <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+                <DialogTitle>Thêm chi nhánh mới</DialogTitle>
+                <DialogContent className="flex flex-col gap-3 mt-2">
+                    <TextField
+                        label="Tên dịch vụ"
+                        fullWidth
+                        value={newAgency.name}
+                        onChange={(e) => setNewAgency({ ...newAgency, name: e.target.value })}
+                    />
+                    <TextField
+                        label="Người phụ trách"
+                        fullWidth
+                        value={newAgency.fullname}
+                        onChange={(e) => setNewAgency({ ...newAgency, fullname: e.target.value })}
+                    />
+                    <TextField
+                        label="SĐT"
+                        fullWidth
+                        value={newAgency.phoneNumber}
+                        onChange={(e) => setNewAgency({ ...newAgency, phoneNumber: e.target.value })}
+                    />
+                    <TextField
+                        label="Địa chỉ"
+                        fullWidth
+                        value={newAgency.address}
+                        onChange={(e) => setNewAgency({ ...newAgency, address: e.target.value })}
+                    />
+                    <TextField
+                        label="Avatar URL"
+                        fullWidth
+                        value={newAgency.avatarUrl}
+                        onChange={(e) => setNewAgency({ ...newAgency, avatarUrl: e.target.value })}
+                    />
+                    <TextField
+                        label="Mô tả"
+                        fullWidth
+                        multiline
+                        rows={3}
+                        value={newAgency.description}
+                        onChange={(e) => setNewAgency({ ...newAgency, description: e.target.value })}
+                    />
+                    <TextField
+                        label="Spot ID"
+                        fullWidth
+                        value={newAgency.spotId}
+                        onChange={(e) => setNewAgency({ ...newAgency, spotId: e.target.value })}
+                    />
+                    <TextField
+                        label="Agency Service IDs (cách nhau bằng dấu phẩy)"
+                        fullWidth
+                        value={newAgency.agencyServiceIds.join(",")}
+                        onChange={(e) =>
+                            setNewAgency({ ...newAgency, agencyServiceIds: e.target.value.split(",") })
+                        }
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>Hủy</Button>
+                    <Button variant="contained" sx={{ backgroundColor: "#215b5b" }} onClick={handleSubmit}>
+                        Lưu
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 };
